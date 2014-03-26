@@ -1,0 +1,15 @@
+<phpunit colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         strict="true"
+         verbose="true"
+         bootstrap="tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="Synapse">
+            <directory>tests/SynapseTest</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
