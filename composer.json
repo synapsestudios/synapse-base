@@ -1,5 +1,5 @@
 {
-    "name": "synapsestudios/api-template-base",
+    "name": "synapsestudios/api-template-base-library",
     "description": "Base code for the API template",
     "suggest": {
         "silex/silex": "~1.1",
