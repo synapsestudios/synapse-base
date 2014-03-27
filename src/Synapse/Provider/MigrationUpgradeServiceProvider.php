@@ -39,7 +39,6 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
 
             $command->setDatabaseAdapter($app['db']);
             $command->setAppVersion($app['version']);
-            $command->setUpgradeNamespace($initConfig['upgrades']);
             $command->setRunMigrationsCommand($app['migrations.run']);
             $command->setGenerateInstallCommand($app['install.generate']);
 
@@ -51,7 +50,6 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
 
             $command->setDbConfig($app['config']->load('db'));
             $command->setInstallConfig($app['config']->load('install'));
-            $command->setUpgradeNamespace($initConfig['upgrades']);
 
             return $command;
         });
@@ -66,7 +64,6 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
             $command = new \Synapse\Command\Migrations\Run;
 
             $command->setDatabaseAdapter($app['db']);
-            $command->setMigrationNamespace($initConfig['migrations']);
 
             return $command;
         });
