@@ -22,8 +22,6 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $initConfig = $app['config']->load('init');
-
         $app['upgrade.create'] = $app->share(function () use ($app) {
             $command = new \Synapse\Command\Upgrade\Create(
                 new \Synapse\View\Upgrade\Create($app['mustache'])
@@ -34,7 +32,7 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
-        $app['upgrade.run'] = $app->share(function () use ($app, $initConfig) {
+        $app['upgrade.run'] = $app->share(function () use ($app) {
             $command = new \Synapse\Command\Upgrade\Run;
 
             $command->setDatabaseAdapter($app['db']);
@@ -45,7 +43,7 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
-        $app['install.generate'] = $app->share(function () use ($app, $initConfig) {
+        $app['install.generate'] = $app->share(function () use ($app) {
             $command = new \Synapse\Command\Install\Generate;
 
             $command->setDbConfig($app['config']->load('db'));
@@ -60,7 +58,7 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
             );
         });
 
-        $app['migrations.run'] = $app->share(function () use ($app, $initConfig) {
+        $app['migrations.run'] = $app->share(function () use ($app) {
             $command = new \Synapse\Command\Migrations\Run;
 
             $command->setDatabaseAdapter($app['db']);
