@@ -15,6 +15,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 {
     const EXISTING_USER_ID = '1';
     const LOGGED_IN_USER_ID = '2';
+    const NON_EXISTENT_USER_ID = '3';
 
     public function setUp()
     {
@@ -52,7 +53,13 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->mockUserService = $this->getMock('Synapse\User\UserService');
         $this->mockUserService->expects($this->any())
             ->method('findById')
-            ->will($this->returnValue($existingUser));
+            ->will($this->returnCallback(function($userId) use ($existingUser) {
+                if ($userId === self::EXISTING_USER_ID) {
+                    return $existingUser;
+                } else {
+                    return FALSE;
+                }
+            }));
 
         $captured = $this->captured;
 
@@ -139,9 +146,9 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         return $user;
     }
 
-    public function makeGetRequest()
+    public function makeGetRequestForUserId($userId)
     {
-        $this->request = new Request(['id' => '1']);
+        $this->request = new Request([], [], ['id' => $userId]);
         $this->request->setMethod('get');
         $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
@@ -252,7 +259,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
     public function testGetReturnsUserArrayWithoutThePassword()
     {
-        $response = $this->makeGetRequest();
+        $response = $this->makeGetRequestForUserId(self::EXISTING_USER_ID);
 
         $userArrayWithoutPassword = array_diff_key(
             $this->existingUser->getArrayCopy(),
@@ -262,6 +269,16 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             $userArrayWithoutPassword,
             json_decode($response->getContent(), TRUE)
+        );
+    }
+
+    public function testGetReturns404IfUserNotFound()
+    {
+        $response = $this->makeGetRequestForUserId(self::NON_EXISTENT_USER_ID);
+
+        $this->assertEquals(
+            404,
+            $response->getStatusCode()
         );
     }
 
