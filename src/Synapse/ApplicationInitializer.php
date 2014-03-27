@@ -11,13 +11,6 @@ use Symfony\Component\Debug\Debug;
 class ApplicationInitializer
 {
     /**
-     * Application version
-     *
-     * @var string
-     */
-    protected $appVersion = '0.0.0';
-
-    /**
      * Initialize the Silex Application
      *
      * Register services and routes
@@ -30,14 +23,14 @@ class ApplicationInitializer
         // Create the application object
         $app = new Application;
 
-        // Store application version
-        $app['version'] = $this->appVersion;
-
         $this->setEnvironment($app);
         $this->registerConfig($app);
 
         // Handle init config
         $initConfig = $app['config']->load('init');
+
+        // Store application version
+        $app['version'] = $initConfig['version'];
 
         if ($initConfig['debug']) {
             Debug::enable();
