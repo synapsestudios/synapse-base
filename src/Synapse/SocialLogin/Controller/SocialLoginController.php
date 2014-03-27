@@ -281,6 +281,22 @@ class SocialLoginController extends AbstractController
         return $loginRequest;
     }
 
+    protected function google(Oauth2Service\Google $google, TokenInterface $token)
+    {
+        $user = json_decode($google->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
+
+        $loginRequest = new LoginRequest(
+            'google',
+            $user['id'],
+            $token->getAccessToken(),
+            $token->getEndOfLife() > 0 ? $token->getEndOfLife() : 0,
+            $token->getRefreshToken(),
+            [$user['email']]
+        );
+
+        return $loginRequest;
+    }
+
     /**
      * Request access token from Facebook and return a LoginRequest object for logging into our app
      *

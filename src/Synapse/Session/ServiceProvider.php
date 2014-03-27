@@ -4,14 +4,15 @@ namespace Synapse\Session;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Drak\NativeSession\NativeRedisSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class ServiceProvider implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
-        $app['session.storage.handler'] = $app->share(function () {
-            return new \SessionHandler('123');
+        $app['session'] = $app->share(function ($app) {
+            return new Session(new NativeSessionStorage());
         });
     }
 
