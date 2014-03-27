@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UserControllerTest extends PHPUnit_Framework_TestCase
 {
+    const EXISTING_USER_ID = '1';
+    const LOGGED_IN_USER_ID = '2';
+
     public function setUp()
     {
         $this->captured = new stdClass();
@@ -21,15 +24,18 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $this->setUpMockUserService();
         $this->setUpMockUrlGenerator();
+        $this->setUpMockSecurityContext();
 
         $this->userController->setUserService($this->mockUserService);
         $this->userController->setUrlGenerator($this->mockUrlGenerator);
+        $this->userController->setSecurityContext($this->mockSecurityContext);
     }
 
     public function setUpExistingUser()
     {
         $existingUser = new User;
         $existingUser->fromArray([
+            'id'       => self::EXISTING_USER_ID,
             'email'    => 'existing@user.com',
             'password' => '12345'
         ]);
@@ -94,63 +100,154 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->captured = $captured;
     }
 
+    public function setUpMockSecurityContext()
+    {
+        $captured = $this->captured;
+
+        $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mockSecurityToken = $this->getMock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
+
+        $loggedInUserEntity = $this->getLoggedInUserEntity();
+
+        $mockSecurityToken->expects($this->any())
+            ->method('getUser')
+            ->will($this->returnCallback(function() use ($loggedInUserEntity, $captured) {
+                $captured->userReturnedFromSecurityContext = $loggedInUserEntity;
+
+                return $loggedInUserEntity;
+            }));
+
+        $this->mockSecurityContext->expects($this->any())
+            ->method('getToken')
+            ->will($this->returnValue($mockSecurityToken));
+
+        $this->captured = $captured;
+    }
+
+    public function getLoggedInUserEntity()
+    {
+        $user = new User();
+
+        $user->fromArray([
+            'id'    => self::LOGGED_IN_USER_ID,
+            'email' => 'current@user.com'
+        ]);
+
+        return $user;
+    }
+
     public function makeGetRequest()
     {
-        $request = new Request(['id' => '1']);
-        $request->setMethod('get');
-        $request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->request = new Request(['id' => '1']);
+        $this->request->setMethod('get');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
-        return $this->userController->execute($request);
+        return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithPasswordOnly()
     {
-        $request = new Request([], [], [], [], [], [],
+        $this->request = new Request([], [], [], [], [], [],
             json_encode(['password' => '12345'])
         );
-        $request->setMethod('post');
-        $request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->request->setMethod('post');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
-        return $this->userController->execute($request);
+        return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithEmailOnly()
     {
-        $request = new Request([], [], [], [], [], [],
+        $this->request = new Request([], [], [], [], [], [],
             json_encode(['email' => 'posted@user.com'])
         );
-        $request->setMethod('post');
-        $request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->request->setMethod('post');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
-        return $this->userController->execute($request);
+        return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithNonUniqueEmail()
     {
-        $request = new Request([], [], [], [], [], [],
+        $this->request = new Request([], [], [], [], [], [],
             json_encode([
                 'email'    => $this->existingUser->getEmail(),
                 'password' => '12345'
             ])
         );
-        $request->setMethod('post');
-        $request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->request->setMethod('post');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
-        return $this->userController->execute($request);
+        return $this->userController->execute($this->request);
     }
 
     public function makeValidPostRequest()
     {
-        $request = new Request([], [], [], [], [], [],
+        $this->request = new Request([], [], [], [], [], [],
             json_encode([
                 'email'    => 'posted@user.com',
                 'password' => '12345'
             ])
         );
-        $request->setMethod('post');
-        $request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->request->setMethod('post');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
 
-        return $this->userController->execute($request);
+        return $this->userController->execute($this->request);
+    }
+
+    public function makePutRequestForNonLoggedInUser()
+    {
+        $this->request = new Request([], [], ['id' => self::EXISTING_USER_ID], [], [], [],
+            json_encode([
+                'email' => 'new@email.com'
+            ])
+        );
+        $this->request->setMethod('put');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+
+        return $this->userController->execute($this->request);
+    }
+
+    public function makeValidPutRequest()
+    {
+        $this->request = new Request([], [], ['id' => self::LOGGED_IN_USER_ID], [], [], [],
+            json_encode([
+                'email'    => 'new@email.com',
+                'password' => '12345'
+            ])
+        );
+        $this->request->setMethod('put');
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+
+        return $this->userController->execute($this->request);
+    }
+
+    public function withUserUpdateThrowingExceptionWithCode($code)
+    {
+        $this->mockUserService->expects($this->once())
+            ->method('update')
+            ->will($this->throwException(new OutOfBoundsException('', $code)));
+    }
+
+    public function withExpectedUserUpdate()
+    {
+        $captured = $this->captured;
+
+        $this->mockUserService->expects($this->once())
+            ->method('update')
+            ->will($this->returnCallback(function ($user, $values) use ($captured) {
+                $captured->updatedUser = $user;
+                $captured->newUserValues = $values;
+
+                $user->exchangeArray($values);
+
+                return $user;
+            }));
+
+        $this->captured = $captured;
     }
 
     public function testGetReturnsUserArrayWithoutThePassword()
@@ -208,5 +305,69 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
             $expected,
             json_decode($response->getContent(), TRUE)
         );
+    }
+
+    public function testPutReturns403IfIdDoesNotMatchIdOfLoggedInUser()
+    {
+        $response = $this->makePutRequestForNonLoggedInUser();
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testPutReturns403IfOutOfBoundsExceptionThrownWithErrorCode1()
+    {
+        $this->withUserUpdateThrowingExceptionWithCode(1);
+
+        $response = $this->makeValidPutRequest();
+
+        $this->assertEquals(403, $response->getStatusCode());
+    }
+
+    public function testPutReturns422IfOutOfBoundsExceptionThrownWithErrorCode2()
+    {
+        $this->withUserUpdateThrowingExceptionWithCode(2);
+
+        $response = $this->makeValidPutRequest();
+
+        $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    public function testPutUpdatesUserWithNewData()
+    {
+        $this->withExpectedUserUpdate();
+
+        $response = $this->makeValidPutRequest();
+
+        $updatedUser = $this->captured->updatedUser;
+
+        $this->assertEquals(
+            $this->captured->userReturnedFromSecurityContext,
+            $this->captured->updatedUser
+        );
+        $this->assertEquals(
+            json_decode($this->request->getContent(), TRUE),
+            $this->captured->newUserValues
+        );
+    }
+
+    public function testPutReturnsUserDataMinusPassword()
+    {
+        $this->withExpectedUserUpdate();
+
+        $response = $this->makeValidPutRequest();
+
+        $expected = $this->captured->userReturnedFromSecurityContext->getArrayCopy();
+        unset($expected['password']);
+
+        $this->assertEquals($expected, json_decode($response->getContent(), TRUE));
+    }
+
+    public function testValidPutReturns200()
+    {
+        $this->withExpectedUserUpdate();
+
+        $response = $this->makeValidPutRequest();
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
