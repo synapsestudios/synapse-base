@@ -39,7 +39,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $this->mockUserTokenMapper->expects($this->any())
             ->method('persist')
-            ->will($this->returnCallback(function($entity) {
+            ->will($this->returnCallback(function ($entity) {
                 return $entity;
             }));
 
@@ -117,7 +117,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $this->mockUserMapper->expects($this->once())
             ->method('persist')
-            ->will($this->returnCallback(function($userEntity) use ($captured) {
+            ->will($this->returnCallback(function ($userEntity) use ($captured) {
                 $captured->persistedUserEntity = $userEntity;
                 return $userEntity;
             }));
@@ -131,7 +131,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $this->mockUserTokenMapper->expects($this->once())
             ->method('persist')
-            ->will($this->returnCallback(function($userTokenEntity) use ($captured) {
+            ->will($this->returnCallback(function ($userTokenEntity) use ($captured) {
                 $captured->persistedUserTokenEntity = $userTokenEntity;
                 return $userTokenEntity;
             }));
@@ -145,7 +145,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $this->mockEmailService->expects($this->once())
             ->method('createFromArray')
-            ->will($this->returnCallback(function($array) use ($captured) {
+            ->will($this->returnCallback(function ($array) use ($captured) {
                 $captured->emailArray = $array;
 
                 $email = new Email;
@@ -172,7 +172,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $this->mockEmailService->expects($this->once())
             ->method('enqueueSendEmailJob')
-            ->will($this->returnCallback(function($entity) use ($captured) {
+            ->will($this->returnCallback(function ($entity) use ($captured) {
                 $captured->sentEmailEntity = $entity;
             }));
 

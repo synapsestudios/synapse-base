@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UserControllerTest extends PHPUnit_Framework_TestCase
 {
-    const EXISTING_USER_ID = '1';
-    const LOGGED_IN_USER_ID = '2';
+    const EXISTING_USER_ID     = '1';
+    const LOGGED_IN_USER_ID    = '2';
     const NON_EXISTENT_USER_ID = '3';
 
     public function setUp()
@@ -53,11 +53,11 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->mockUserService = $this->getMock('Synapse\User\UserService');
         $this->mockUserService->expects($this->any())
             ->method('findById')
-            ->will($this->returnCallback(function($userId) use ($existingUser) {
+            ->will($this->returnCallback(function ($userId) use ($existingUser) {
                 if ($userId === self::EXISTING_USER_ID) {
                     return $existingUser;
                 } else {
-                    return FALSE;
+                    return false;
                 }
             }));
 
@@ -65,7 +65,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $this->mockUserService->expects($this->any())
             ->method('register')
-            ->will($this->returnCallback(function($userValues) use ($existingUser, $captured) {
+            ->will($this->returnCallback(function ($userValues) use ($existingUser, $captured) {
                 if (Arr::get($userValues, 'email') === $existingUser->getEmail()) {
                     throw new OutOfBoundsException(
                         '',
@@ -96,7 +96,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         );
         $this->mockUrlGenerator->expects($this->any())
             ->method('generate')
-            ->will($this->returnCallback(function($name, $params, $refType) use ($captured) {
+            ->will($this->returnCallback(function ($name, $params, $refType) use ($captured) {
                 $generatedUrl = '/users/'.Arr::get($params, 'id');
 
                 $captured->generatedUrl = $generatedUrl;
@@ -121,7 +121,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $mockSecurityToken->expects($this->any())
             ->method('getUser')
-            ->will($this->returnCallback(function() use ($loggedInUserEntity, $captured) {
+            ->will($this->returnCallback(function () use ($loggedInUserEntity, $captured) {
                 $captured->userReturnedFromSecurityContext = $loggedInUserEntity;
 
                 return $loggedInUserEntity;
@@ -146,88 +146,93 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         return $user;
     }
 
+    public function createJsonRequest($method, $params)
+    {
+        $this->request = new Request(
+            Arr::get($params, 'getParams', []),
+            [],
+            Arr::get($params, 'attributes', []),
+            [],
+            [],
+            [],
+            Arr::get($params, 'content') ? json_encode($params['content']) : ''
+        );
+        $this->request->setMethod($method);
+        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+
+        return $this->request;
+    }
+
     public function makeGetRequestForUserId($userId)
     {
-        $this->request = new Request([], [], ['id' => $userId]);
-        $this->request->setMethod('get');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->createJsonRequest('get', [
+            'attributes' => ['id' => $userId]
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithPasswordOnly()
     {
-        $this->request = new Request([], [], [], [], [], [],
-            json_encode(['password' => '12345'])
-        );
-        $this->request->setMethod('post');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->createJsonRequest('post', [
+            'content' => ['password' => '12345']
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithEmailOnly()
     {
-        $this->request = new Request([], [], [], [], [], [],
-            json_encode(['email' => 'posted@user.com'])
-        );
-        $this->request->setMethod('post');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->createJsonRequest('post', [
+            'content' => ['email' => 'posted@user.com']
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makePostRequestWithNonUniqueEmail()
     {
-        $this->request = new Request([], [], [], [], [], [],
-            json_encode([
+        $this->createJsonRequest('post', [
+            'content' => [
                 'email'    => $this->existingUser->getEmail(),
                 'password' => '12345'
-            ])
-        );
-        $this->request->setMethod('post');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+            ]
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makeValidPostRequest()
     {
-        $this->request = new Request([], [], [], [], [], [],
-            json_encode([
+        $this->createJsonRequest('post', [
+            'content' => [
                 'email'    => 'posted@user.com',
                 'password' => '12345'
-            ])
-        );
-        $this->request->setMethod('post');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+            ]
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makePutRequestForNonLoggedInUser()
     {
-        $this->request = new Request([], [], ['id' => self::EXISTING_USER_ID], [], [], [],
-            json_encode([
-                'email' => 'new@email.com'
-            ])
-        );
-        $this->request->setMethod('put');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+        $this->createJsonRequest('put', [
+            'attributes' => ['id' => self::EXISTING_USER_ID],
+            'content'    => ['email' => 'new@email.com']
+        ]);
 
         return $this->userController->execute($this->request);
     }
 
     public function makeValidPutRequest()
     {
-        $this->request = new Request([], [], ['id' => self::LOGGED_IN_USER_ID], [], [], [],
-            json_encode([
+        $this->createJsonRequest('put', [
+            'attributes' => ['id' => self::LOGGED_IN_USER_ID],
+            'content' => [
                 'email'    => 'new@email.com',
                 'password' => '12345'
-            ])
-        );
-        $this->request->setMethod('put');
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
+            ]
+        ]);
 
         return $this->userController->execute($this->request);
     }
@@ -268,7 +273,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $userArrayWithoutPassword,
-            json_decode($response->getContent(), TRUE)
+            json_decode($response->getContent(), true)
         );
     }
 
@@ -320,7 +325,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $expected,
-            json_decode($response->getContent(), TRUE)
+            json_decode($response->getContent(), true)
         );
     }
 
@@ -362,7 +367,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
             $this->captured->updatedUser
         );
         $this->assertEquals(
-            json_decode($this->request->getContent(), TRUE),
+            json_decode($this->request->getContent(), true),
             $this->captured->newUserValues
         );
     }
@@ -376,7 +381,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $expected = $this->captured->userReturnedFromSecurityContext->getArrayCopy();
         unset($expected['password']);
 
-        $this->assertEquals($expected, json_decode($response->getContent(), TRUE));
+        $this->assertEquals($expected, json_decode($response->getContent(), true));
     }
 
     public function testValidPutReturns200()
