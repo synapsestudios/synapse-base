@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\User;
+namespace Test\Synapse\User;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\User\UserService;

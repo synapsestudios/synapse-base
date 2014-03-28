@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Config;
+namespace Test\Synapse\Config;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\Config;

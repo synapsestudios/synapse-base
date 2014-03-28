@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Command\Install;
+namespace Test\Synapse\Command\Install;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\Command\Install\Generate;

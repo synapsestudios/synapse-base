@@ -10,7 +10,7 @@
          bootstrap="tests/bootstrap.php">
     <testsuites>
         <testsuite name="Synapse">
-            <directory>tests/SynapseTest</directory>
+            <directory>tests/Test/Synapse</directory>
         </testsuite>
     </testsuites>
     <filter>

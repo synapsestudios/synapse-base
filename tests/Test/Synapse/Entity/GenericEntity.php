@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Entity;
+namespace Test\Synapse\Entity;
 
 use Synapse\Entity\AbstractEntity;
 

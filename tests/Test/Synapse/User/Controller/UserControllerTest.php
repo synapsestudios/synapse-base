@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\User\Controller;
+namespace Test\Synapse\User\Controller;
 
 use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
