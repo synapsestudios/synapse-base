@@ -56,4 +56,32 @@ class SocialLoginControllerTest extends ControllerTestCase
 
         $this->assertEquals(301, $response->getStatusCode());
     }
+
+    public function testLoginReturnsResponseWithRedirectHeaderThatIncludesLoginConstantValueForTheStateParam()
+    {
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google']
+        ]);
+
+        $response = $this->controller->login($request);
+
+        $this->assertContains(
+            'state=' . SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT,
+            $response->headers->get('location')
+        );
+    }
+
+    public function testLinkReturnsResponseWithRedirectHeaderThatIncludesLinkConstantValueForTheStateParam()
+    {
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google']
+        ]);
+
+        $response = $this->controller->link($request);
+
+        $this->assertContains(
+            'state=' . SocialLoginController::ACTION_LINK_ACCOUNT,
+            $response->headers->get('location')
+        );
+    }
 }
