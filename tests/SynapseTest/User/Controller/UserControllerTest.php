@@ -336,18 +336,22 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testPutReturns403IfOutOfBoundsExceptionThrownWithErrorCode1()
+    public function testPutReturns403IfOutOfBoundsExceptionThrownWithPasswordRequiredErrorCode()
     {
-        $this->withUserUpdateThrowingExceptionWithCode(1);
+        $this->withUserUpdateThrowingExceptionWithCode(
+            UserService::CURRENT_PASSWORD_REQUIRED
+        );
 
         $response = $this->makeValidPutRequest();
 
         $this->assertEquals(403, $response->getStatusCode());
     }
 
-    public function testPutReturns422IfOutOfBoundsExceptionThrownWithErrorCode2()
+    public function testPutReturns422IfOutOfBoundsExceptionThrownWithEmptyFieldErrorCode()
     {
-        $this->withUserUpdateThrowingExceptionWithCode(2);
+        $this->withUserUpdateThrowingExceptionWithCode(
+            UserService::FIELD_CANNOT_BE_EMPTY
+        );
 
         $response = $this->makeValidPutRequest();
 
