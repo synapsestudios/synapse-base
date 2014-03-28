@@ -246,15 +246,10 @@ class SocialLoginController extends AbstractController
      */
     protected function providerExists($provider)
     {
-        if (! array_key_exists($provider, $this->serviceMap)) {
-            return false;
-        }
-
-        if (! array_key_exists($provider, $this->config)) {
-            return false;
-        }
-
-        return true;
+        return (
+            array_key_exists($provider, $this->serviceMap) ||
+            array_key_exists($provider, $this->config)
+        );
     }
 
     /**
@@ -334,7 +329,7 @@ class SocialLoginController extends AbstractController
         ));
 
         $serviceName = $this->serviceMap[$provider];
-        $storage     = new SessionStorage();
+        $storage     = new SessionStorage(false);
         $credentials = new ConsumerCredentials(
             $this->config[$provider]['key'],
             $this->config[$provider]['secret'],
