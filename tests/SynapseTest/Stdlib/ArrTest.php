@@ -25,11 +25,11 @@ use stdClass;
 class ArrTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Provides test data for test_callback()
+     * Provides test data for testCallback()
      *
      * @return array
      */
-    public function provider_callback()
+    public function providerCallback()
     {
         return [
             // Tests....
@@ -51,11 +51,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::callback()
      *
      * @test
-     * @dataProvider provider_callback
+     * @dataProvider providerCallback
      * @param string $str       String to parse
      * @param array  $expected  Callback and its parameters
      */
-    public function test_callback($str, $expected)
+    public function testCallback($str, $expected)
     {
         $result = Arr::callback($str);
 
@@ -64,11 +64,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for test_extract
+     * Provides test data for testExtract
      *
      * @return array
      */
-    public function provider_extract()
+    public function providerExtract()
     {
         return [
             [
@@ -113,7 +113,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
                 // Default
                 'default',
                 // Expected Result
-                ['level1a' => ['level2a' => 'value 1'], 'level1b' => ['level2b' => 'value 2'], 'level1c' => 'default', 'level1d' => ['notfound' => 'default']],
+                [
+                    'level1a' => ['level2a' => 'value 1'],
+                    'level1b' => ['level2b' => 'value 2'],
+                    'level1c' => 'default',
+                    'level1d' => ['notfound' => 'default']],
             ],
         ];
     }
@@ -122,13 +126,13 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::extract()
      *
      * @test
-     * @dataProvider provider_extract
+     * @dataProvider providerExtract
      * @param array $array
      * @param array $paths
      * @param mixed $default
      * @param array $expected
      */
-    public function test_extract(array $array, array $paths, $default, $expected)
+    public function testExtract(array $array, array $paths, $default, $expected)
     {
         $array = Arr::extract($array, $paths, $default);
 
@@ -137,11 +141,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for test_pluck
+     * Provides test data for testPluck
      *
      * @return array
      */
-    public function provider_pluck()
+    public function providerPluck()
     {
         return [
             [
@@ -160,12 +164,12 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::pluck()
      *
      * @test
-     * @dataProvider provider_pluck
+     * @dataProvider providerPluck
      * @param array $array
      * @param string $key
      * @param array $expected
      */
-    public function test_pluck(array $array, $key, $expected)
+    public function testPluck(array $array, $key, $expected)
     {
         $array = Arr::pluck($array, $key);
 
@@ -174,11 +178,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for test_get()
+     * Provides test data for testGet()
      *
      * @return array
      */
-    public function provider_get()
+    public function providerGet()
     {
         return [
             [['uno', 'dos', 'tress'], 1, null, 'dos'],
@@ -194,23 +198,23 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::get()
      *
      * @test
-     * @dataProvider provider_get()
+     * @dataProvider providerGet()
      * @param array          $array      Array to look in
      * @param string|integer $key        Key to look for
      * @param mixed          $default    What to return if $key isn't set
      * @param mixed          $expected   The expected value returned
      */
-    public function test_get(array $array, $key, $default, $expected)
+    public function testGet(array $array, $key, $default, $expected)
     {
         $this->assertSame($expected, Arr::get($array, $key, $default));
     }
 
     /**
-     * Provides test data for test_isAssoc()
+     * Provides test data for testIsAssoc()
      *
      * @return array
      */
-    public function provider_isAssoc()
+    public function providerIsAssoc()
     {
         return [
             [['one', 'two', 'three'], false],
@@ -222,21 +226,21 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::isAssoc()
      *
      * @test
-     * @dataProvider provider_isAssoc
+     * @dataProvider providerIsAssoc
      * @param array   $array     Array to check
      * @param boolean $expected  Is $array assoc
      */
-    public function test_isAssoc(array $array, $expected)
+    public function testIsAssoc(array $array, $expected)
     {
         $this->assertSame($expected, Arr::isAssoc($array));
     }
 
     /**
-     * Provides test data for test_isArray()
+     * Provides test data for testIsArray()
      *
      * @return array
      */
-    public function provider_isArray()
+    public function providerIsArray()
     {
         $array = ['one', 'two', 'three'];
 
@@ -253,11 +257,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::isArray()
      *
      * @test
-     * @dataProvider provider_isArray
+     * @dataProvider providerIsArray
      * @param mixed   $value     Value to check
      * @param boolean $expected  Is $value an array?
      */
-    public function test_isArray($array, $expected)
+    public function testIsArray($array, $expected)
     {
         $this->assertSame($expected, Arr::isArray($array));
     }
@@ -275,7 +279,7 @@ class ArrTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, Arr::merge($original, $merge_1, $merge_2, $merge_3));
     }
 
-    public function provider_merge()
+    public function providerMerge()
     {
         return [
             // Test how it merges arrays and sub arrays with assoc keys
@@ -397,19 +401,19 @@ class ArrTest extends PHPUnit_Framework_TestCase
     /**
      *
      * @test
-     * @dataProvider provider_merge
+     * @dataProvider providerMerge
      */
-    public function test_merge($expected, $array1, $array2)
+    public function testMerge($expected, $array1, $array2)
     {
-        $this->assertSame($expected, Arr::merge($array1,$array2));
+        $this->assertSame($expected, Arr::merge($array1, $array2));
     }
 
     /**
-     * Provides test data for test_path()
+     * Provides test data for testPath()
      *
      * @return array
      */
-    public function provider_path()
+    public function providerPath()
     {
         $array = [
             'foobar' => ['definition' => 'lost'],
@@ -456,23 +460,23 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::path()
      *
      * @test
-     * @dataProvider provider_path
+     * @dataProvider providerPath
      * @param string  $path       The path to follow
      * @param mixed   $default    The value to return if dnx
      * @param boolean $expected   The expected value
      * @param string  $delimiter  The path delimiter
      */
-    public function test_path($expected, $array, $path, $default = null, $delimiter = null)
+    public function testPath($expected, $array, $path, $default = null, $delimiter = null)
     {
         $this->assertSame($expected, Arr::path($array, $path, $default, $delimiter));
     }
 
     /**
-     * Provides test data for test_setPath()
+     * Provides test data for testSetPath()
      *
      * @return array
      */
-    public function provider_setPath()
+    public function providerSetPath()
     {
         return [
             // Tests returns normal values
@@ -494,12 +498,12 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::setPath()
      *
      * @test
-     * @dataProvider provider_setPath
+     * @dataProvider providerSetPath
      * @param string  $path       The path to follow
      * @param boolean $expected   The expected value
      * @param string  $delimiter  The path delimiter
      */
-    public function test_setPath($expected, $array, $path, $value, $delimiter = null)
+    public function testSetPath($expected, $array, $path, $value, $delimiter = null)
     {
         Arr::setPath($array, $path, $value, $delimiter);
 
@@ -514,11 +518,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for test_range()
+     * Provides test data for testRange()
      *
      * @return array
      */
-    public function provider_range()
+    public function providerRange()
     {
         return [
             [1, 2],
@@ -530,20 +534,19 @@ class ArrTest extends PHPUnit_Framework_TestCase
     /**
      * Tests Arr::range()
      *
-     * @dataProvider provider_range
+     * @dataProvider providerRange
      * @param integer $step  The step between each value in the array
      * @param integer $max   The max value of the range (inclusive)
      */
-    public function test_range($step, $max)
+    public function testRange($step, $max)
     {
         $range = Arr::range($step, $max);
 
-        $this->assertSame( (int) floor($max / $step), count($range));
+        $this->assertSame((int) floor($max / $step), count($range));
 
         $current = $step;
 
-        foreach ($range as $key => $value)
-        {
+        foreach ($range as $key => $value) {
             $this->assertSame($key, $value);
             $this->assertSame($current, $key);
             $this->assertLessThanOrEqual($max, $key);
@@ -552,11 +555,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provides test data for test_unshift()
+     * Provides test data for testUnshift()
      *
      * @return array
      */
-    public function provider_unshift()
+    public function providerUnshift()
     {
         return [
             [['one' => '1', 'two' => '2'], 'zero', '0'],
@@ -568,12 +571,12 @@ class ArrTest extends PHPUnit_Framework_TestCase
      * Tests Arr::unshift()
      *
      * @test
-     * @dataProvider provider_unshift
+     * @dataProvider providerUnshift
      * @param array $array
      * @param string $key
      * @param mixed $value
      */
-    public function test_unshift(array $array, $key, $value)
+    public function testUnshift(array $array, $key, $value)
     {
         $original = $array;
 
@@ -588,11 +591,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Provies test data for test_overwrite
+     * Provies test data for testOverwrite
      *
      * @return array Test Data
      */
-    public function provider_overwrite()
+    public function providerOverwrite()
     {
         return [
             [
@@ -607,19 +610,19 @@ class ArrTest extends PHPUnit_Framework_TestCase
     /**
      *
      * @test
-     * @dataProvider provider_overwrite
+     * @dataProvider providerOverwrite
      */
-    public function test_overwrite($expected, $arr1, $arr2, $arr3 = [], $arr4 = [])
+    public function testOverwrite($expected, $arr1, $arr2, $arr3 = [], $arr4 = [])
     {
         $this->assertSame($expected, Arr::overwrite($arr1, $arr2, $arr3, $arr4));
     }
 
     /**
-     * Provides test data for test_map
+     * Provides test data for testMap
      *
      * @return array Test Data
      */
-    public function provider_map()
+    public function providerMap()
     {
         return [
             ['strip_tags', ['<p>foobar</p>'], null, ['foobar']],
@@ -669,19 +672,19 @@ class ArrTest extends PHPUnit_Framework_TestCase
     /**
      *
      * @test
-     * @dataProvider provider_map
+     * @dataProvider providerMap
      */
-    public function test_map($method, $source, $keys, $expected)
+    public function testMap($method, $source, $keys, $expected)
     {
         $this->assertSame($expected, Arr::map($method, $source, $keys));
     }
 
     /**
-     * Provides test data for test_flatten
+     * Provides test data for testFlatten
      *
      * @return array Test Data
      */
-    public function provider_flatten()
+    public function providerFlatten()
     {
         return [
             [['set' => ['one' => 'something'], 'two' => 'other'], ['one' => 'something', 'two' => 'other']],
@@ -692,9 +695,9 @@ class ArrTest extends PHPUnit_Framework_TestCase
     /**
      *
      * @test
-     * @dataProvider provider_flatten
+     * @dataProvider providerFlatten
      */
-    public function test_flatten($source, $expected)
+    public function testFlatten($source, $expected)
     {
         $this->assertSame($expected, Arr::flatten($source));
     }
