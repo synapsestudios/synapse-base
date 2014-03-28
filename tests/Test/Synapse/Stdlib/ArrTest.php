@@ -1,7 +1,8 @@
 <?php
 
-namespace Synapse\Stdlib;
+namespace Test\Synapse\Stdlib;
 
+use Synapse\Stdlib\Arr;
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use ArrayObject;

@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Command\Email;
+namespace Test\Synapse\Command\Email;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\Command\Email\Send;

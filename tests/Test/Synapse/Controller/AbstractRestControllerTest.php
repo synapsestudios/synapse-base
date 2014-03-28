@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Controller;
+namespace Test\Synapse\Controller;
 
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;

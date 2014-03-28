@@ -1,6 +1,6 @@
 <?php
 
-namespace SynapseTest\Controller;
+namespace Test\Synapse\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Synapse\Controller\AbstractRestController;
