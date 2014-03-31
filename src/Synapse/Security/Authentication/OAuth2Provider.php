@@ -26,6 +26,9 @@ class OAuth2Provider implements AuthenticationProviderInterface
         $this->server       = $server;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function authenticate(TokenInterface $token)
     {
         $oauthRequest = OAuthRequest::createFromRequest($token->request);
@@ -51,6 +54,9 @@ class OAuth2Provider implements AuthenticationProviderInterface
         return $authenticatedToken;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(TokenInterface $token)
     {
         return $token instanceof OAuth2UserToken;

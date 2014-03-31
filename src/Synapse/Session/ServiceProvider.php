@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class ServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $app['session'] = $app->share(function ($app) {
@@ -16,6 +19,9 @@ class ServiceProvider implements ServiceProviderInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
         $app['session']->start();

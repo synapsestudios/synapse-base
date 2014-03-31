@@ -6,6 +6,9 @@ use OAuth2\ResponseType\AccessToken as BaseAccessToken;
 
 class AccessToken extends BaseAccessToken
 {
+    /**
+     * {@inheritDoc}
+     */
     public function createAccessToken($clientId, $userId, $scope = null, $includeRefreshToken = true)
     {
         $token = parent::createAccessToken($clientId, $userId, $scope, $includeRefreshToken);

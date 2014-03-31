@@ -80,7 +80,7 @@ abstract class AbstractEntity implements ArraySerializableInterface
     }
 
     /**
-     * Get values which are saved to the database.
+     * Get values which are saved to the database
      *
      * Useful if as_array is overridden to return values not
      * saved to the database.

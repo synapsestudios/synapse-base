@@ -21,6 +21,11 @@ use OAuth2\ResponseType\AuthorizationCode as AuthorizationCodeResponse;
 
 class OAuth2ServerServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * Register services
+     *
+     * @param  Application $app
+     */
     public function setup(Application $app)
     {
         $app['oauth.storage'] = $app->share(function () use ($app) {
@@ -76,6 +81,9 @@ class OAuth2ServerServiceProvider implements ServiceProviderInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $this->setup($app);
@@ -88,6 +96,9 @@ class OAuth2ServerServiceProvider implements ServiceProviderInterface
         $app->post('/logout', 'oauth.controller:logout');
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
     }

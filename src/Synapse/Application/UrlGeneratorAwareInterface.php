@@ -7,7 +7,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 interface UrlGeneratorAwareInterface
 {
     /**
-     * @param UrlGenerator $urlGenerator
+     * @param UrlGeneratorInterface $urlGenerator
      */
     public function setUrlGenerator(UrlGeneratorInterface $urlGenerator);
 }

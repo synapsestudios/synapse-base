@@ -16,11 +16,21 @@ class OAuth2UserToken extends AbstractToken
         $this->setAuthenticated(count($roles) > 0);
     }
 
+    /**
+     * Set the OAuth token
+     *
+     * @param string $token
+     */
     public function setOAuthToken($token)
     {
         $this->token = $token;
     }
 
+    /**
+     * Get the OAuth token
+     *
+     * @return string
+     */
     public function getOAuthToken()
     {
         return $this->token;

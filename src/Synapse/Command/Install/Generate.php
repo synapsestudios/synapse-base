@@ -122,7 +122,7 @@ class Generate extends Command
     }
 
     /**
-     * Returns the mysqldump command to run with escaped arguments
+     * Return the mysqldump command for structure only
      *
      * @param  string $database   the database name
      * @param  string $username   the database username
@@ -141,6 +141,16 @@ class Generate extends Command
         );
     }
 
+    /**
+     * Return the mysqldump command for data only
+     *
+     * @param  string $database   the database name
+     * @param  string $username   the database username
+     * @param  string $password   the database password
+     * @param  string $outputPath the resultant file location
+     * @param  array  $tables     the tables to include (optional)
+     * @return string             the command to run
+     */
     public function getDumpDataCommand($database, $username, $password, $outputPath, $tables = array())
     {
         $tables = array_map('escapeshellarg', $tables);
