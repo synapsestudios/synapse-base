@@ -158,7 +158,7 @@ class SocialLoginController extends AbstractController
             return $this->createNotFoundResponse();
         }
 
-        $service = $this->getServiceByProvider($provider);
+        $service = $this->service->getServiceByProvider($provider);
 
         $redirectUri = $service->getAuthorizationUri(['state' => $action]);
 
@@ -192,7 +192,7 @@ class SocialLoginController extends AbstractController
 
         // Use provider service and access token from provider to create a LoginRequest for our app
         $code            = $request->query->get('code');
-        $providerService = $this->getServiceByProvider($provider);
+        $providerService = $this->service->getServiceByProvider($provider);
         $providerToken   = $providerService->requestAccessToken($code);
 
         $socialLoginRequest = $this->$provider($providerService, $providerToken);
@@ -313,37 +313,5 @@ class SocialLoginController extends AbstractController
         );
 
         return $loginRequest;
-    }
-
-    /**
-     * Get a provider service given a provider name
-     *
-     * @param  string $provider
-     * @param  int    $action   Constant representing Login or Link account (to determine which callback to use)
-     * @return OAuth\Common\Service\ServiceInterface
-     */
-    protected function getServiceByProvider($provider)
-    {
-        $redirect = $this->url($this->config[$provider]['callback_route'], array(
-            'provider' => $provider,
-        ));
-
-        $serviceName = $this->serviceMap[$provider];
-        $storage     = new SessionStorage(false);
-        $credentials = new ConsumerCredentials(
-            $this->config[$provider]['key'],
-            $this->config[$provider]['secret'],
-            $redirect
-        );
-
-        $serviceFactory = new ServiceFactory;
-        $service = $serviceFactory->createService(
-            $serviceName,
-            $credentials,
-            $storage,
-            $this->config[$provider]['scope']
-        );
-
-        return $service;
     }
 }
