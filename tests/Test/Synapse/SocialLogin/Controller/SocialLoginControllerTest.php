@@ -14,17 +14,27 @@ class SocialLoginControllerTest extends ControllerTestCase
 
         $this->setUpMockUrlGenerator();
         $this->setUpMockSocialLoginService();
+        $this->setUpMockSession();
 
         $this->controller->setUrlGenerator($this->mockUrlGenerator);
         $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->controller->setSession($this->mockSession);
         $this->controller->setConfig([
+            'redirect-url' => 'redirect-url',
             'google' => [
                 'callback_route' => 'callback-route',
-                'key'    => '',
-                'secret' => '',
-                'scope'  => []
+                'key'            => '',
+                'secret'         => '',
+                'scope'          => []
             ]
         ]);
+    }
+
+    public function setUpMockSession()
+    {
+        $this->mockSession = $this->getMockBuilder('Symfony\Component\HttpFoundation\Session\Session')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function setUpMockSocialLoginService()
@@ -55,6 +65,22 @@ class SocialLoginControllerTest extends ControllerTestCase
         $this->mockUrlGenerator->expects($this->any())
             ->method('generate')
             ->will($this->returnValue('/url'));
+    }
+
+    public function expectingLoginRequest()
+    {
+        $this->mockSocialLoginService->expects($this->once())
+            ->method('handleLoginRequest')
+            ->with($this->anything())
+            ->will($this->returnValue(['access_token' => '12345']));
+    }
+
+    public function expectingLinkRequest()
+    {
+        $this->mockSocialLoginService->expects($this->once())
+            ->method('handleLinkRequest')
+            ->with($this->anything())
+            ->will($this->returnValue(['access_token' => '12345']));
     }
 
     public function testLoginReturns404IfProviderDoesNotExist()
@@ -134,5 +160,29 @@ class SocialLoginControllerTest extends ControllerTestCase
         $response = $this->controller->callback($request);
 
         $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    public function testHandleLoginRequestCalledIfStateIsLogin()
+    {
+        $this->expectingLoginRequest();
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+    }
+
+    public function testHandleLoginRequestCalledIfStateIsLink()
+    {
+        $this->expectingLinkRequest();
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LINK_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
     }
 }
