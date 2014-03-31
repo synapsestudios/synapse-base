@@ -105,6 +105,8 @@ class Application extends SilexApp
 
     /**
      * Add a command to $this['console'] (Symfony's console component)
+     *
+     * @param Command|string $command
      */
     public function command($command)
     {

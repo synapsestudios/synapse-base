@@ -34,12 +34,25 @@ class User extends Mapper\AbstractMapper implements UserProviderInterface
      */
     protected $tableName = 'users';
 
+
+    /**
+     * Find user by email
+     *
+     * @param  string $email
+     * @return UserEntity
+     */
     public function findByEmail($email)
     {
         $entity = $this->findBy(['email' => $email]);
         return $entity;
     }
 
+    /**
+     * Find roles for a user
+     *
+     * @param  UserEntity $user
+     * @return array  Array of role names
+     */
     public function findRolesByUser(UserEntity $user)
     {
         $sql = new Sql($this->dbAdapter);

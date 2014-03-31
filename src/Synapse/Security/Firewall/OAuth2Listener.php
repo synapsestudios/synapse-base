@@ -23,6 +23,9 @@ class OAuth2Listener implements ListenerInterface
         $this->authenticationManager = $authenticationManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function handle(GetResponseEvent $event)
     {
         $request = $event->getRequest();
@@ -56,6 +59,11 @@ class OAuth2Listener implements ListenerInterface
         $event->setResponse($this->getForbiddenReponse());
     }
 
+    /**
+     * Return a 401 response object
+     *
+     * @return Response
+     */
     protected function getForbiddenReponse()
     {
         $response = new Response();

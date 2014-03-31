@@ -10,6 +10,9 @@ use Synapse\Config\FileReader;
 
 class ConfigServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $app['config'] = $app->share(function () use ($app) {
@@ -23,6 +26,9 @@ class ConfigServiceProvider implements ServiceProviderInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
         // noop

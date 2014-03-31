@@ -82,7 +82,8 @@ class Create extends Command
     }
 
     /**
-     * Get the name of the new migration class.
+     * Get the name of the new migration class
+     *
      * Converts description to camelCase and appends timestamp.
      * Example:
      *     // From:

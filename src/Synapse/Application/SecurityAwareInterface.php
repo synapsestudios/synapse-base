@@ -12,7 +12,7 @@ interface SecurityAwareInterface
     public function setSecurityContext(SecurityContext $security);
 
     /**
-     * Gets a user from the Security Context.
+     * Get a user from the Security Context
      *
      * @return mixed
      */

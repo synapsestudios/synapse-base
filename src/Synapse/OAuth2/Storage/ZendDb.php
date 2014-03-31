@@ -48,6 +48,9 @@ class ZendDb implements
         ), $config);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function checkClientCredentials($clientId, $clientSecret = null)
     {
         $select = new Select($this->config['client_table']);
@@ -57,6 +60,9 @@ class ZendDb implements
         return Arr::get($result, 'client_secret', null) === $clientSecret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getClientDetails($clientId)
     {
         $select = new Select($this->config['client_table']);
@@ -65,6 +71,9 @@ class ZendDb implements
         return $this->execute($select)->current();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function checkRestrictedGrantType($clientId, $grantType)
     {
         $details = $this->getClientDetails($clientId);
@@ -78,7 +87,10 @@ class ZendDb implements
         return true;
     }
 
-    /* OAuth2_Storage_AccessTokenInterface */
+
+    /**
+     * {@inheritDoc}
+     */
     public function getAccessToken($accessToken)
     {
         $select = new Select($this->config['access_token_table']);
@@ -90,6 +102,9 @@ class ZendDb implements
         return $this->execute($select)->current();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setAccessToken($accessToken, $clientId, $userId, $expires, $scope = null)
     {
         $expires = date('Y-m-d H:i:s', $expires);
@@ -120,7 +135,9 @@ class ZendDb implements
         }
     }
 
-    /* OAuth2_Storage_AuthorizationCodeInterface */
+    /**
+     * {@inheritDoc}
+     */
     public function getAuthorizationCode($code)
     {
         $select = new Select($this->config['code_table']);
@@ -132,6 +149,9 @@ class ZendDb implements
         return $this->execute($select)->current();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setAuthorizationCode($code, $clientId, $userId, $redirectUri, $expires, $scope = null)
     {
         $expires = date('Y-m-d H:i:s', $expires);
@@ -163,6 +183,9 @@ class ZendDb implements
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function expireAuthorizationCode($code)
     {
         $delete = new Delete($this->config['code_table']);
@@ -171,7 +194,10 @@ class ZendDb implements
         return $this->execute($delete);
     }
 
-    /* OAuth2_Storage_UserCredentialsInterface */
+
+    /**
+     * {@inheritDoc}
+     */
     public function checkUserCredentials($username, $password)
     {
         if ($user = $this->getUser($username)) {
@@ -181,7 +207,9 @@ class ZendDb implements
         return false;
     }
 
-    /* OAuth2_Storage_RefreshTokenInterface */
+    /**
+     * {@inheritDoc}
+     */
     public function getRefreshToken($refreshToken)
     {
         $select = new Select($this->config['refresh_token_table']);
@@ -193,6 +221,9 @@ class ZendDb implements
         return $this->execute($select)->current();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setRefreshToken($refreshToken, $clientId, $userId, $expires, $scope = null)
     {
         $expires = date('Y-m-d H:i:s', $expires);
@@ -223,6 +254,9 @@ class ZendDb implements
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function unsetRefreshToken($refreshToken)
     {
         $delete = new Delete($this->config['refresh_token_table']);
@@ -238,6 +272,7 @@ class ZendDb implements
 
     /**
      * Set the user mapper
+     *
      * @param UserMapper $userMapper
      */
     public function setUserMapper(UserMapper $userMapper)
@@ -279,6 +314,7 @@ class ZendDb implements
 
     /**
      * Verify the user's password hash
+     *
      * @param  Synapse\Entity\User $user     the user to check the given password against
      * @param  string $password the password to check
      * @return boolean whether the password is valid

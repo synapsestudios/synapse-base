@@ -11,6 +11,9 @@ use Silex\ServiceProviderInterface;
 
 class MustacheServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $app['mustache.options'] = array();
@@ -63,6 +66,9 @@ class MustacheServiceProvider implements ServiceProviderInterface
         $app['mustache.helpers'] = array();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
         // nada

@@ -57,6 +57,8 @@ class OAuthController extends AbstractController implements
 
     /**
      * The user is directed here to log in
+     *
+     * @param Request $request
      */
     public function authorize(Request $request)
     {

@@ -11,7 +11,8 @@ use Zend\Db\Adapter\Adapter as DbAdapter;
 abstract class AbstractUpgradeCommand extends AbstractDatabaseCommand
 {
     /**
-     * Returns the current database version.
+     * Returns the current database version
+     *
      * Assumes that the most recent upgrade is the current database version.
      * (You should always construct and apply upgrades in numerical versioning order.)
      *

@@ -12,6 +12,9 @@ use Synapse\Config\FileReader;
 
 class ConsoleServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $app['console'] = $app->share(function () use ($app) {
@@ -19,6 +22,9 @@ class ConsoleServiceProvider implements ServiceProviderInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
         // noop

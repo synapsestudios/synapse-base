@@ -10,6 +10,9 @@ use Synapse\Security\Firewall\OAuth2Listener;
 
 class OAuth2SecurityServiceProvider implements ServiceProviderInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function register(Application $app)
     {
         $app['security.authentication_listener.factory.oauth'] = $app->protect(function ($name, $options) use ($app) {
@@ -30,6 +33,9 @@ class OAuth2SecurityServiceProvider implements ServiceProviderInterface
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function boot(Application $app)
     {
     }

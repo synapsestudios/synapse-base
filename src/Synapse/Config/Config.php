@@ -8,14 +8,15 @@ class Config
     protected $groups  = [];
 
     /**
-     * Attaches a new config reader. Readers are accessed in order by their
-     * priority. By default, their priority is the order in which they were
-     * attached. Calling Config::attach($reader) will cause any configs read by
-     * it to override any configs read by previously attached readers.
+     * Attach a new config reader
      *
-     * @param  Reader  $reader
+     * Readers are accessed in order by their priority. By default, their
+     * priority is the order in which they were attached. Calling
+     * Config::attach($reader) will cause any configs read by it to override any
+     * configs read by previously attached readers.
+     *
+     * @param  ReaderInterface $reader
      * @param  boolean $last
-     * @return [type]
      */
     public function attach(ReaderInterface $reader, $last = true)
     {
@@ -31,6 +32,11 @@ class Config
         $this->groups = [];
     }
 
+    /**
+     * Detach a config reader
+     *
+     * @param  ReaderInterface $reader
+     */
     public function detach(ReaderInterface $reader)
     {
         if (($key = array_search($reader, $this->readers)) !== false) {
@@ -41,11 +47,22 @@ class Config
         $this->groups = [];
     }
 
+    /**
+     * Get config readers
+     *
+     * @return array  ReaderInterface objects
+     */
     public function getReaders()
     {
         return $this->readers;
     }
 
+    /**
+     * Load configuration for a group
+     *
+     * @param  string $groupName
+     * @return array
+     */
     public function load($groupName)
     {
         if (! count($this->readers)) {

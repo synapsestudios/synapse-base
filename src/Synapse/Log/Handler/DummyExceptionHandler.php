@@ -38,7 +38,8 @@ class DummyExceptionHandler implements HandlerInterface
     }
 
     /**
-     * Wrap the handle function and only allow a record through if it is not a DummyException
+     * Wrap the handle function and only allow a record through if it is not a
+     * DummyException
      *
      * {@inheritDoc}
      */

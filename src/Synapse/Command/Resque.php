@@ -42,6 +42,9 @@ class Resque extends Command implements LoggerAwareInterface
         return $this;
     }
 
+    /**
+     * Configure command arguments and options
+     */
     protected function configure()
     {
         $this->setName('resque')
@@ -74,6 +77,12 @@ class Resque extends Command implements LoggerAwareInterface
             );
     }
 
+    /**
+     * Execute the console command
+     *
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input  = $input;
@@ -113,6 +122,9 @@ class Resque extends Command implements LoggerAwareInterface
         $this->startWorkers($queues, $count, $logLevel, $interval);
     }
 
+    /**
+     * Shutdown all workers
+     */
     protected function shutdownWorkers()
     {
         $workers = Resque_Worker::all();
@@ -125,6 +137,15 @@ class Resque extends Command implements LoggerAwareInterface
         $this->output->writeln('<info>SIGQUIT sent to '.count($workers).' workers.</info>');
     }
 
+
+    /**
+     * Start workers
+     *
+     * @param  string $queues   comma separated list of queues
+     * @param  integer $count    number of workers
+     * @param  integer $logLevel See Resque_Worker constants
+     * @param  integer $interval How often (in seconds) to check for new jobs across the queues
+     */
     protected function startWorkers($queues, $count = 1, $logLevel = 0, $interval = 5)
     {
         for ($i = 0; $i < $count; ++$i) {
