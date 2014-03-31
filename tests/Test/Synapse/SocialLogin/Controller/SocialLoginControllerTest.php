@@ -117,7 +117,7 @@ class SocialLoginControllerTest extends ControllerTestCase
 
     public function expectingGithubAsProvider()
     {
-        $this->setUpMockSocialLoginService('github', 'Github');
+        $this->setUpMockSocialLoginService('github', 'GitHub');
 
         $this->mockOAuthService->expects($this->at(1))
             ->method('request')
@@ -335,8 +335,7 @@ class SocialLoginControllerTest extends ControllerTestCase
 
     public function testFacebookCallbackImplemented()
     {
-        $this->setUpMockSocialLoginService('facebook', 'Facebook');
-        $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->expectingFacebookAsProvider();
         $this->expectingLoginRequest();
 
         $request = $this->createJsonRequest('get', [
