@@ -54,11 +54,11 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->getMock();
     }
 
-    public function setUpMockSocialLoginService()
+    public function setUpMockSocialLoginService($provider = 'google', $serviceName = 'Google')
     {
         $this->mockSocialLoginService = $this->getMock('Synapse\SocialLogin\SocialLoginService');
 
-        $this->mockOAuthService = $this->getMockBuilder('OAuth\OAuth2\Service\Google')
+        $this->mockOAuthService = $this->getMockBuilder('OAuth\OAuth2\Service\\' . $serviceName)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -70,7 +70,7 @@ class SocialLoginControllerTest extends ControllerTestCase
 
         $this->mockSocialLoginService->expects($this->any())
             ->method('getServiceByProvider')
-            ->with($this->equalTo('google'))
+            ->with($this->equalTo($provider))
             ->will($this->returnValue($this->mockOAuthService));
     }
 
@@ -113,6 +113,40 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->method('handleLoginRequest')
             ->with($this->anything())
             ->will($this->throwException($exception));
+    }
+
+    public function expectingGithubAsProvider()
+    {
+        $this->setUpMockSocialLoginService('github', 'Github');
+
+        $this->mockOAuthService->expects($this->at(1))
+            ->method('request')
+            ->with($this->equalTo('user/emails'))
+            ->will($this->returnValue(json_encode(['user@domain.com'])));
+
+        $this->mockOAuthService->expects($this->at(2))
+            ->method('request')
+            ->with($this->equalTo('user'))
+            ->will($this->returnValue(json_encode(['id' => '123'])));
+
+        $this->controller->setSocialLoginService($this->mockSocialLoginService);
+    }
+
+    public function expectingFacebookAsProvider()
+    {
+        $this->setUpMockSocialLoginService('facebook', 'Facebook');
+
+        $this->mockOAuthService->expects($this->once())
+            ->method('request')
+            ->with($this->equalTo('/me'))
+            ->will(
+                $this->returnValue(json_encode([
+                    'id' => '123',
+                    'email' => 'user@domain.com'
+                ]))
+            );
+
+        $this->controller->setSocialLoginService($this->mockSocialLoginService);
     }
 
     public function testLoginReturns404IfProviderDoesNotExist()
@@ -284,5 +318,32 @@ class SocialLoginControllerTest extends ControllerTestCase
 
         $this->assertContains('login_failure=1', $response->headers->get('Location'));
         $this->assertContains('error=account_not_found', $response->headers->get('Location'));
+    }
+
+    public function testGithubCallbackImplemented()
+    {
+        $this->expectingGithubAsProvider();
+        $this->expectingLoginRequest();
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'github'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+    }
+
+    public function testFacebookCallbackImplemented()
+    {
+        $this->setUpMockSocialLoginService('facebook', 'Facebook');
+        $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->expectingLoginRequest();
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'facebook'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
     }
 }
