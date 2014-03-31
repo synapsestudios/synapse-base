@@ -87,7 +87,6 @@ class ZendDb implements
         return true;
     }
 
-
     /**
      * {@inheritDoc}
      */

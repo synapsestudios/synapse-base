@@ -141,7 +141,7 @@ class Resque extends Command implements LoggerAwareInterface
     /**
      * Start workers
      *
-     * @param  string $queues   comma separated list of queues
+     * @param  string  $queues   comma separated list of queues
      * @param  integer $count    number of workers
      * @param  integer $logLevel See Resque_Worker constants
      * @param  integer $interval How often (in seconds) to check for new jobs across the queues
