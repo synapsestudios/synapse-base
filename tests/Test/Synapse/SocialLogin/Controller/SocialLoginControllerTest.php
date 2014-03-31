@@ -2,8 +2,12 @@
 
 namespace Test\Synapse\SocialLogin\Controller;
 
+use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
 use Synapse\SocialLogin\Controller\SocialLoginController;
+use Synapse\SocialLogin\Exception\NoLinkedAccountException;
+use Synapse\SocialLogin\Exception\LinkedAccountExistsException;
+use Synapse\SocialLogin\SocialLoginService;
 use TestHelper\ControllerTestCase;
 
 class SocialLoginControllerTest extends ControllerTestCase
@@ -19,7 +23,12 @@ class SocialLoginControllerTest extends ControllerTestCase
         $this->controller->setUrlGenerator($this->mockUrlGenerator);
         $this->controller->setSocialLoginService($this->mockSocialLoginService);
         $this->controller->setSession($this->mockSession);
-        $this->controller->setConfig([
+        $this->controller->setConfig($this->getControllerConfig());
+    }
+
+    public function getControllerConfig()
+    {
+        return [
             'redirect-url' => 'redirect-url',
             'google' => [
                 'callback_route' => 'callback-route',
@@ -27,7 +36,15 @@ class SocialLoginControllerTest extends ControllerTestCase
                 'secret'         => '',
                 'scope'          => []
             ]
-        ]);
+        ];
+    }
+
+    public function getExpectedRedirectUrl()
+    {
+        $config = $this->getControllerConfig();
+        $token = $this->getReturnedAccessToken();
+
+        return $config['redirect-url'] . '?' . http_build_query($token);
     }
 
     public function setUpMockSession()
@@ -67,12 +84,19 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->will($this->returnValue('/url'));
     }
 
+    public function getReturnedAccessToken()
+    {
+        return [
+            'access_token' => '12345'
+        ];
+    }
+
     public function expectingLoginRequest()
     {
         $this->mockSocialLoginService->expects($this->once())
             ->method('handleLoginRequest')
             ->with($this->anything())
-            ->will($this->returnValue(['access_token' => '12345']));
+            ->will($this->returnValue($this->getReturnedAccessToken()));
     }
 
     public function expectingLinkRequest()
@@ -80,7 +104,15 @@ class SocialLoginControllerTest extends ControllerTestCase
         $this->mockSocialLoginService->expects($this->once())
             ->method('handleLinkRequest')
             ->with($this->anything())
-            ->will($this->returnValue(['access_token' => '12345']));
+            ->will($this->returnValue($this->getReturnedAccessToken()));
+    }
+
+    public function expectingLoginRequestAndThrowingException($exception)
+    {
+        $this->mockSocialLoginService->expects($this->once())
+            ->method('handleLoginRequest')
+            ->with($this->anything())
+            ->will($this->throwException($exception));
     }
 
     public function testLoginReturns404IfProviderDoesNotExist()
@@ -184,5 +216,73 @@ class SocialLoginControllerTest extends ControllerTestCase
         ]);
 
         $response = $this->controller->callback($request);
+    }
+
+    public function testCallbackReturns301WithRedirectLocationFromConfigWithParamsFromToken()
+    {
+        $this->expectingLoginRequest();
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+
+        $this->assertEquals(301, $response->getStatusCode());
+        $this->assertEquals(
+            $this->getExpectedRedirectUrl(),
+            $response->headers->get('Location')
+        );
+    }
+
+    public function testRedirectUrlContainsErrorParamsIfNoLinkedAccountExceptionThrown()
+    {
+        $this->expectingLoginRequestAndThrowingException(new NoLinkedAccountException);
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+
+        $this->assertContains('login_failure=1', $response->headers->get('Location'));
+        $this->assertContains('error=no_linked_account', $response->headers->get('Location'));
+    }
+
+    public function testRedirectUrlContainsErrorParamsIfLinkedAccountExistsExceptionThrown()
+    {
+        $this->expectingLoginRequestAndThrowingException(new LinkedAccountExistsException);
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+
+        $this->assertContains('login_failure=1', $response->headers->get('Location'));
+        $this->assertContains('error=account_already_linked', $response->headers->get('Location'));
+    }
+
+    public function testRedirectUrlContainsErrorParamsOutOfBoundsExceptionThrown()
+    {
+        $this->expectingLoginRequestAndThrowingException(
+            new OutOfBoundsException(
+                '',
+                SocialLoginService::EXCEPTION_ACCOUNT_NOT_FOUND
+            )
+        );
+
+        $request = $this->createJsonRequest('get', [
+            'attributes' => ['provider' => 'google'],
+            'getParams'  => ['state' => SocialLoginController::ACTION_LOGIN_WITH_ACCOUNT]
+        ]);
+
+        $response = $this->controller->callback($request);
+
+        $this->assertContains('login_failure=1', $response->headers->get('Location'));
+        $this->assertContains('error=account_not_found', $response->headers->get('Location'));
     }
 }
