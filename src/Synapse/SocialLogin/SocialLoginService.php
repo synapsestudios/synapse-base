@@ -39,7 +39,7 @@ class SocialLoginService
      * Handle a request to log in via a social login provider
      *
      * @param  LoginRequest $request
-     * @return AccessToken
+     * @return array        Access token
      */
     public function handleLoginRequest(LoginRequest $request)
     {
@@ -82,7 +82,7 @@ class SocialLoginService
      *
      * @param  LoginRequest $request
      * @param  string       $userId  ID of the non-social account to link with the social account
-     * @return AccessToken
+     * @return array        Access token
      */
     public function handleLinkRequest(LoginRequest $request, $userId)
     {
@@ -161,7 +161,7 @@ class SocialLoginService
      * Create an access token given a user entity
      *
      * @param  UserEntity   $user
-     * @return AccessToken
+     * @return array        Access token
      */
     public function handleLogin(UserEntity $user)
     {
@@ -196,5 +196,36 @@ class SocialLoginService
     {
         $this->userService = $service;
         return $this;
+    }
+
+    /**
+     * Get a provider service given a provider name
+     *
+     * @param  string $provider
+     * @return OAuth\Common\Service\ServiceInterface
+     */
+    public function getServiceByProvider($provider)
+    {
+        $redirect = $this->url($this->config[$provider]['callback_route'], array(
+            'provider' => $provider,
+        ));
+
+        $serviceName = $this->serviceMap[$provider];
+        $storage     = new SessionStorage(false);
+        $credentials = new ConsumerCredentials(
+            $this->config[$provider]['key'],
+            $this->config[$provider]['secret'],
+            $redirect
+        );
+
+        $serviceFactory = new ServiceFactory;
+        $service = $serviceFactory->createService(
+            $serviceName,
+            $credentials,
+            $storage,
+            $this->config[$provider]['scope']
+        );
+
+        return $service;
     }
 }

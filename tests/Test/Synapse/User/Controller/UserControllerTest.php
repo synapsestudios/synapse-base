@@ -3,15 +3,14 @@
 namespace Test\Synapse\User\Controller;
 
 use OutOfBoundsException;
-use PHPUnit_Framework_TestCase;
+use TestHelper\ControllerTestCase;
 use stdClass;
 use Synapse\Stdlib\Arr;
 use Synapse\User\Controller\UserController;
 use Synapse\User\Entity\User;
 use Synapse\User\UserService;
-use Symfony\Component\HttpFoundation\Request;
 
-class UserControllerTest extends PHPUnit_Framework_TestCase
+class UserControllerTest extends ControllerTestCase
 {
     const EXISTING_USER_ID     = '1';
     const LOGGED_IN_USER_ID    = '2';
@@ -144,23 +143,6 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         ]);
 
         return $user;
-    }
-
-    public function createJsonRequest($method, $params)
-    {
-        $this->request = new Request(
-            Arr::get($params, 'getParams', []),
-            [],
-            Arr::get($params, 'attributes', []),
-            [],
-            [],
-            [],
-            Arr::get($params, 'content') ? json_encode($params['content']) : ''
-        );
-        $this->request->setMethod($method);
-        $this->request->headers->set('CONTENT_TYPE', 'application/json');
-
-        return $this->request;
     }
 
     public function makeGetRequestForUserId($userId)
