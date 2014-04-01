@@ -121,6 +121,15 @@ class SocialLoginController extends AbstractController
     }
 
     /**
+     * @param ServiceFactory $serviceFactory
+     */
+    public function setServiceFactory(ServiceFactory $serviceFactory)
+    {
+        $this->serviceFactory = $serviceFactory;
+        return $this;
+    }
+
+    /**
      * Authenticate via a separate OAuth provider with the intent to login
      *
      * @param  Request $request
@@ -158,7 +167,7 @@ class SocialLoginController extends AbstractController
             return $this->createNotFoundResponse();
         }
 
-        $service = $this->service->getServiceByProvider($provider);
+        $service = $this->getServiceByProvider($provider);
 
         $redirectUri = $service->getAuthorizationUri(['state' => $action]);
 
@@ -192,7 +201,7 @@ class SocialLoginController extends AbstractController
 
         // Use provider service and access token from provider to create a LoginRequest for our app
         $code            = $request->query->get('code');
-        $providerService = $this->service->getServiceByProvider($provider);
+        $providerService = $this->getServiceByProvider($provider);
         $providerToken   = $providerService->requestAccessToken($code);
 
         $socialLoginRequest = $this->$provider($providerService, $providerToken);
@@ -320,5 +329,35 @@ class SocialLoginController extends AbstractController
         );
 
         return $loginRequest;
+    }
+
+    /**
+     * Get a provider service given a provider name
+     *
+     * @param  string $provider
+     * @return OAuth\Common\Service\ServiceInterface
+     */
+    public function getServiceByProvider($provider)
+    {
+        $redirect = $this->url($this->config[$provider]['callback_route'], array(
+            'provider' => $provider,
+        ));
+
+        $serviceName = $this->serviceMap[$provider];
+        $storage     = new SessionStorage(false);
+        $credentials = new ConsumerCredentials(
+            $this->config[$provider]['key'],
+            $this->config[$provider]['secret'],
+            $redirect
+        );
+
+        $service = $this->serviceFactory->createService(
+            $serviceName,
+            $credentials,
+            $storage,
+            $this->config[$provider]['scope']
+        );
+
+        return $service;
     }
 }

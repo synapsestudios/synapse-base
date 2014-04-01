@@ -2,6 +2,7 @@
 
 namespace Synapse\SocialLogin;
 
+use OAuth\ServiceFactory;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
@@ -26,6 +27,7 @@ class ServiceProvider implements ServiceProviderInterface
             $controller
                 ->setSocialLoginService($app['social-login.service'])
                 ->setConfig($config)
+                ->setServiceFactory(new ServiceFactory())
                 ->setSession($app['session']);
 
             return $controller;
