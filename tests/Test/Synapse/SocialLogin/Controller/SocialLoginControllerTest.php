@@ -19,16 +19,18 @@ class SocialLoginControllerTest extends ControllerTestCase
         $this->setUpMockUrlGenerator();
         $this->setUpMockSocialLoginService();
         $this->setUpMockSession();
+        $this->setUpMockServiceFactory();
 
         $this->controller->setUrlGenerator($this->mockUrlGenerator);
         $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->controller->setServiceFactory($this->mockServiceFactory);
         $this->controller->setSession($this->mockSession);
         $this->controller->setConfig($this->getControllerConfig());
     }
 
     public function getControllerConfig()
     {
-        return [
+        $config = [
             'redirect-url' => 'redirect-url',
             'google' => [
                 'callback_route' => 'callback-route',
@@ -37,6 +39,11 @@ class SocialLoginControllerTest extends ControllerTestCase
                 'scope'          => []
             ]
         ];
+
+        $config['facebook'] = $config['google'];
+        $config['github'] = $config['google'];
+
+        return $config;
     }
 
     public function getExpectedRedirectUrl()
@@ -54,10 +61,8 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->getMock();
     }
 
-    public function setUpMockSocialLoginService($provider = 'google', $serviceName = 'Google')
+    public function setUpMockServiceFactory($serviceName = 'Google')
     {
-        $this->mockSocialLoginService = $this->getMock('Synapse\SocialLogin\SocialLoginService');
-
         $this->mockOAuthService = $this->getMockBuilder('OAuth\OAuth2\Service\\' . $serviceName)
             ->disableOriginalConstructor()
             ->getMock();
@@ -68,10 +73,21 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->method('requestAccessToken')
             ->will($this->returnValue($this->mockProviderToken));
 
-        $this->mockSocialLoginService->expects($this->any())
-            ->method('getServiceByProvider')
-            ->with($this->equalTo($provider))
-            ->will($this->returnValue($this->mockOAuthService));
+        $this->mockServiceFactory = $this->getMock('OAuth\ServiceFactory');
+
+        $this->mockServiceFactory->expects($this->any())
+            ->method('createService')
+            ->with(
+                $this->equalTo($serviceName),
+                $this->anything(),
+                $this->anything(),
+                $this->anything()
+            )->will($this->returnValue($this->mockOAuthService));
+    }
+
+    public function setUpMockSocialLoginService()
+    {
+        $this->mockSocialLoginService = $this->getMock('Synapse\SocialLogin\SocialLoginService');
     }
 
     public function setUpMockUrlGenerator()
@@ -117,7 +133,7 @@ class SocialLoginControllerTest extends ControllerTestCase
 
     public function expectingGithubAsProvider()
     {
-        $this->setUpMockSocialLoginService('github', 'GitHub');
+        $this->setUpMockServiceFactory('GitHub');
 
         $this->mockOAuthService->expects($this->at(1))
             ->method('request')
@@ -129,12 +145,12 @@ class SocialLoginControllerTest extends ControllerTestCase
             ->with($this->equalTo('user'))
             ->will($this->returnValue(json_encode(['id' => '123'])));
 
-        $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->controller->setServiceFactory($this->mockServiceFactory);
     }
 
     public function expectingFacebookAsProvider()
     {
-        $this->setUpMockSocialLoginService('facebook', 'Facebook');
+        $this->setUpMockServiceFactory('Facebook');
 
         $this->mockOAuthService->expects($this->once())
             ->method('request')
@@ -146,7 +162,7 @@ class SocialLoginControllerTest extends ControllerTestCase
                 ]))
             );
 
-        $this->controller->setSocialLoginService($this->mockSocialLoginService);
+        $this->controller->setServiceFactory($this->mockServiceFactory);
     }
 
     public function testLoginReturns404IfProviderDoesNotExist()
