@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Resque;
 
 use Synapse\Resque\Resque as ResqueService;
 use Silex\Application;
@@ -11,7 +11,7 @@ use Synapse\Command\Resque as ResqueCommand;
 /**
  * Service provider for Resque services
  */
-class ResqueServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

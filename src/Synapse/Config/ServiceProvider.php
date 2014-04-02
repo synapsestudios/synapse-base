@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Config;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -8,7 +8,7 @@ use Silex\ServiceProviderInterface;
 use Synapse\Config\Config;
 use Synapse\Config\FileReader;
 
-class ConfigServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

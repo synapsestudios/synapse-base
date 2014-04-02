@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\OAuth2;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -19,7 +19,7 @@ use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\UserCredentials;
 use OAuth2\ResponseType\AuthorizationCode as AuthorizationCodeResponse;
 
-class OAuth2ServerServiceProvider implements ServiceProviderInterface
+class ServerServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register services

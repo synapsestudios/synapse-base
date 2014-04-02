@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Synapse\Rest\Exception\MethodNotImplementedException;
  *
  * @link http://silex.sensiolabs.org/doc/providers/service_controller.html
  */
-class ControllerResolver implements ControllerResolverInterface
+class Resolver implements ControllerResolverInterface
 {
     const SERVICE_PATTERN = "/[A-Za-z0-9\._\-]+:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/";
 
