@@ -30,7 +30,7 @@ class Services implements ServicesInterface
         $app->register(new \Synapse\Log\ServiceProvider);
 
         $app->register(new \Synapse\Command\ServiceProvider);
-        $app->register(new \Synapse\Db\ServiceProvider;
+        $app->register(new \Synapse\Db\ServiceProvider);
         $app->register(new \Synapse\OAuth2\ServerServiceProvider);
         $app->register(new \Synapse\OAuth2\SecurityServiceProvider);
         $app->register(new \Synapse\Resque\ServiceProvider);
