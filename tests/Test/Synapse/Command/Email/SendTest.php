@@ -49,7 +49,7 @@ class EmailTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue('emailId'));
 
         $email = new Email();
-        $email->fromArray(['id' => 'emailId']);
+        $email->exchangeArray(['id' => 'emailId']);
 
         $this->mockEmailMapper->expects($this->once())
             ->method('findById')

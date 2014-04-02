@@ -34,7 +34,7 @@ class UserControllerTest extends ControllerTestCase
     public function setUpExistingUser()
     {
         $existingUser = new User;
-        $existingUser->fromArray([
+        $existingUser->exchangeArray([
             'id'       => self::EXISTING_USER_ID,
             'email'    => 'existing@user.com',
             'password' => '12345'
@@ -76,7 +76,7 @@ class UserControllerTest extends ControllerTestCase
                 $newUserValues['id'] = 1;
 
                 $user = new User;
-                $user->fromArray($newUserValues);
+                $user->exchangeArray($newUserValues);
 
                 $captured->registeredUser = $user;
 
@@ -137,7 +137,7 @@ class UserControllerTest extends ControllerTestCase
     {
         $user = new User();
 
-        $user->fromArray([
+        $user->exchangeArray([
             'id'    => self::LOGGED_IN_USER_ID,
             'email' => 'current@user.com'
         ]);
