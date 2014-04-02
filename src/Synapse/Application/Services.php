@@ -67,20 +67,25 @@ class Services implements ServicesInterface
     {
         $app->register(new \Silex\Provider\SecurityServiceProvider, [
             'security.firewalls' => [
-                'unsecured' => [
+                'base.unsecured' => [
                     'pattern'   => '^/(oauth|social-login)',
                 ],
-                'public' => [
+                'base.create-users' => [
                     'pattern'   => '^/users$', // Make user creation endpoint public for user registration
                     'anonymous' => true,
                 ],
-                'api' => [
+                'base.api' => [
                     'pattern'   => '^/',
                     // Order of oauth and anonymous matters!
                     'oauth'     => true,
                     'anonymous' => true,
                 ],
             ],
+            /**
+             * Define security.access_rules so it can be extended in application-specific service providers.
+             * Otherwise the application would have to make sure to define it the first time before extending it.
+             */
+            'security.access_rules' => [],
         ]);
     }
 }
