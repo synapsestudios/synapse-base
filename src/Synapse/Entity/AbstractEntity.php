@@ -108,7 +108,7 @@ abstract class AbstractEntity implements ArraySerializableInterface
      * @param  array  $values Entity data to be set
      * @return AbstractEntity
      */
-    public function exchangeArray(array $array)
+    public function exchangeArray(array $values)
     {
         foreach ($this->object as $key => $value) {
             if (array_key_exists($key, $values)) {
