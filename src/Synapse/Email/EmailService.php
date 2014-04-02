@@ -73,7 +73,7 @@ class EmailService
 
         $email = new EmailEntity;
 
-        $email = $email->fromArray(
+        $email = $email->exchangeArray(
             array_merge($defaults, $data)
         );
 

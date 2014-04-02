@@ -23,7 +23,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     public function testUserGetters()
     {
         $user = new User;
-        $user->fromArray([
+        $user->exchangeArray([
             'email'    => 'test@example.com',
             'password' => 'password',
         ]);

@@ -89,35 +89,7 @@ abstract class AbstractEntity implements ArraySerializableInterface
      */
     public function getDbValues()
     {
-        return Arr::extract($this->asArray(), $this->getColumns());
-    }
-
-    /**
-     * Return this entity as an array
-     *
-     * @return array
-     */
-    public function asArray()
-    {
-        return $this->object;
-    }
-
-    /**
-     * Load object data in this entity from array
-     *
-     * @param  array  $values Entity data to be set
-     * @return AbstractEntity
-     */
-    public function fromArray(array $values)
-    {
-        foreach ($this->object as $key => $value) {
-            if (array_key_exists($key, $values)) {
-                $setter = 'set'.ucfirst($key);
-                $this->$setter($values[$key]);
-            }
-        }
-
-        return $this;
+        return Arr::extract($this->getArrayCopy(), $this->getColumns());
     }
 
     /**
@@ -131,18 +103,30 @@ abstract class AbstractEntity implements ArraySerializableInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Load object data in this entity from array
+     *
+     * @param  array  $values Entity data to be set
+     * @return AbstractEntity
      */
-    public function exchangeArray(array $array)
+    public function exchangeArray(array $values)
     {
-        return $this->fromArray($array);
+        foreach ($this->object as $key => $value) {
+            if (array_key_exists($key, $values)) {
+                $setter = 'set'.ucfirst($key);
+                $this->$setter($values[$key]);
+            }
+        }
+
+        return $this;
     }
 
     /**
-     * {@inheritDoc}
+     * Return this entity as an array
+     *
+     * @return array
      */
     public function getArrayCopy()
     {
-        return $this->asArray();
+        return $this->object;
     }
 }

@@ -71,7 +71,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     {
         $user = new UserEntity();
 
-        $user->fromArray([
+        $user->exchangeArray([
             'email'    => 'user@domain.com',
             'password' => $this->getCurrentPasswordHash()
         ]);
@@ -85,7 +85,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $id    = 'existing_user_id';
 
         $user = new UserEntity();
-        $user->fromArray([
+        $user->exchangeArray([
             'id'    => $id,
             'email' => $email
         ]);
@@ -149,7 +149,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
                 $captured->emailArray = $array;
 
                 $email = new Email;
-                $email->fromArray($array);
+                $email->exchangeArray($array);
 
                 $captured->createdEmailEntity = $email;
 
@@ -378,7 +378,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     public function testVerifyRegistrationThrowsExceptionIfTokenIsOfWrongType()
     {
         $userToken = new UserToken();
-        $userToken->fromArray([
+        $userToken->exchangeArray([
             'id'   => '1',
             'type' => UserToken::TYPE_RESET_PASSWORD
         ]);
@@ -392,7 +392,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     public function testVerifyRegistrationThrowsExceptionIfExpireTimeHasPassed()
     {
         $userToken = new UserToken();
-        $userToken->fromArray([
+        $userToken->exchangeArray([
             'id'      => '1',
             'type'    => UserToken::TYPE_VERIFY_REGISTRATION,
             'expires' => time() - 1000
@@ -407,7 +407,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $user = $this->withExistingUser();
 
         $userToken = new UserToken();
-        $userToken->fromArray([
+        $userToken->exchangeArray([
             'id'      => '1',
             'type'    => UserToken::TYPE_VERIFY_REGISTRATION,
             'expires' => time() + 1000,

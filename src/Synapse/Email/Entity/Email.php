@@ -45,9 +45,9 @@ class Email extends AbstractEntity
     /**
      * {@inheritDoc}
      */
-    public function fromArray(array $values)
+    public function exchangeArray(array $values)
     {
-        $entity = parent::fromArray($values);
+        $entity = parent::exchangeArray($values);
 
         $entity->setDateCreated(time());
         $entity->setStatus(self::STATUS_PENDING);
