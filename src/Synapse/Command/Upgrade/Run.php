@@ -203,12 +203,24 @@ class Run extends AbstractUpgradeCommand
     {
         $tables = $this->db->query('SHOW TABLES', DbAdapter::QUERY_MODE_EXECUTE);
 
+        // Disable foreign key checks -- we are wiping the database on purpose
+        $this->db->query(
+            'SET FOREIGN_KEY_CHECKS = 0',
+            DbAdapter::QUERY_MODE_EXECUTE
+        );
+
         foreach ($tables as $table) {
             $this->db->query(
                 'DROP TABLE '.reset($table),
                 DbAdapter::QUERY_MODE_EXECUTE
             );
         }
+
+        // Re-enable foreign key checks
+        $this->db->query(
+            'SET FOREIGN_KEY_CHECKS = 1',
+            DbAdapter::QUERY_MODE_EXECUTE
+        );
     }
 
     /**
