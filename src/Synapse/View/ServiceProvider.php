@@ -4,12 +4,12 @@
  * Custom service provider for mustache
  */
 
-namespace Synapse\Provider;
+namespace Synapse\View;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
-class MustacheServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

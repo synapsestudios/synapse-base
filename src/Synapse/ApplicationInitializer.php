@@ -2,7 +2,7 @@
 
 namespace Synapse;
 
-use Synapse\Provider\ConfigServiceProvider;
+use Synapse\Config\ServiceProvider as ConfigServiceProvider;
 use Symfony\Component\Debug\Debug;
 
 /**

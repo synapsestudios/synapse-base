@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Command;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Synapse\Config\Config;
 use Synapse\Config\FileReader;
 
-class ConsoleServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

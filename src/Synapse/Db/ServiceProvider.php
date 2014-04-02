@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Db;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -10,7 +10,7 @@ use Zend\Db\Sql\Sql;
 /**
  * Provider for Zend database services
  */
-class ZendDbServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register the database adapter

@@ -26,28 +26,23 @@ class Services implements ServicesInterface
      */
     protected function registerServiceProviders(Application $app)
     {
-        // Load log provider first to catch any exceptions thrown in the others
-        $app->register(new \Synapse\Log\ServiceProvider());
+        // Register log provider first to catch any exceptions thrown in the others
+        $app->register(new \Synapse\Log\ServiceProvider);
 
-        $app->register(new \Synapse\Provider\ConsoleServiceProvider());
-        $app->register(new \Synapse\Provider\ZendDbServiceProvider());
-        $app->register(new \Synapse\Provider\OAuth2ServerServiceProvider());
-        $app->register(new \Synapse\Provider\OAuth2SecurityServiceProvider());
-        $app->register(new \Synapse\Provider\ResqueServiceProvider());
-        $app->register(new \Synapse\Provider\ControllerServiceProvider());
-        $app->register(new \Synapse\Email\ServiceProvider());
-        $app->register(new \Synapse\User\ServiceProvider());
+        $app->register(new \Synapse\Command\ServiceProvider);
+        $app->register(new \Synapse\Db\ServiceProvider;
+        $app->register(new \Synapse\OAuth2\ServerServiceProvider);
+        $app->register(new \Synapse\OAuth2\SecurityServiceProvider);
+        $app->register(new \Synapse\Resque\ServiceProvider);
+        $app->register(new \Synapse\Controller\ServiceProvider);
+        $app->register(new \Synapse\Email\ServiceProvider);
+        $app->register(new \Synapse\User\ServiceProvider);
+        $app->register(new \Synapse\Migration\ServiceProvider);
+        $app->register(new \Synapse\Upgrade\ServiceProvider);
+        $app->register(new \Synapse\Session\ServiceProvider);
+        $app->register(new \Synapse\SocialLogin\ServiceProvider);
 
-        // Register the CORS middleware
-        $app->register(new \JDesrosiers\Silex\Provider\CorsServiceProvider());
-        $app->after($app['cors']);
-
-        $app->register(new \Synapse\Session\ServiceProvider());
-
-        $app->register(new \Silex\Provider\UrlGeneratorServiceProvider());
-        $app->register(new \Synapse\SocialLogin\ServiceProvider());
-
-        $app->register(new \Synapse\Provider\MustacheServiceProvider, [
+        $app->register(new \Synapse\View\ServiceProvider, [
             'mustache.paths' => array(
                 APPDIR.'/templates'
             ),
@@ -56,7 +51,11 @@ class Services implements ServicesInterface
             ],
         ]);
 
-        $app->register(new \Synapse\Provider\MigrationUpgradeServiceProvider());
+        $app->register(new \Silex\Provider\UrlGeneratorServiceProvider);
+
+        // Register the CORS middleware
+        $app->register(new \JDesrosiers\Silex\Provider\CorsServiceProvider);
+        $app->after($app['cors']);
     }
 
     /**
@@ -66,7 +65,7 @@ class Services implements ServicesInterface
      */
     public function registerSecurity(Application $app)
     {
-        $app->register(new \Silex\Provider\SecurityServiceProvider(), [
+        $app->register(new \Silex\Provider\SecurityServiceProvider, [
             'security.firewalls' => [
                 'unsecured' => [
                     'pattern'   => '^/(oauth|social-login)',

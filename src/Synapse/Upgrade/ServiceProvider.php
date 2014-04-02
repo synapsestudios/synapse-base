@@ -1,19 +1,14 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Upgrade;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
-use Symfony\Component\Console\Application as ConsoleApplication;
-
-use Synapse\Config\Config;
-use Synapse\Config\FileReader;
-
 /**
- * Service provider for migration and upgrade console commands
+ * Service provider for upgrade console commands
  */
-class MigrationUpgradeServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register console commands as services
@@ -51,20 +46,6 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
 
             return $command;
         });
-
-        $app['migrations.create'] = $app->share(function () use ($app) {
-            return new \Synapse\Command\Migrations\Create(
-                new \Synapse\View\Migration\Create($app['mustache'])
-            );
-        });
-
-        $app['migrations.run'] = $app->share(function () use ($app) {
-            $command = new \Synapse\Command\Migrations\Run;
-
-            $command->setDatabaseAdapter($app['db']);
-
-            return $command;
-        });
     }
 
     /**
@@ -78,7 +59,5 @@ class MigrationUpgradeServiceProvider implements ServiceProviderInterface
         $app->command('upgrade.run');
         $app->command('upgrade.create');
         $app->command('install.generate');
-        $app->command('migrations.run');
-        $app->command('migrations.create');
     }
 }

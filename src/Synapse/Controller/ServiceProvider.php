@@ -1,11 +1,11 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\Controller;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
-class ControllerServiceProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register the controller resolver and initializers

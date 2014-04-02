@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Provider;
+namespace Synapse\OAuth2;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
@@ -8,7 +8,7 @@ use Silex\ServiceProviderInterface;
 use Synapse\Security\Authentication\OAuth2Provider;
 use Synapse\Security\Firewall\OAuth2Listener;
 
-class OAuth2SecurityServiceProvider implements ServiceProviderInterface
+class SecurityServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}
