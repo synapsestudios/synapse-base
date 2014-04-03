@@ -3,6 +3,7 @@
 namespace Synapse\Application;
 
 use Synapse\Application;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 
 /**
  * Define services
@@ -20,7 +21,7 @@ class Services implements ServicesInterface
     }
 
     /**
-     * Register various service providers
+     * Register service providers
      *
      * @param  Application $app
      */
@@ -65,13 +66,17 @@ class Services implements ServicesInterface
      */
     public function registerSecurity(Application $app)
     {
-        $app->register(new \Silex\Provider\SecurityServiceProvider, [
-            'security.firewalls' => [
+        $app->register(new \Silex\Provider\SecurityServiceProvider);
+
+        $app['security.firewalls'] = $app->share(function () {
+            $createUser = new RequestMatcher('^/users$', null, ['POST']);
+
+            return [
                 'base.unsecured' => [
                     'pattern'   => '^/(oauth|social-login)',
                 ],
                 'base.create-users' => [
-                    'pattern'   => '^/users$', // Make user creation endpoint public for user registration
+                    'pattern'   => $createUser, // Make user creation endpoint public for user registration
                     'anonymous' => true,
                 ],
                 'base.api' => [
@@ -80,12 +85,7 @@ class Services implements ServicesInterface
                     'oauth'     => true,
                     'anonymous' => true,
                 ],
-            ],
-            /**
-             * Define security.access_rules so it can be extended in application-specific service providers.
-             * Otherwise the application would have to make sure to define it the first time before extending it.
-             */
-            'security.access_rules' => [],
-        ]);
+            ];
+        });
     }
 }
