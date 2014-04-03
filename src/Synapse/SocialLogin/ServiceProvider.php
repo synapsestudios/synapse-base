@@ -5,6 +5,7 @@ namespace Synapse\SocialLogin;
 use OAuth\ServiceFactory;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 
 /**
  * Service provider for logging services.
@@ -54,6 +55,8 @@ class ServiceProvider implements ServiceProviderInterface
 
         $app->get('/social-login/{provider}/callback', 'social-login.controller:callback')
             ->bind('social-login-callback');
+
+        $this->setFirewalls($app);
     }
 
     /**
@@ -63,6 +66,32 @@ class ServiceProvider implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
-        // noop
+        // Noop
+    }
+
+    /**
+     * Set social login related firewalls
+     *
+     * @param Application $app
+     */
+    protected function setFirewalls(Application $app)
+    {
+        $app->extend('security.firewalls', function ($firewalls, $app) {
+            $socialLoginLink = new RequestMatcher('^/social-login/[a-z]+/link', null, ['GET']);
+            $socialLogin     = new RequestMatcher('^/social-login', null, ['GET']);
+
+            $socialFirewalls = [
+                'social-login-link' => [
+                    'pattern' => $socialLoginLink,
+                    'oauth'   => true,
+                ],
+                'social-login' => [
+                    'pattern'   => $socialLogin,
+                    'anonymous' => true,
+                ],
+            ];
+
+            return array_merge($socialFirewalls, $firewalls);
+        });
     }
 }

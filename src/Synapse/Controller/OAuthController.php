@@ -133,10 +133,6 @@ class OAuthController extends AbstractController implements
 
         $this->session->set('user', null);
 
-        if (! $accessToken) {
-            return new Response('Authentication required', 401);
-        }
-
         if (! $refreshToken) {
             return new Response('Refresh token not provided', 422);
         }

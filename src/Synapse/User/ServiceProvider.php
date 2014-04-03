@@ -14,6 +14,7 @@ use Synapse\View\Email\ResetPassword as ResetPasswordView;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 
 /**
  * Service provider for user related services
@@ -85,6 +86,8 @@ class ServiceProvider implements ServiceProviderInterface
         $app->match('/users/{id}/reset-password', 'reset-password.controller:rest')
             ->method('POST|PUT')
             ->bind('reset-password');
+
+        $this->setFirewalls($app);
     }
 
     /**
@@ -94,6 +97,27 @@ class ServiceProvider implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
-        // noop
+        // Noop
+    }
+
+    /**
+     * Set user related firewalls
+     *
+     * @param Application $app
+     */
+    protected function setFirewalls(Application $app)
+    {
+        $app->extend('security.firewalls', function ($firewalls, $app) {
+            $createUser = new RequestMatcher('^/users$', null, ['POST']);
+
+            $userFirewalls = [
+                'create-users' => [
+                    'pattern'   => $createUser, // User registration endpoint is public
+                    'anonymous' => true,
+                ],
+            ];
+
+            return array_merge($userFirewalls, $firewalls);
+        });
     }
 }
