@@ -24,7 +24,7 @@ trait PivotDeleterTrait
 
         $query = $this->sql()
             ->delete()
-            ->where($condition);
+            ->where($conditions);
 
         return $this->execute($query);
     }
