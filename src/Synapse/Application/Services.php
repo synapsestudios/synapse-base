@@ -15,20 +15,23 @@ class Services implements ServicesInterface
      */
     public function register(Application $app)
     {
+        // Register log provider first to catch any exceptions thrown in the others
+        $app->register(new \Synapse\Log\ServiceProvider);
+
+        // Register security component before other providers attempt to extend $app['security.firewalls']
+        $app->register(new \Silex\Provider\SecurityServiceProvider);
+        $this->registerSecurityFirewalls($app);
+
         $this->registerServiceProviders($app);
-        $this->registerSecurity($app);
     }
 
     /**
-     * Register various service providers
+     * Register service providers
      *
      * @param  Application $app
      */
     protected function registerServiceProviders(Application $app)
     {
-        // Register log provider first to catch any exceptions thrown in the others
-        $app->register(new \Synapse\Log\ServiceProvider);
-
         $app->register(new \Synapse\Command\ServiceProvider);
         $app->register(new \Synapse\Db\ServiceProvider);
         $app->register(new \Synapse\OAuth2\ServerServiceProvider);
@@ -59,28 +62,35 @@ class Services implements ServicesInterface
     }
 
     /**
-     * Register the security context
+     * Register the security firewalls for use with the Security Context in SecurityServiceProvider
+     *
+     * How to add application-specific firewalls:
+     *
+     *     $app->extend('security.firewalls, function ($firewalls, $app) {
+     *         $newFirewalls = [...];
+     *
+     *         return array_merge($newFirewalls, $firewalls);
+     *     });
+     *
+     * It's important to return an array with $firewalls at the end, as in the example,
+     * so that the catch-all 'base.api' firewall does not preclude more specific firewalls.
+     *
+     * Application-specific firewalls should only be needed to allow passthrough
+     * for public endpoints, since 'base.api' requires authentication.
      *
      * @param  Application $app
      */
-    public function registerSecurity(Application $app)
+    public function registerSecurityFirewalls(Application $app)
     {
-        $app->register(new \Silex\Provider\SecurityServiceProvider, [
-            'security.firewalls' => [
-                'unsecured' => [
-                    'pattern'   => '^/(oauth|social-login)',
-                ],
-                'public' => [
-                    'pattern'   => '^/users$', // Make user creation endpoint public for user registration
-                    'anonymous' => true,
-                ],
-                'api' => [
+        $app['security.firewalls'] = $app->share(function () {
+            return [
+                'base.api' => [
                     'pattern'   => '^/',
                     // Order of oauth and anonymous matters!
                     'oauth'     => true,
                     'anonymous' => true,
                 ],
-            ],
-        ]);
+            ];
+        });
     }
 }

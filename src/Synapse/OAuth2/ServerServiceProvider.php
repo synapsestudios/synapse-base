@@ -4,6 +4,7 @@ namespace Synapse\OAuth2;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 
 use Synapse\Controller\OAuthController;
 use Synapse\OAuth2\Storage\ZendDb as OAuth2ZendDb;
@@ -87,13 +88,14 @@ class ServerServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $this->setup($app);
+        $this->setFirewalls($app);
 
         $app->get('/oauth/authorize', 'oauth.controller:authorize');
         $app->get('/oauth/authorize-submit', 'oauth.controller:authorizeFormSubmit')
             ->bind('oauth-authorize-form-submit');
 
         $app->post('/oauth/token', 'oauth.controller:token');
-        $app->post('/logout', 'oauth.controller:logout');
+        $app->post('/oauth/logout', 'oauth.controller:logout');
     }
 
     /**
@@ -101,5 +103,32 @@ class ServerServiceProvider implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
+        // Noop
+    }
+
+    /**
+     * Set OAuth related firewalls
+     *
+     * @param Application $app
+     */
+    protected function setFirewalls(Application $app)
+    {
+        $app->extend('security.firewalls', function ($firewalls, $app) {
+            $logout = new RequestMatcher('^/oauth/logout', null, ['POST']);
+            $oAuth  = new RequestMatcher('^/oauth');
+
+            $breedFirewalls = [
+                'oauth-logout' => [
+                    'pattern' => $logout,
+                    'oauth'   => true,
+                ],
+                'oauth-public' => [
+                    'pattern'   => $oAuth,
+                    'anonymous' => true,
+                ],
+            ];
+
+            return array_merge($breedFirewalls, $firewalls);
+        });
     }
 }
