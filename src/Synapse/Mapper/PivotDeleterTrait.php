@@ -10,7 +10,7 @@ use Synapse\Entity\AbstractEntity;
  *
  * Use this trait to add delete functionality to AbstractMappers for pivot tables.
  */
-trait DeleterTrait
+trait PivotDeleterTrait
 {
     /**
      * Delete record corresponding to this entity
