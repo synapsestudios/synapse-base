@@ -106,6 +106,11 @@ class ServerServiceProvider implements ServiceProviderInterface
         // Noop
     }
 
+    /**
+     * Set OAuth related firewalls
+     *
+     * @param Application $app
+     */
     protected function setFirewalls(Application $app)
     {
         $app->extend('security.firewalls', function ($firewalls, $app) {
