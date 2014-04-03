@@ -68,6 +68,20 @@ class Services implements ServicesInterface
     {
         $app->register(new \Silex\Provider\SecurityServiceProvider);
 
+        /**
+         * Security firewalls
+         *
+         * How to add application-specific firewalls:
+         *
+         *     $app->extend('security.firewalls, function ($firewalls, $app) {
+         *         $newFirewalls = [...];
+         *
+         *         return array_merge($newFirewalls, $firewalls);
+         *     });
+         *
+         * It's important to return an array with $firewalls at the end, as in the example,
+         * so that the catch-all 'base.api' firewall does not preclude more specific firewalls.
+         */
         $app['security.firewalls'] = $app->share(function () {
             $createUser = new RequestMatcher('^/users$', null, ['POST']);
 
