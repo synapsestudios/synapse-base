@@ -54,7 +54,12 @@ abstract class AbstractRestController extends AbstractController
         } elseif (is_array($result)) {
             return new JsonResponse($result);
         } else {
-            throw new RuntimeException('Unhandled response type from controller');
+            throw new RuntimeException(
+                sprintf(
+                    'Unhandled response type %s from controller',
+                    gettype($result)
+                )
+            );
         }
     }
 
