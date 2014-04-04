@@ -123,8 +123,7 @@ trait FinderTrait
      */
     protected function addWheres($query, $wheres)
     {
-        foreach ($wheres as $key => $where)
-        {
+        foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
                 $operator = $where[1];
 
@@ -181,7 +180,7 @@ trait FinderTrait
                 }
 
                 $query->where($predicate);
-            } else if (is_string($key) && is_string($where)){
+            } elseif (is_string($key) && is_string($where)) {
                 $query->where([$key => $where]);
             } else {
                 throw new InvalidArgumentException('Invalid WHERE requirement');
