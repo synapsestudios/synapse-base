@@ -4,14 +4,18 @@ namespace Synapse\Entity;
 
 use BadMethodCallException;
 use InvalidArgumentException;
+use Synapse\Log\LoggerAwareInterface;
+use Synapse\Log\LoggerAwareTrait;
 use Synapse\Stdlib\Arr;
 use Zend\Stdlib\ArraySerializableInterface;
 
 /**
  * An abstract class for representing database records as entity objects
  */
-abstract class AbstractEntity implements ArraySerializableInterface
+abstract class AbstractEntity implements ArraySerializableInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Entity data
      *
