@@ -5,6 +5,7 @@ namespace Synapse\Controller;
 use Synapse\Application\UrlGeneratorAwareInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -14,6 +15,11 @@ abstract class AbstractController implements UrlGeneratorAwareInterface
 {
     use UrlGeneratorAwareTrait;
 
+    /**
+     * Create and return a 404 response object
+     *
+     * @return Response
+     */
     public function createNotFoundResponse()
     {
         $response = new Response();
@@ -22,11 +28,34 @@ abstract class AbstractController implements UrlGeneratorAwareInterface
         return $response;
     }
 
+    /**
+     * Create and return an error response object
+     *
+     * @param  integer $code    HTTP response code
+     * @param  string  $content Response content
+     * @return Response
+     */
     protected function getSimpleResponse($code = 500, $content = 'Unknown error')
     {
         $response = new Response;
         $response->setStatusCode($code)
             ->setContent($content);
+
+        return $response;
+    }
+
+    /**
+     * Create and return a JSON response object
+     *
+     * @param  int $code    HTTP response code
+     * @param  array $data  Response data
+     * @return JsonResponse
+     */
+    protected function getJsonResponse($code, $data)
+    {
+        $response = new JsonResponse;
+        $response->setStatusCode($code)
+            ->setData($data);
 
         return $response;
     }

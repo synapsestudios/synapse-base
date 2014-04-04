@@ -24,7 +24,7 @@ trait SecurityAwareTrait
     }
 
     /**
-     * Gets a user from the Security Context.
+     * Get a user from the Security Context
      * Borrowed from Silex\Application\SecurityTrait
      *
      * @return mixed

@@ -54,6 +54,7 @@ class MandrillSender implements SenderInterface
 
     /**
      * Build Mandrill compatible message array from email entity
+     *
      * Documentation at https://mandrillapp.com/api/docs/messages.php.html
      *
      * @param  Email  $emails

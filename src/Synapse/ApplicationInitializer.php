@@ -2,7 +2,7 @@
 
 namespace Synapse;
 
-use Synapse\Provider\ConfigServiceProvider;
+use Synapse\Config\ServiceProvider as ConfigServiceProvider;
 use Symfony\Component\Debug\Debug;
 
 /**
@@ -10,13 +10,6 @@ use Symfony\Component\Debug\Debug;
  */
 class ApplicationInitializer
 {
-    /**
-     * Application version
-     *
-     * @var string
-     */
-    protected $appVersion = '0.0.0';
-
     /**
      * Initialize the Silex Application
      *
@@ -30,14 +23,14 @@ class ApplicationInitializer
         // Create the application object
         $app = new Application;
 
-        // Store application version
-        $app['version'] = $this->appVersion;
-
         $this->setEnvironment($app);
         $this->registerConfig($app);
 
         // Handle init config
         $initConfig = $app['config']->load('init');
+
+        // Store application version
+        $app['version'] = $initConfig['version'];
 
         if ($initConfig['debug']) {
             Debug::enable();

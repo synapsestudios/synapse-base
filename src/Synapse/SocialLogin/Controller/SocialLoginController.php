@@ -121,6 +121,15 @@ class SocialLoginController extends AbstractController
     }
 
     /**
+     * @param ServiceFactory $serviceFactory
+     */
+    public function setServiceFactory(ServiceFactory $serviceFactory)
+    {
+        $this->serviceFactory = $serviceFactory;
+        return $this;
+    }
+
+    /**
      * Authenticate via a separate OAuth provider with the intent to login
      *
      * @param  Request $request
@@ -246,15 +255,10 @@ class SocialLoginController extends AbstractController
      */
     protected function providerExists($provider)
     {
-        if (! array_key_exists($provider, $this->serviceMap)) {
-            return false;
-        }
-
-        if (! array_key_exists($provider, $this->config)) {
-            return false;
-        }
-
-        return true;
+        return (
+            array_key_exists($provider, $this->serviceMap) ||
+            array_key_exists($provider, $this->config)
+        );
     }
 
     /**
@@ -281,6 +285,13 @@ class SocialLoginController extends AbstractController
         return $loginRequest;
     }
 
+    /**
+     * Request access token from Google and return a LoginRequest object for logging into our app
+     *
+     * @param  Oauth2Service\Google $google
+     * @param  TokenInterface       $token
+     * @return LoginRequest
+     */
     protected function google(Oauth2Service\Google $google, TokenInterface $token)
     {
         $user = json_decode($google->request('https://www.googleapis.com/oauth2/v1/userinfo'), true);
@@ -324,25 +335,23 @@ class SocialLoginController extends AbstractController
      * Get a provider service given a provider name
      *
      * @param  string $provider
-     * @param  int    $action   Constant representing Login or Link account (to determine which callback to use)
      * @return OAuth\Common\Service\ServiceInterface
      */
-    protected function getServiceByProvider($provider)
+    public function getServiceByProvider($provider)
     {
         $redirect = $this->url($this->config[$provider]['callback_route'], array(
             'provider' => $provider,
         ));
 
         $serviceName = $this->serviceMap[$provider];
-        $storage     = new SessionStorage();
+        $storage     = new SessionStorage(false);
         $credentials = new ConsumerCredentials(
             $this->config[$provider]['key'],
             $this->config[$provider]['secret'],
             $redirect
         );
 
-        $serviceFactory = new ServiceFactory;
-        $service = $serviceFactory->createService(
+        $service = $this->serviceFactory->createService(
             $serviceName,
             $credentials,
             $storage,

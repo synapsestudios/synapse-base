@@ -6,12 +6,14 @@ class FileReader implements ReaderInterface
 {
     /**
      * Directory to search for config files
+     *
      * @var string
      */
     protected $directory;
 
     /**
      * The configuration directory to load configs from
+     *
      * @param string $directory path to configs
      */
     public function __construct($directory)

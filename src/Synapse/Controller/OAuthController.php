@@ -57,6 +57,8 @@ class OAuthController extends AbstractController implements
 
     /**
      * The user is directed here to log in
+     *
+     * @param Request $request
      */
     public function authorize(Request $request)
     {
@@ -130,10 +132,6 @@ class OAuthController extends AbstractController implements
         $refreshToken  = Arr::get($content, 'refresh_token');
 
         $this->session->set('user', null);
-
-        if (! $accessToken) {
-            return new Response('Authentication required', 401);
-        }
 
         if (! $refreshToken) {
             return new Response('Refresh token not provided', 422);

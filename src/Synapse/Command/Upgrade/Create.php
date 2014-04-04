@@ -79,7 +79,8 @@ class Create extends AbstractUpgradeCommand
     }
 
     /**
-     * Get the name of the new upgrade class.
+     * Get the name of the new upgrade class
+     *
      * Removes all non-numeric characters from version string, except periods.
      * Converts periods to underscores, and prefixes with Upgrade_
      *
