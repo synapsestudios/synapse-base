@@ -2,7 +2,12 @@
 
 namespace Synapse\Mapper;
 
+use InvalidArgumentException;
 use Synapse\Stdlib\Arr;
+use Zend\Db\Sql\Where;
+use Zend\Db\Sql\Predicate\Like;
+use Zend\Db\Sql\Predicate\NotLike;
+use Zend\Db\Sql\Predicate\Operator;
 
 /**
  * Use this trait to add find functionality to AbstractMappers.
@@ -12,16 +17,16 @@ trait FinderTrait
     /**
      * Find a single entity by specific field values
      *
-     * @param  array  $fields Associative array where key is field and value is the value
+     * @param  array  $wheres An array of where conditions in the format:
+     *                        ['column' => 'value'] or
+     *                        ['column', 'operator', 'value']
      * @return AbstractEntity|bool
      */
-    public function findBy(array $fields)
+    public function findBy(array $wheres)
     {
         $query = $this->sql()->select();
 
-        foreach ($fields as $name => $value) {
-            $query->where([$name => $value]);
-        }
+        $this->addWheres($query, $wheres);
 
         $data = $this->execute($query)->current();
 
@@ -46,17 +51,17 @@ trait FinderTrait
     /**
      * Find all entities matching specific field values
      *
-     * @param  array $fields  Associative array where key is field and value is the value
+     * @param  array $wheres  An array of where conditions in the format:
+     *                        ['column' => 'value'] or
+     *                        ['column', 'operator', 'value']
      * @param  array $options Array of options for this request
      * @return array          Array of AbstractEntity objects
      */
-    public function findAllBy($fields, array $options = [])
+    public function findAllBy(array $wheres, array $options = [])
     {
         $query = $this->sql()->select();
 
-        foreach ($fields as $name => $value) {
-            $query->where([$name => $value]);
-        }
+        $this->addWheres($query, $wheres);
 
         $this->setOrder($query, $options);
 
@@ -105,5 +110,82 @@ trait FinderTrait
         }
 
         return $query;
+    }
+
+    /**
+     * Add where clauses to query
+     *
+     * @param Zend\Db\Sql\Select $query
+     * @param array              $wheres An array of where conditions in the format:
+     *                                   ['column' => 'value'] or
+     *                                   ['column', 'operator', 'value']
+     * @throws InvalidArgumentException  If a WHERE requirement is in an unsupported format.
+     */
+    protected function addWheres($query, $wheres)
+    {
+        foreach ($wheres as $key => $where)
+        {
+            if (is_array($where) && count($where) === 3) {
+                $operator = $where[1];
+
+                switch ($operator)
+                {
+                    case '=':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_EQ,
+                            $where[2]
+                        );
+                        break;
+                    case '!=':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_NE,
+                            $where[2]
+                        );
+                        break;
+                    case '>':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_GT,
+                            $where[2]
+                        );
+                        break;
+                    case '<':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_LT,
+                            $where[2]
+                        );
+                        break;
+                    case '>=':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_GTE,
+                            $where[2]
+                        );
+                        break;
+                    case '<=':
+                        $predicate = new Operator(
+                            $where[0],
+                            Operator::OP_LTE,
+                            $where[2]
+                        );
+                        break;
+                    case 'LIKE':
+                        $predicate = new Like($where[0], $where[2]);
+                        break;
+                    case 'NOT LIKE':
+                        $predicate = new NotLike($where[0], $where[2]);
+                        break;
+                }
+
+                $query->where($predicate);
+            } else if (is_string($key) && is_string($where)){
+                $query->where([$key => $where]);
+            } else {
+                throw new InvalidArgumentException('Invalid WHERE requirement');
+            }
+        }
     }
 }
