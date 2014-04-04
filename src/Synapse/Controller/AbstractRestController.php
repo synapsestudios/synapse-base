@@ -15,6 +15,11 @@ use Synapse\Rest\Exception\MethodNotImplementedException;
  */
 abstract class AbstractRestController extends AbstractController
 {
+    /**
+     * Request body content decoded from JSON
+     *
+     * @var mixed
+     */
     protected $content;
 
     /**
@@ -51,5 +56,22 @@ abstract class AbstractRestController extends AbstractController
         } else {
             throw new RuntimeException('Unhandled response type from controller');
         }
+    }
+
+    /**
+     * Transform an array of AbstractEntities into an array of arrays representing the entities
+     *
+     * @param  array  $entities Array of AbstractEntity objects
+     * @return array            Array of arrays
+     */
+    protected function nestedArrayFromEntities(array $entities)
+    {
+        $results = [];
+
+        foreach ($entities as $entity) {
+            $results[] = $entity->getArrayCopy();
+        }
+
+        return $results;
     }
 }
