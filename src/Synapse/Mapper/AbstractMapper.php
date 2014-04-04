@@ -7,6 +7,8 @@ use ArrayObject;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\AbstractEntity as AbstractEntity;
 use Synapse\Db\ResultSet\HydratingResultSet;
+use Synapse\Log\LoggerAwareInterface;
+use Synapse\Log\LoggerAwareTrait;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\PreparableSqlInterface;
@@ -16,8 +18,10 @@ use Zend\Stdlib\Hydrator\ArraySerializable;
 /**
  * An abstract class for mapping database records to entity objects
  */
-abstract class AbstractMapper
+abstract class AbstractMapper implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Whether the object has been initialized yet
      *
