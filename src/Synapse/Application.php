@@ -16,7 +16,7 @@ class Application extends SilexApp
     use SecurityTrait;
 
     /**
-     * Controller initializers, used to perform a callback on controllers that implement a given interface
+     * Controller initializers, used to perform a callback on services that implement a given interface
      *
      * @var array
      */
