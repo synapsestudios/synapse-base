@@ -141,4 +141,17 @@ abstract class AbstractMapper
     {
         return new Sql($this->dbAdapter, $this->tableName);
     }
+
+    /**
+     * Add any necessary joins to the query.
+     *
+     * @param  PreparableSqlInterface $query
+     * @param  array                  $wheres
+     * @return array                          Updated $wheres that may include
+     *                                        fully qualified names.
+     */
+    protected function addJoins($query, $wheres)
+    {
+        // Override if joins are required
+    }
 }
