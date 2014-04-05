@@ -153,5 +153,6 @@ abstract class AbstractMapper
     protected function addJoins($query, $wheres)
     {
         // Override if joins are required
+        return $wheres;
     }
 }

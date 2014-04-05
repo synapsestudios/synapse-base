@@ -26,7 +26,7 @@ trait FinderTrait
     {
         $query = $this->sql()->select();
 
-        $this->addJoins($query, $wheres);
+        $wheres = $this->addJoins($query, $wheres);
 
         $this->addWheres($query, $wheres);
 
@@ -63,7 +63,7 @@ trait FinderTrait
     {
         $query = $this->sql()->select();
 
-        $this->addJoins($query, $wheres);
+        $wheres = $this->addJoins($query, $wheres);
 
         $this->addWheres($query, $wheres);
 
