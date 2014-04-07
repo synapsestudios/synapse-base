@@ -26,6 +26,8 @@ trait FinderTrait
     {
         $query = $this->sql()->select();
 
+        $wheres = $this->addJoins($query, $wheres);
+
         $this->addWheres($query, $wheres);
 
         $data = $this->execute($query)->current();
@@ -60,6 +62,8 @@ trait FinderTrait
     public function findAllBy(array $wheres, array $options = [])
     {
         $query = $this->sql()->select();
+
+        $wheres = $this->addJoins($query, $wheres);
 
         $this->addWheres($query, $wheres);
 
