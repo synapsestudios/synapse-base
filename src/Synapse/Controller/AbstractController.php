@@ -4,16 +4,17 @@ namespace Synapse\Controller;
 
 use Synapse\Application\UrlGeneratorAwareInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
-
+use Synapse\Log\LoggerAwareInterface;
+use Synapse\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Abstract controller defining universal helper methods
  */
-abstract class AbstractController implements UrlGeneratorAwareInterface
+abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerAwareInterface
 {
-    use UrlGeneratorAwareTrait;
+    use UrlGeneratorAwareTrait, LoggerAwareTrait;
 
     /**
      * Create and return a 404 response object
