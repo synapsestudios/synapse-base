@@ -17,20 +17,15 @@ use OAuth2\Server as OAuth2Server;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;
 use Synapse\Controller\AbstractController;
-use Synapse\Log\LoggerAwareInterface;
-use Synapse\Log\LoggerAwareTrait;
 use Synapse\OAuth2\Mapper\AccessToken as AccessTokenMapper;
 use Synapse\OAuth2\Mapper\RefreshToken as RefreshTokenMapper;
 use Synapse\Stdlib\Arr;
 
 use OutOfBoundsException;
 
-class OAuthController extends AbstractController implements
-    SecurityAwareInterface,
-    LoggerAwareInterface
+class OAuthController extends AbstractController implements SecurityAwareInterface
 {
     use SecurityAwareTrait;
-    use LoggerAwareTrait;
 
     protected $server;
     protected $userService;
