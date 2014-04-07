@@ -184,10 +184,8 @@ trait FinderTrait
                 }
 
                 $query->where($predicate);
-            } elseif (is_string($key) && is_string($where)) {
-                $query->where([$key => $where]);
             } else {
-                throw new InvalidArgumentException('Invalid WHERE requirement');
+                $query->where([$key => $where]);
             }
         }
     }
