@@ -9,7 +9,6 @@ use Synapse\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-
 /**
  * Abstract controller defining universal helper methods
  */
