@@ -8,7 +8,7 @@ use Synapse\SocialLogin\Controller\SocialLoginController;
 use Synapse\SocialLogin\Exception\NoLinkedAccountException;
 use Synapse\SocialLogin\Exception\LinkedAccountExistsException;
 use Synapse\SocialLogin\SocialLoginService;
-use TestHelper\ControllerTestCase;
+use Synapse\TestHelper\ControllerTestCase;
 
 class SocialLoginControllerTest extends ControllerTestCase
 {

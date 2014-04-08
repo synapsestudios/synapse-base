@@ -3,9 +3,9 @@
 namespace Test\Synapse\User\Controller;
 
 use OutOfBoundsException;
-use TestHelper\ControllerTestCase;
 use stdClass;
 use Synapse\Stdlib\Arr;
+use Synapse\TestHelper\ControllerTestCase;
 use Synapse\User\Controller\UserController;
 use Synapse\User\Entity\User;
 use Synapse\User\UserService;

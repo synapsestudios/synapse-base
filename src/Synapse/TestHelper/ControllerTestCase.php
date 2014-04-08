@@ -1,6 +1,6 @@
 <?php
 
-namespace TestHelper;
+namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
