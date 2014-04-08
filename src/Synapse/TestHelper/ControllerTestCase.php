@@ -6,7 +6,7 @@ use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Stdlib\Arr;
 
-class ControllerTestCase extends  PHPUnit_Framework_TestCase
+class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
     public function createJsonRequest($method, $params)
     {
