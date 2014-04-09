@@ -133,4 +133,17 @@ abstract class AbstractEntity implements ArraySerializableInterface, LoggerAware
     {
         return $this->object;
     }
+
+    /**
+     * Return an array of validation rules for use with Symfony Validator
+     *
+     * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
+     * @return array Associative array of Symfony\Component\Validator\Constraints\*
+     *               objects sharing keys from $this->object
+     */
+    public function getValidationRules()
+    {
+        // Return empty set of rules by default
+        return [];
+    }
 }
