@@ -56,6 +56,10 @@ class Run extends AbstractDatabaseCommand
 
         $migrations = $this->migrationsToRun();
 
+        usort($migrations, function ($a, $b) {
+            return strcmp($a->getTimestamp(), $b->getTimestamp());
+        });
+
         $count = 0;
         foreach ($migrations as $migration) {
             $migration->execute($this->db);
