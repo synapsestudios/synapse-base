@@ -86,6 +86,10 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
             $authorized = false;
         }
 
+        if (! $user) {
+            return $this->createNotFoundResponse();
+        }
+
         $res = $this->server->handleAuthorizeRequest($oauthRequest, $response, $authorized, $user->getId());
         return $res;
     }
