@@ -4,13 +4,14 @@ namespace Synapse\Validator;
 
 use Symfony\Component\Validator\Validator;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Abstract class for validating arrays
  *
  * Simply extend this class and define getConstraints to create a concrete Validator
  */
-abstract class AbstractValidator
+abstract class AbstractArrayValidator
 {
     /**
      * Symfony validator component
@@ -37,9 +38,12 @@ abstract class AbstractValidator
      */
     public function validate(array $values)
     {
+        $constraints     = $this->getConstraints();
+        $arrayConstraint = new Assert\Collection($constraints);
+
         return $this->validator->validateValue(
             $values,
-            $this->getConstraints()
+            $arrayConstraint
         );
     }
 
