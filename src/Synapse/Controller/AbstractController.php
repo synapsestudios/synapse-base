@@ -66,10 +66,13 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
     {
         $results = [];
 
-        foreach ($violationList as $violation)
-        {
+        foreach ($violationList as $violation) {
             $field = $violation->getPropertyPath();
-            $field = str_replace(['[',']'],'',$field);
+            $field = str_replace(
+                ['[', ']'],
+                '',
+                $field
+            );
 
             $results[$field][] = $violation->getMessage();
         }
