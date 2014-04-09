@@ -54,6 +54,7 @@ class Services implements ServicesInterface
             ],
         ]);
 
+        $app->register(new \Silex\Provider\ValidatorServiceProvider);
         $app->register(new \Silex\Provider\UrlGeneratorServiceProvider);
 
         // Register the CORS middleware
