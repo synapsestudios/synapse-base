@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * Simply extend this class and define getConstraints to create a concrete Validator
  */
-abstract class AbstractValidator
+abstract class AbstractArrayValidator
 {
     /**
      * Symfony validator component
