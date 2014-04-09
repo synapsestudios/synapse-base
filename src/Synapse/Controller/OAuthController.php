@@ -81,12 +81,24 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $user = $this->userService->findByEmail($request->query->get('username'));
 
         if ($user && password_verify($request->query->get('password'), $user->getPassword())) {
-            $authorized = true;
+            $correctPassword = true;
         } else {
-            $authorized = false;
+            $correctPassword = false;
         }
 
+        if (! $user) {
+            return $this->createNotFoundResponse();
+        }
+
+        if (! $correctPassword) {
+            return $this->getSimpleResponse(422, 'Invalid credentials');
+        }
+
+        // Automatically authorize the user
+        $authorized = true;
+
         $res = $this->server->handleAuthorizeRequest($oauthRequest, $response, $authorized, $user->getId());
+
         return $res;
     }
 
