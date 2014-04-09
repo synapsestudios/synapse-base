@@ -8,6 +8,7 @@ use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Abstract controller defining universal helper methods
@@ -59,5 +60,20 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
             ->setData($data);
 
         return $response;
+    }
+
+    protected function constraintViolationArray(ConstraintViolationListInterface $violationList)
+    {
+        $results = [];
+
+        foreach ($violationList as $violation)
+        {
+            $field = $violation->getPropertyPath();
+            $field = str_replace(['[',']'],'',$field);
+
+            $results[$field][] = $violation->getMessage();
+        }
+
+        return $results;
     }
 }
