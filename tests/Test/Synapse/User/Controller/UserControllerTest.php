@@ -106,33 +106,6 @@ class UserControllerTest extends ControllerTestCase
         $this->captured = $captured;
     }
 
-    public function setUpMockSecurityContext()
-    {
-        $captured = $this->captured;
-
-        $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $mockSecurityToken = $this->getMock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
-
-        $loggedInUserEntity = $this->getLoggedInUserEntity();
-
-        $mockSecurityToken->expects($this->any())
-            ->method('getUser')
-            ->will($this->returnCallback(function () use ($loggedInUserEntity, $captured) {
-                $captured->userReturnedFromSecurityContext = $loggedInUserEntity;
-
-                return $loggedInUserEntity;
-            }));
-
-        $this->mockSecurityContext->expects($this->any())
-            ->method('getToken')
-            ->will($this->returnValue($mockSecurityToken));
-
-        $this->captured = $captured;
-    }
-
     public function getLoggedInUserEntity()
     {
         $user = new User();
