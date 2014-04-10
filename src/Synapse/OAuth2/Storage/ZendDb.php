@@ -10,7 +10,7 @@ use OAuth2\Storage\ClientCredentialsInterface;
 use OAuth2\Storage\UserCredentialsInterface;
 use OAuth2\Storage\RefreshTokenInterface;
 
-use Synapse\User\Mapper\User as UserMapper;
+use Synapse\User\UserMapper;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\PreparableSqlInterface;

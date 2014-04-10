@@ -38,12 +38,12 @@ class Services implements ServicesInterface
         $app->register(new \Synapse\OAuth2\SecurityServiceProvider);
         $app->register(new \Synapse\Resque\ServiceProvider);
         $app->register(new \Synapse\Controller\ServiceProvider);
-        $app->register(new \Synapse\Email\ServiceProvider);
-        $app->register(new \Synapse\User\ServiceProvider);
+        $app->register(new \Synapse\Email\EmailServiceProvider);
+        $app->register(new \Synapse\User\UserServiceProvider);
         $app->register(new \Synapse\Migration\ServiceProvider);
         $app->register(new \Synapse\Upgrade\ServiceProvider);
         $app->register(new \Synapse\Session\ServiceProvider);
-        $app->register(new \Synapse\SocialLogin\ServiceProvider);
+        $app->register(new \Synapse\SocialLogin\SocialLoginServiceProvider);
 
         $app->register(new \Synapse\View\ServiceProvider, [
             'mustache.paths' => array(

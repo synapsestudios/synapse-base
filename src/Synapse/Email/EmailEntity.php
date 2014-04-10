@@ -1,13 +1,13 @@
 <?php
 
-namespace Synapse\Email\Entity;
+namespace Synapse\Email;
 
 use Synapse\Entity\AbstractEntity;
 
 /**
  * Email entity
  */
-class Email extends AbstractEntity
+class EmailEntity extends AbstractEntity
 {
     /**
      * Possible values for the status field

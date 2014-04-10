@@ -1,10 +1,10 @@
 <?php
 
-namespace Synapse\User\Mapper;
+namespace Synapse\User\Token;
 
 use Synapse\Mapper;
 
-class UserToken extends Mapper\AbstractMapper
+class TokenMapper extends Mapper\AbstractMapper
 {
     use Mapper\InserterTrait;
     use Mapper\FinderTrait;

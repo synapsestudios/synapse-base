@@ -1,11 +1,9 @@
 <?php
 
-namespace Synapse\User\Controller;
+namespace Synapse\User;
 
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
-use Synapse\User\Entity\User;
-use Synapse\User\UserService;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;
 use OutOfBoundsException;
@@ -118,7 +116,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      * @param  User   $user
      * @return array
      */
-    protected function userArrayWithoutPassword(User $user)
+    protected function userArrayWithoutPassword(UserEntity $user)
     {
         $user = $user->getArrayCopy();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Email\Mapper;
+namespace Synapse\Email;
 
 use Synapse\Mapper\AbstractMapper;
 use Synapse\Mapper\InserterTrait;
@@ -11,7 +11,7 @@ use Synapse\Mapper\DeleterTrait;
 /**
  * Email mapper
  */
-class Email extends AbstractMapper
+class EmailMapper extends AbstractMapper
 {
     /**
      * Use all mapper traits, making this a general purpose mapper

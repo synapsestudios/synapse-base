@@ -2,13 +2,8 @@
 
 namespace Synapse\User;
 
-use Synapse\User\Controller\UserController;
-use Synapse\User\Controller\VerifyRegistrationController;
-use Synapse\User\Controller\ResetPasswordController;
-use Synapse\User\Entity\User as UserEntity;
-use Synapse\User\Entity\UserToken as UserTokenEntity;
-use Synapse\User\Mapper\User as UserMapper;
-use Synapse\User\Mapper\UserToken as UserTokenMapper;
+use Synapse\User\Token\TokenEntity;
+use Synapse\User\Token\TokenMapper;
 use Synapse\View\Email\VerifyRegistration as VerifyRegistrationView;
 use Synapse\View\Email\ResetPassword as ResetPasswordView;
 
@@ -19,7 +14,7 @@ use Symfony\Component\HttpFoundation\RequestMatcher;
 /**
  * Service provider for user related services
  */
-class ServiceProvider implements ServiceProviderInterface
+class UserServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register services related to Users
@@ -33,7 +28,7 @@ class ServiceProvider implements ServiceProviderInterface
         });
 
         $app['user-token.mapper'] = $app->share(function () use ($app) {
-            return new UserTokenMapper($app['db'], new UserTokenEntity);
+            return new TokenMapper($app['db'], new TokenEntity);
         });
 
         $app['user.service'] = $app->share(function () use ($app) {
@@ -45,7 +40,7 @@ class ServiceProvider implements ServiceProviderInterface
 
             $service = new UserService;
             $service->setUserMapper($app['user.mapper'])
-                ->setUserTokenMapper($app['user-token.mapper'])
+                ->setTokenMapper($app['user-token.mapper'])
                 ->setEmailService($app['email.service'])
                 ->setVerifyRegistrationView($verifyRegistrationView)
                 ->setResetPasswordView($resetPasswordView);

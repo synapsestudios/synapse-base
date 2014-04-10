@@ -1,16 +1,14 @@
 <?php
 
-namespace Synapse\User\Controller;
+namespace Synapse\User;
 
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
-use Synapse\User\UserService;
-use Synapse\User\Entity\UserToken;
-use Synapse\User\Entity\User;
+use Synapse\User\Token\TokenEntity;
 use Synapse\Stdlib\Arr;
-use OutOfBoundsException;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;
+use OutOfBoundsException;
 
 /**
  * Controller for resetting passwords
@@ -64,7 +62,7 @@ class ResetPasswordController extends AbstractRestController implements Security
         $conditions = [
             'user_id' => $user->getId(),
             'token'   => $token,
-            'type'    => UserToken::TYPE_RESET_PASSWORD,
+            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
         ];
 
         // Ensure token is valid
@@ -103,7 +101,7 @@ class ResetPasswordController extends AbstractRestController implements Security
      * @param  User   $user
      * @return array
      */
-    protected function userArrayWithoutPassword(User $user)
+    protected function userArrayWithoutPassword(UserEntity $user)
     {
         $user = $user->getArrayCopy();
 

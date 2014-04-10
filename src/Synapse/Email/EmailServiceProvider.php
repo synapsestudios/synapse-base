@@ -4,10 +4,6 @@ namespace Synapse\Email;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Synapse\Email\Entity\Email as EmailEntity;
-use Synapse\Email\Mapper\Email as EmailMapper;
-use Synapse\Email\EmailService;
-use Synapse\Email\MandrillSender;
 use Synapse\Command\Email\Send as SendEmailCommand;
 use Synapse\Stdlib\Arr;
 use Mandrill;
@@ -15,7 +11,7 @@ use Mandrill;
 /**
  * Service provider for email related services
  */
-class ServiceProvider implements ServiceProviderInterface
+class EmailServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

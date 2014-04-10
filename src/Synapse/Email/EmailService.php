@@ -2,8 +2,6 @@
 
 namespace Synapse\Email;
 
-use Synapse\Email\Mapper\Email as EmailMapper;
-use Synapse\Email\Entity\Email as EmailEntity;
 use Synapse\Resque\Resque;
 use Synapse\Stdlib\Arr;
 
