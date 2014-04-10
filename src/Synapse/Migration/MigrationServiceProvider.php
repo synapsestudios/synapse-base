@@ -8,7 +8,7 @@ use Silex\ServiceProviderInterface;
 /**
  * Service provider for migration console commands
  */
-class ServiceProvider implements ServiceProviderInterface
+class MigrationServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register console commands as services

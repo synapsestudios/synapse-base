@@ -8,7 +8,7 @@ use Silex\ServiceProviderInterface;
 /**
  * Service provider for upgrade console commands
  */
-class ServiceProvider implements ServiceProviderInterface
+class UpgradeServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register console commands as services
