@@ -3,7 +3,7 @@
 namespace Synapse\View\Email;
 
 use Synapse\View\AbstractView;
-use Synapse\User\Entity\UserToken;
+use Synapse\User\Token\TokenEntity;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
@@ -12,19 +12,19 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 class ResetPassword extends AbstractView
 {
     /**
-     * @var Synapse\User\Entity\UserToken
+     * @var TokenEntity
      */
     protected $userToken;
 
     /**
-     * @var Symfony\Component\Routing\Generator\UrlGenerator
+     * @var UrlGenerator
      */
     protected $urlGenerator;
 
     /**
-     * @param UserToken $userToken
+     * @param TokenEntity $userToken
      */
-    public function setUserToken(UserToken $userToken)
+    public function setUserToken(TokenEntity $userToken)
     {
         $this->userToken = $userToken;
     }
