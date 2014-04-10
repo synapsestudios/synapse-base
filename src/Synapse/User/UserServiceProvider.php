@@ -104,10 +104,15 @@ class UserServiceProvider implements ServiceProviderInterface
     {
         $app->extend('security.firewalls', function ($firewalls, $app) {
             $createUser = new RequestMatcher('^/users$', null, ['POST']);
+            $verifyRegistration = new RequestMatcher('^/users/[0-9]+/verify-registration$', null, ['POST']);
 
             $userFirewalls = [
                 'create-users' => [
                     'pattern'   => $createUser, // User registration endpoint is public
+                    'anonymous' => true,
+                ],
+                'verify-registration' => [
+                    'pattern'   => $verifyRegistration, // User registration endpoint is public
                     'anonymous' => true,
                 ],
             ];
