@@ -5,7 +5,7 @@ namespace Synapse\TestHelper;
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Stdlib\Arr;
-use Synapse\User\Entity\User as UserEntity;
+use Synapse\User\UserEntity;
 use stdClass;
 
 abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
