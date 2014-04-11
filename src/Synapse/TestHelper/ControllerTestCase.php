@@ -10,6 +10,8 @@ use stdClass;
 
 abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
+    const LOGGED_IN_USER_ID = 57;
+
     public function createJsonRequest($method, $params)
     {
         $this->request = new Request(
@@ -68,7 +70,7 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
         $user = new UserEntity;
 
         $user->exchangeArray([
-            'id'         => 1,
+            'id'         => self::LOGGED_IN_USER_ID,
             'email'      => 'test@example.com',
             'password'   => 'password',
             'last_login' => 1397078025,
