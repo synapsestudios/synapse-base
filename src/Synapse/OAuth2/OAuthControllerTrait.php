@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Controller;
+namespace Synapse\OAuth2;
 
 use Symfony\Component\HttpFoundation\Request;
 

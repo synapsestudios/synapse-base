@@ -1,11 +1,11 @@
 <?php
 
-namespace Synapse\OAuth2\Mapper;
+namespace Synapse\OAuth2;
 
 use Synapse\Mapper;
 use Synapse\OAuth2\Entity\AccessToken as AccessTokenEntity;
 
-class AccessToken extends Mapper\AbstractMapper
+class AccessTokenMapper extends Mapper\AbstractMapper
 {
     use Mapper\FinderTrait;
 
