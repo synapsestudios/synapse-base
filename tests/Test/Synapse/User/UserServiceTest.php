@@ -328,7 +328,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($captured->persistedUserEntity->getEmail(), 'new@email.com');
     }
 
-    public function testSendResetPasswordEmailEnqueusResetPasswordEmail()
+    public function testSendResetPasswordEmailEnqueuesResetPasswordEmail()
     {
         $this->expectingPersistedUserToken();
         $capturedEmailCreation = $this->expectingEmailCreatedFromArray();

@@ -37,12 +37,16 @@ class ResetPasswordController extends AbstractRestController
         $email = Arr::get($this->content, 'email');
         $user  = $this->userService->findByEmail($email);
 
-        // Ensure the user in question is logged in
-        if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->getSimpleResponse(403, 'Access denied');
+        if (! $user) {
+            return $this->createNotFoundResponse();
         }
 
-        $user = $this->userService->sendResetPasswordEmail($user);
+        $userToken = $this->userService->createUserToken([
+            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            'user_id' => $user->getId(),
+        ]);
+
+        $this->userService->sendResetPasswordEmail($user);
 
         return $this->userArrayWithoutPassword($user);
     }

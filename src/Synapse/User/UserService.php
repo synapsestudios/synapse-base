@@ -225,11 +225,6 @@ class UserService
      */
     public function sendResetPasswordEmail(UserEntity $user)
     {
-        $userToken = $this->createUserToken([
-            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-            'user_id' => $user->getId(),
-        ]);
-
         $this->resetPasswordView->setUserToken($userToken);
 
         $email = $this->emailService->createFromArray([
@@ -357,7 +352,7 @@ class UserService
      * @param  array  $data Data to populate the user token
      * @return Synapse\User\Entity\UserToken
      */
-    protected function createUserToken(array $data)
+    public function createUserToken(array $data)
     {
         $userToken = new TokenEntity;
 

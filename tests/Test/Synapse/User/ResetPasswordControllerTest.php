@@ -168,6 +168,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function testPostCallsFindByEmailOnUserServiceAndPassesEmail()
     {
+        $this->withUserServiceFindByEmailReturningUser();
         $this->expectingFindByEmailCalledOnUserServiceWithEmail();
 
         $this->performPostRequest();
