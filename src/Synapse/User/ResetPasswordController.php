@@ -6,21 +6,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
 use Synapse\User\TokenEntity;
 use Synapse\Stdlib\Arr;
-use Synapse\Application\SecurityAwareInterface;
-use Synapse\Application\SecurityAwareTrait;
 use OutOfBoundsException;
 
 /**
  * Controller for resetting passwords
  */
-class ResetPasswordController extends AbstractRestController implements SecurityAwareInterface
+class ResetPasswordController extends AbstractRestController
 {
-    use SecurityAwareTrait;
-
     /**
      * @var Synapse\User\UserService
      */
     protected $userService;
+
+    /**
+     * @param UserService $service
+     */
+    public function __construct(UserService $service)
+    {
+        $this->userService = $service;
+    }
 
     /**
      * Sending reset password email
@@ -30,7 +34,8 @@ class ResetPasswordController extends AbstractRestController implements Security
      */
     public function post(Request $request)
     {
-        $user = $this->user();
+        $email = Arr::get($this->content, 'email');
+        $user  = $this->userService->findByEmail($email);
 
         // Ensure the user in question is logged in
         if ($request->attributes->get('id') !== $user->getId()) {
@@ -50,8 +55,6 @@ class ResetPasswordController extends AbstractRestController implements Security
      */
     public function put(Request $request)
     {
-        $user = $this->user();
-
         // Ensure the user in question is logged in
         if ($request->attributes->get('id') !== $user->getId()) {
             return $this->getSimpleResponse(403, 'Access denied');
@@ -84,15 +87,6 @@ class ResetPasswordController extends AbstractRestController implements Security
         $this->userService->deleteToken($token);
 
         return $this->userArrayWithoutPassword($user);
-    }
-
-    /**
-     * @param UserService $service
-     */
-    public function setUserService(UserService $service)
-    {
-        $this->userService = $service;
-        return $this;
     }
 
     /**

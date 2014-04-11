@@ -7,14 +7,18 @@ use Synapse\TestHelper\ControllerTestCase;
 use Synapse\User\ResetPasswordController;
 use Synapse\Email\EmailEntity;
 use Synapse\User\UserEntity;
-use Synapse\View\Email\VerifyRegistrationView;
+use Synapse\User\TokenEntity;
 
 class ResetPasswordControllerTest extends ControllerTestCase
 {
+    const VERIFY_REGISTRATION_VIEW_STRING_VALUE = 'verify_registration';
+    const ACCOUNT_EMAIL_TO_RESET                = 'account@example.com';
+
     public function setUp()
     {
         $this->setUpMockUserService();
         $this->setUpMockEmailService();
+        $this->setUpMockVerifyRegistrationView();
 
         $this->controller = new ResetPasswordController($this->mockUserService, $this->mockEmailService);
     }
@@ -31,6 +35,19 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->mockEmailService = $this->getMockBuilder('Synapse\Email\EmailService')
             ->disableOriginalConstructor()
             ->getMock();
+    }
+
+    public function setUpMockVerifyRegistrationView()
+    {
+        $mockVerifyRegistrationView = $this->getMockBuilder('Synapse\View\Email\VerifyRegistration')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $mockVerifyRegistrationView->expects($this->any())
+            ->method('__toString')
+            ->will($this->returnValue(self::VERIFY_REGISTRATION_VIEW_STRING_VALUE));
+
+        $this->mockVerifyRegistrationView = $mockVerifyRegistrationView;
     }
 
     public function createUserEntity()
@@ -81,26 +98,19 @@ class ResetPasswordControllerTest extends ControllerTestCase
         return $entity;
     }
 
-    public function createVerifyRegistrationView()
+    public function expectingFindByEmailCalledOnUserServiceWithEmail()
     {
-        $view  = new VerifyRegistrationView();
-        $token = $this->createTokenEntity();
+        $userEntity = $this->createUserEntity();
 
-        $view->setToken($token);
-
-        return $view;
-    }
-
-    public function expectingFindByCalledOnUserServiceWithEmail()
-    {
         $this->mockUserService->expects($this->once())
-            ->method('findBy')
-            ->with($this->createEmailEntity());
+            ->method('findByEmail')
+            ->with(self::ACCOUNT_EMAIL_TO_RESET)
+            ->will($this->returnValue($userEntity));
     }
 
     public function expectingCreateFromArrayCalledOnEmailService()
     {
-        $message = (string) $this->createVerifyRegistrationView();
+        $message = (string) $this->mockVerifyRegistrationView;
 
         $argument = [
             'recipient_email' => $this->createUserEntity()->getEmail(),
@@ -113,21 +123,37 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->with($argument);
     }
 
+    public function expectingCreateUserTokenCalledOnUserService()
+    {
+        $this->mockUserService->expects($this->once())
+            ->method('createUserToken');
+    }
+
     public function performPostRequest()
     {
-        $request = new Request();
+        $content = ['email' => self::ACCOUNT_EMAIL_TO_RESET];
+
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            json_encode($content)
+        );
 
         $request->setMethod('POST');
 
         return $this->controller->execute($request);
     }
 
-    public function withUserServiceFindByReturningUser()
+    public function withUserServiceFindByEmailReturningUser()
     {
         $user = $this->createUserEntity();
 
         $this->mockUserService->expects($this->any())
-            ->method('findBy')
+            ->method('findByEmail')
             ->will($this->returnValue($user));
     }
 
@@ -140,16 +166,16 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->will($this->returnValue($token));
     }
 
-    public function testPostCallsFindByOnUserServiceAndPassesEmail()
+    public function testPostCallsFindByEmailOnUserServiceAndPassesEmail()
     {
-        $this->expectingFindByCalledOnUserServiceWithEmail();
+        $this->expectingFindByEmailCalledOnUserServiceWithEmail();
 
         $this->performPostRequest();
     }
 
     public function testPostCallsCreateUserTokenOnUserServiceIfAccountExists()
     {
-        $this->withUserServiceFindByReturningUser();
+        $this->withUserServiceFindByEmailReturningUser();
 
         $this->expectingCreateUserTokenCalledOnUserService();
 
@@ -158,6 +184,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function testPostCallsCreateFromArrayOnEmailServiceIfAccountExists()
     {
+        $this->withUserServiceFindByEmailReturningUser();
         $this->withUserServiceCreateUserTokenReturningToken();
 
         $this->expectingCreateFromArrayCalledOnEmailService();

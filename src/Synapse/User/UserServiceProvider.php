@@ -61,9 +61,7 @@ class UserServiceProvider implements ServiceProviderInterface
         });
 
         $app['reset-password.controller'] = $app->share(function () use ($app) {
-            $controller = new ResetPasswordController();
-            $controller->setUserService($app['user.service']);
-            return $controller;
+            return new ResetPasswordController($app['user.service']);
         });
 
         $app->match('/users', 'user.controller:rest')
@@ -78,7 +76,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('POST')
             ->bind('verify-registration');
 
-        $app->match('/users/{id}/reset-password', 'reset-password.controller:rest')
+        $app->match('/users/reset-password', 'reset-password.controller:rest')
             ->method('POST|PUT')
             ->bind('reset-password');
 
