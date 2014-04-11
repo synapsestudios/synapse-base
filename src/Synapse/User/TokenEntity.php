@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\User\Token;
+namespace Synapse\User;
 
 use Synapse\Entity\AbstractEntity;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Synapse\User\Controller;
+namespace Test\Synapse\User;
 
 use OutOfBoundsException;
 use stdClass;
