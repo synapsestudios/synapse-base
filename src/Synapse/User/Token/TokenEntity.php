@@ -1,13 +1,13 @@
 <?php
 
-namespace Synapse\User\Entity;
+namespace Synapse\User\Token;
 
 use Synapse\Entity\AbstractEntity;
 
 /**
  * User token entity used for registration verification among other purposes
  */
-class UserToken extends AbstractEntity
+class TokenEntity extends AbstractEntity
 {
     // Token types
     const TYPE_VERIFY_REGISTRATION = 'Verify registration';

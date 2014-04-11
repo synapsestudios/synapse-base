@@ -10,7 +10,7 @@ use Zend\Db\Sql\Sql;
 /**
  * Provider for Zend database services
  */
-class ServiceProvider implements ServiceProviderInterface
+class DbServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register the database adapter

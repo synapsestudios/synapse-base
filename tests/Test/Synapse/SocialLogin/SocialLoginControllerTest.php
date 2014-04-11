@@ -1,10 +1,10 @@
 <?php
 
-namespace Test\Synapse\SocialLogin\Controller;
+namespace Test\Synapse\SocialLogin;
 
 use OutOfBoundsException;
 use PHPUnit_Framework_TestCase;
-use Synapse\SocialLogin\Controller\SocialLoginController;
+use Synapse\SocialLogin\SocialLoginController;
 use Synapse\SocialLogin\Exception\NoLinkedAccountException;
 use Synapse\SocialLogin\Exception\LinkedAccountExistsException;
 use Synapse\SocialLogin\SocialLoginService;

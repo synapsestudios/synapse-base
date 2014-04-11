@@ -5,16 +5,16 @@ namespace Test\Synapse\Command\Email;
 use PHPUnit_Framework_TestCase;
 use Synapse\Command\Email\Send;
 use Synapse\Command\Install\Generate;
-use Synapse\Email\Entity\Email;
+use Synapse\Email\EmailEntity;
 
-class EmailTest extends PHPUnit_Framework_TestCase
+class SendTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         $this->sendCommand = new Send();
 
         // Create mocks
-        $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\Mapper\Email')
+        $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')
             ->disableOriginalConstructor()
             ->getMock();
         $this->mockEmailSender = $this->getMock('Synapse\Email\SenderInterface');
@@ -38,7 +38,7 @@ class EmailTest extends PHPUnit_Framework_TestCase
         $this->mockEmailMapper->expects($this->once())
             ->method('findById')
             ->with($this->equalTo('emailId'))
-            ->will($this->returnValue(new Email));
+            ->will($this->returnValue(new EmailEntity));
     }
 
     public function withEmailThatIsFound()
@@ -48,7 +48,7 @@ class EmailTest extends PHPUnit_Framework_TestCase
             ->with($this->equalTo('id'))
             ->will($this->returnValue('emailId'));
 
-        $email = new Email();
+        $email = new EmailEntity();
         $email->exchangeArray(['id' => 'emailId']);
 
         $this->mockEmailMapper->expects($this->once())
@@ -61,7 +61,7 @@ class EmailTest extends PHPUnit_Framework_TestCase
 
     public function withSuccessfullySentEmail($email)
     {
-        $email->setStatus(Email::STATUS_SENT);
+        $email->setStatus(EmailEntity::STATUS_SENT);
 
         $this->mockEmailSender->expects($this->once())
             ->method('send')
@@ -76,7 +76,7 @@ class EmailTest extends PHPUnit_Framework_TestCase
 
     public function withRejectedEmail($email)
     {
-        $email->setStatus(Email::STATUS_REJECTED);
+        $email->setStatus(EmailEntity::STATUS_REJECTED);
 
         $this->mockEmailSender->expects($this->once())
             ->method('send')

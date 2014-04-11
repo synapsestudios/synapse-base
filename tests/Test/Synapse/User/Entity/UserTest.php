@@ -1,11 +1,11 @@
 <?php
 
-namespace Test\Synapse\Entity;
+namespace Test\Synapse\User;
 
 use PHPUnit_Framework_TestCase;
-use Synapse\User\Entity\User;
+use Synapse\User\UserEntity;
 
-class UserTest extends PHPUnit_Framework_TestCase
+class UserEntityTest extends PHPUnit_Framework_TestCase
 {
     public function testSetGetRoles()
     {
@@ -14,7 +14,7 @@ class UserTest extends PHPUnit_Framework_TestCase
             'ROLE_USER'
         ];
 
-        $user = new User;
+        $user = new UserEntity();
         $user->setRoles($roles);
 
         $this->assertEquals($roles, $user->getRoles());
@@ -22,7 +22,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
     public function testUserGetters()
     {
-        $user = new User;
+        $user = new UserEntity();
         $user->exchangeArray([
             'email'    => 'test@example.com',
             'password' => 'password',
@@ -44,7 +44,7 @@ class UserTest extends PHPUnit_Framework_TestCase
      */
     public function testSettingInvalidPropertyThrowsException()
     {
-        $user = new User;
+        $user = new UserEntity();
         $user->setSomethingThatDoesNotExist('fail');
     }
 
@@ -53,7 +53,7 @@ class UserTest extends PHPUnit_Framework_TestCase
      */
     public function testMissingMethodThrowsBadMethodCallException()
     {
-        $user = new User;
+        $user = new UserEntity();
         $user->someMethodThatDoesNotExist();
     }
 
@@ -62,7 +62,7 @@ class UserTest extends PHPUnit_Framework_TestCase
      */
     public function testMissingMethodThrowsBadMethodCallException2()
     {
-        $user = new User;
+        $user = new UserEntity();
         $user->abc();
     }
 
@@ -78,7 +78,7 @@ class UserTest extends PHPUnit_Framework_TestCase
             'verified',
         ];
 
-        $user = new User;
+        $user = new UserEntity();
         $this->assertEquals($columns, $user->getColumns());
     }
 
@@ -94,14 +94,14 @@ class UserTest extends PHPUnit_Framework_TestCase
             'verified'   => null,
         ];
 
-        $user = new User;
+        $user = new UserEntity();
 
         $this->assertEquals($values, $user->getDbValues());
     }
 
     public function testIsNew()
     {
-        $user = new User;
+        $user = new UserEntity();
 
         $this->assertTrue($user->isNew());
         $user->setId(5);

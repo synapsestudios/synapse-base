@@ -7,7 +7,7 @@ use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
-class ServiceProvider implements ServiceProviderInterface
+class SessionServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

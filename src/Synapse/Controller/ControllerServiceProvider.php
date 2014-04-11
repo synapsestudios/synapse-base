@@ -5,7 +5,7 @@ namespace Synapse\Controller;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
-class ServiceProvider implements ServiceProviderInterface
+class ControllerServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register the controller resolver and initializers

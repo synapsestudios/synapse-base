@@ -6,8 +6,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Synapse\Email\Entity\Email;
-use Synapse\Email\Mapper\Email as EmailMapper;
+use Synapse\Email\EmailEntity;
+use Synapse\Email\EmailMapper;
 use Synapse\Email\SenderInterface;
 
 use LogicException;
@@ -16,7 +16,7 @@ use OutOfBoundsException;
 class Send extends Command
 {
     /**
-     * @var Synapse\Email\Mapper\Email
+     * @var Synapse\Email\EmailMapper
      */
     protected $emailMapper;
 
@@ -89,7 +89,7 @@ class Send extends Command
 
         list($email, $result) = $this->emailSender->send($email);
 
-        if ($email->getStatus() !== Email::STATUS_SENT) {
+        if ($email->getStatus() !== EmailEntity::STATUS_SENT) {
             $format = 'Email did NOT send successfully. Returned with status %s.';
             $message = sprintf($format, $result['status']);
 

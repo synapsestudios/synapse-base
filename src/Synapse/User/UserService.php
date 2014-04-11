@@ -2,11 +2,9 @@
 
 namespace Synapse\User;
 
-use Synapse\User\Mapper\User as UserMapper;
-use Synapse\User\Mapper\UserToken as UserTokenMapper;
 use Synapse\Email\EmailService;
-use Synapse\User\Entity\User as UserEntity;
-use Synapse\User\Entity\UserToken as UserTokenEntity;
+use Synapse\User\Token\TokenEntity;
+use Synapse\User\Token\TokenMapper;
 use Synapse\View\Email\VerifyRegistration as VerifyRegistrationView;
 use Synapse\View\Email\ResetPassword as ResetPasswordView;
 use Synapse\Stdlib\Arr;
@@ -158,7 +156,7 @@ class UserService
      * @return Zend\Db\ResultSet\ResultSet
      * @codeCoverageIgnore
      */
-    public function deleteToken(UserTokenEntity $token)
+    public function deleteToken(TokenEntity $token)
     {
         return $this->userTokenMapper->delete($token);
     }
@@ -190,12 +188,12 @@ class UserService
         $user = $this->userMapper->persist($userEntity);
 
         $userToken = $this->createUserToken([
-            'type'    => UserTokenEntity::TYPE_VERIFY_REGISTRATION,
+            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
             'user_id' => $user->getId(),
         ]);
 
         // Create the verify registration email
-        $this->verifyRegistrationView->setUserToken($userToken);
+        $this->verifyRegistrationView->setToken($userToken);
 
         $email = $this->emailService->createFromArray([
             'recipient_email' => $user->getEmail(),
@@ -228,7 +226,7 @@ class UserService
     public function sendResetPasswordEmail(UserEntity $user)
     {
         $userToken = $this->createUserToken([
-            'type'    => UserTokenEntity::TYPE_RESET_PASSWORD,
+            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
             'user_id' => $user->getId(),
         ]);
 
@@ -279,15 +277,15 @@ class UserService
      * @return Synapse\User\Entity\User
      * @throws OutOfBoundsException
      */
-    public function verifyRegistration(UserTokenEntity $token)
+    public function verifyRegistration(TokenEntity $token)
     {
         if ($token->isNew()) {
             throw new OutOfBoundsException('Token not found.', self::TOKEN_NOT_FOUND);
         }
 
-        if ($token->getType() !== UserTokenEntity::TYPE_VERIFY_REGISTRATION) {
+        if ($token->getType() !== TokenEntity::TYPE_VERIFY_REGISTRATION) {
             $format  = 'Token specified is of type %s. Expected %s.';
-            $message = sprintf($format, $token->getType(), UserTokenEntity::TYPE_VERIFY_REGISTRATION);
+            $message = sprintf($format, $token->getType(), TokenEntity::TYPE_VERIFY_REGISTRATION);
 
             throw new OutOfBoundsException($message, self::INCORRECT_TOKEN_TYPE);
         }
@@ -320,7 +318,7 @@ class UserService
     /**
      * @param Synapse\User\Mapper\UserToken $mapper
      */
-    public function setUserTokenMapper(UserTokenMapper $mapper)
+    public function setTokenMapper(TokenMapper $mapper)
     {
         $this->userTokenMapper = $mapper;
         return $this;
@@ -361,7 +359,7 @@ class UserService
      */
     protected function createUserToken(array $data)
     {
-        $userToken = new UserTokenEntity;
+        $userToken = new TokenEntity;
 
         $defaults = [
             'created' => time(),

@@ -6,8 +6,8 @@ use OutOfBoundsException;
 use stdClass;
 use Synapse\Stdlib\Arr;
 use Synapse\TestHelper\ControllerTestCase;
-use Synapse\User\Controller\UserController;
-use Synapse\User\Entity\User;
+use Synapse\User\UserController;
+use Synapse\User\UserEntity;
 use Synapse\User\UserService;
 
 class UserControllerTest extends ControllerTestCase
@@ -33,7 +33,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function setUpExistingUser()
     {
-        $existingUser = new User;
+        $existingUser = new UserEntity();
         $existingUser->exchangeArray([
             'id'       => self::EXISTING_USER_ID,
             'email'    => 'existing@user.com',
@@ -75,7 +75,7 @@ class UserControllerTest extends ControllerTestCase
                 $newUserValues = $userValues;
                 $newUserValues['id'] = 1;
 
-                $user = new User;
+                $user = new UserEntity();
                 $user->exchangeArray($newUserValues);
 
                 $captured->registeredUser = $user;
@@ -108,7 +108,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function getLoggedInUserEntity()
     {
-        $user = new User();
+        $user = new UserEntity();
 
         $user->exchangeArray([
             'id'    => self::LOGGED_IN_USER_ID,

@@ -11,7 +11,7 @@ use Synapse\Command\Resque as ResqueCommand;
 /**
  * Service provider for Resque services
  */
-class ServiceProvider implements ServiceProviderInterface
+class ResqueServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

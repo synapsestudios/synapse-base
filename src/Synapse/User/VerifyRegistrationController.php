@@ -1,11 +1,10 @@
 <?php
 
-namespace Synapse\User\Controller;
+namespace Synapse\User;
 
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
-use Synapse\User\UserService;
-use Synapse\User\Entity\UserToken;
+use Synapse\User\Token\TokenEntity;
 use Synapse\Stdlib\Arr;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;
@@ -41,7 +40,7 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
         $conditions = [
             'user_id' => $id,
             'token'   => $token,
-            'type'    => UserToken::TYPE_VERIFY_REGISTRATION,
+            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
         ];
 
         $token = $this->userService->findTokenBy($conditions);

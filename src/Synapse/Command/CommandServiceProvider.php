@@ -10,7 +10,7 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Synapse\Config\Config;
 use Synapse\Config\FileReader;
 
-class ServiceProvider implements ServiceProviderInterface
+class CommandServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

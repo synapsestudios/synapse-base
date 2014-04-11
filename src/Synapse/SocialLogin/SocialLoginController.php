@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\SocialLogin\Controller;
+namespace Synapse\SocialLogin;
 
 use LogicException;
 

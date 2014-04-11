@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\RequestMatcher;
  *
  * Register application logger and injected log handlers.
  */
-class ServiceProvider implements ServiceProviderInterface
+class SocialLoginServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register social login services
@@ -24,7 +24,7 @@ class ServiceProvider implements ServiceProviderInterface
         $app['social-login.controller'] = $app->share(function () use ($app) {
             $config = $app['config']->load('social-login');
 
-            $controller = new Controller\SocialLoginController;
+            $controller = new SocialLoginController;
             $controller
                 ->setSocialLoginService($app['social-login.service'])
                 ->setConfig($config)

@@ -9,7 +9,7 @@ namespace Synapse\View;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
-class ServiceProvider implements ServiceProviderInterface
+class ViewServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritDoc}

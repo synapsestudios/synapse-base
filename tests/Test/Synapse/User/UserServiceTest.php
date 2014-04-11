@@ -4,9 +4,9 @@ namespace Test\Synapse\User;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\User\UserService;
-use Synapse\User\Entity\User as UserEntity;
-use Synapse\User\Entity\UserToken as UserToken;
-use Synapse\Email\Entity\Email;
+use Synapse\User\UserEntity;
+use Synapse\User\Token\TokenEntity;
+use Synapse\Email\EmailEntity;
 
 class UserServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -21,7 +21,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $this->createMocks();
 
         $this->userService->setUserMapper($this->mockUserMapper);
-        $this->userService->setUserTokenMapper($this->mockUserTokenMapper);
+        $this->userService->setTokenMapper($this->mockTokenMapper);
         $this->userService->setVerifyRegistrationView($this->mockVerifyRegistrationView);
         $this->userService->setResetPasswordView($this->mockResetPasswordView);
         $this->userService->setEmailService($this->mockEmailService);
@@ -29,15 +29,15 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
     public function createMocks()
     {
-        $this->mockUserMapper = $this->getMockBuilder('Synapse\User\Mapper\User')
+        $this->mockUserMapper = $this->getMockBuilder('Synapse\User\UserMapper')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockUserTokenMapper = $this->getMockBuilder('Synapse\User\Mapper\UserToken')
+        $this->mockTokenMapper = $this->getMockBuilder('Synapse\User\Token\TokenMapper')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockUserTokenMapper->expects($this->any())
+        $this->mockTokenMapper->expects($this->any())
             ->method('persist')
             ->will($this->returnCallback(function ($entity) {
                 return $entity;
@@ -129,7 +129,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     {
         $captured = new \stdClass();
 
-        $this->mockUserTokenMapper->expects($this->once())
+        $this->mockTokenMapper->expects($this->once())
             ->method('persist')
             ->will($this->returnCallback(function ($userTokenEntity) use ($captured) {
                 $captured->persistedUserTokenEntity = $userTokenEntity;
@@ -148,7 +148,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
             ->will($this->returnCallback(function ($array) use ($captured) {
                 $captured->emailArray = $array;
 
-                $email = new Email;
+                $email = new EmailEntity();
                 $email->exchangeArray($array);
 
                 $captured->createdEmailEntity = $email;
@@ -161,7 +161,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
     public function expectingDeletedToken($token)
     {
-        $this->mockUserTokenMapper->expects($this->once())
+        $this->mockTokenMapper->expects($this->once())
             ->method('delete')
             ->with($this->identicalTo($token));
     }
@@ -369,7 +369,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testVerifyRegistrationThrowsExceptionIfTokenNotFound()
     {
-        $this->userService->verifyRegistration(new UserToken);
+        $this->userService->verifyRegistration(new TokenEntity);
     }
 
     /**
@@ -377,10 +377,10 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testVerifyRegistrationThrowsExceptionIfTokenIsOfWrongType()
     {
-        $userToken = new UserToken();
+        $userToken = new TokenEntity();
         $userToken->exchangeArray([
             'id'   => '1',
-            'type' => UserToken::TYPE_RESET_PASSWORD
+            'type' => TokenEntity::TYPE_RESET_PASSWORD
         ]);
 
         $this->userService->verifyRegistration($userToken);
@@ -391,10 +391,10 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
      */
     public function testVerifyRegistrationThrowsExceptionIfExpireTimeHasPassed()
     {
-        $userToken = new UserToken();
+        $userToken = new TokenEntity();
         $userToken->exchangeArray([
             'id'      => '1',
-            'type'    => UserToken::TYPE_VERIFY_REGISTRATION,
+            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
             'expires' => time() - 1000
         ]);
 
@@ -406,10 +406,10 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $captured = $this->expectingPersistedUserEntity();
         $user = $this->withExistingUser();
 
-        $userToken = new UserToken();
+        $userToken = new TokenEntity();
         $userToken->exchangeArray([
             'id'      => '1',
-            'type'    => UserToken::TYPE_VERIFY_REGISTRATION,
+            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
             'expires' => time() + 1000,
             'user_id' => $user->getId()
         ]);

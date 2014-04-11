@@ -2,8 +2,8 @@
 
 namespace Synapse\SocialLogin;
 
-use Synapse\User\Entity\User as UserEntity;
-use Synapse\User\UserService as UserService;
+use Synapse\User\UserEntity;
+use Synapse\User\UserService;
 use Synapse\OAuth2\ResponseType\AccessToken;
 use Synapse\OAuth2\Storage\ZendDb as OAuth2ZendDb;
 use Synapse\SocialLogin\Exception\NoLinkedAccountException;

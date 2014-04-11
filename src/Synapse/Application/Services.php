@@ -32,20 +32,20 @@ class Services implements ServicesInterface
      */
     protected function registerServiceProviders(Application $app)
     {
-        $app->register(new \Synapse\Command\ServiceProvider);
-        $app->register(new \Synapse\Db\ServiceProvider);
+        $app->register(new \Synapse\Command\CommandServiceProvider);
+        $app->register(new \Synapse\Db\DbServiceProvider);
         $app->register(new \Synapse\OAuth2\ServerServiceProvider);
         $app->register(new \Synapse\OAuth2\SecurityServiceProvider);
-        $app->register(new \Synapse\Resque\ServiceProvider);
-        $app->register(new \Synapse\Controller\ServiceProvider);
-        $app->register(new \Synapse\Email\ServiceProvider);
-        $app->register(new \Synapse\User\ServiceProvider);
-        $app->register(new \Synapse\Migration\ServiceProvider);
-        $app->register(new \Synapse\Upgrade\ServiceProvider);
-        $app->register(new \Synapse\Session\ServiceProvider);
-        $app->register(new \Synapse\SocialLogin\ServiceProvider);
+        $app->register(new \Synapse\Resque\ResqueServiceProvider);
+        $app->register(new \Synapse\Controller\ControllerServiceProvider);
+        $app->register(new \Synapse\Email\EmailServiceProvider);
+        $app->register(new \Synapse\User\UserServiceProvider);
+        $app->register(new \Synapse\Migration\MigrationServiceProvider);
+        $app->register(new \Synapse\Upgrade\UpgradeServiceProvider);
+        $app->register(new \Synapse\Session\SessionServiceProvider);
+        $app->register(new \Synapse\SocialLogin\SocialLoginServiceProvider);
 
-        $app->register(new \Synapse\View\ServiceProvider, [
+        $app->register(new \Synapse\View\ViewServiceProvider, [
             'mustache.paths' => array(
                 APPDIR.'/templates'
             ),
