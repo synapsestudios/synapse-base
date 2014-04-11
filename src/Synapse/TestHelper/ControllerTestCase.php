@@ -10,7 +10,7 @@ use stdClass;
 
 abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
-    const LOGGED_IN_USER_ID = 57;
+    const LOGGED_IN_USER_ID = 79276419;
 
     public function createJsonRequest($method, $params)
     {
