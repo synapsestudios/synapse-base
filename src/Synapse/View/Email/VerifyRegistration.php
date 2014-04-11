@@ -4,7 +4,7 @@ namespace Synapse\View\Email;
 
 use Synapse\View\AbstractView;
 use Synapse\User\Entity\User;
-use Synapse\User\Token\TokenEntity;
+use Synapse\User\TokenEntity;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
@@ -13,12 +13,12 @@ use Symfony\Component\Routing\Generator\UrlGenerator;
 class VerifyRegistration extends AbstractView
 {
     /**
-     * @var Synapse\User\Token\TokenEntity
+     * @var TokenEntity
      */
     protected $userToken;
 
     /**
-     * @var Symfony\Component\Routing\Generator\UrlGenerator
+     * @var UrlGenerator
      */
     protected $urlGenerator;
 

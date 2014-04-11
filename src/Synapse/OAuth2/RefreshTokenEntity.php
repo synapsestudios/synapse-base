@@ -1,10 +1,10 @@
 <?php
 
-namespace Synapse\OAuth2\Entity;
+namespace Synapse\OAuth2;
 
 use Synapse\Entity\AbstractEntity;
 
-class RefreshToken extends AbstractEntity
+class RefreshTokenEntity extends AbstractEntity
 {
     protected $object = [
         'refresh_token' => null,

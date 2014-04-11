@@ -4,7 +4,7 @@ namespace Synapse\User;
 
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
-use Synapse\User\Token\TokenEntity;
+use Synapse\User\TokenEntity;
 use Synapse\Stdlib\Arr;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;

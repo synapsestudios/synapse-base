@@ -3,8 +3,8 @@
 namespace Synapse\User;
 
 use Synapse\Email\EmailService;
-use Synapse\User\Token\TokenEntity;
-use Synapse\User\Token\TokenMapper;
+use Synapse\User\TokenEntity;
+use Synapse\User\TokenMapper;
 use Synapse\View\Email\VerifyRegistration as VerifyRegistrationView;
 use Synapse\View\Email\ResetPassword as ResetPasswordView;
 use Synapse\Stdlib\Arr;

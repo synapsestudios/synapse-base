@@ -3,7 +3,7 @@
 namespace Synapse\View\Email;
 
 use Synapse\View\AbstractView;
-use Synapse\User\Token\TokenEntity;
+use Synapse\User\TokenEntity;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**

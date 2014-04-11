@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Controller;
+namespace Synapse\OAuth2;
 
 use Mustache_Engine;
 
@@ -17,8 +17,6 @@ use OAuth2\Server as OAuth2Server;
 use Synapse\Application\SecurityAwareInterface;
 use Synapse\Application\SecurityAwareTrait;
 use Synapse\Controller\AbstractController;
-use Synapse\OAuth2\Mapper\AccessToken as AccessTokenMapper;
-use Synapse\OAuth2\Mapper\RefreshToken as RefreshTokenMapper;
 use Synapse\Stdlib\Arr;
 
 use OutOfBoundsException;

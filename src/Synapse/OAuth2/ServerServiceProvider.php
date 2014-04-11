@@ -6,13 +6,8 @@ use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 
-use Synapse\Controller\OAuthController;
 use Synapse\OAuth2\Storage\ZendDb as OAuth2ZendDb;
 use Synapse\OAuth2\ResponseType\AccessToken;
-use Synapse\OAuth2\Mapper\AccessToken as AccessTokenMapper;
-use Synapse\OAuth2\Mapper\RefreshToken as RefreshTokenMapper;
-use Synapse\OAuth2\Entity\AccessToken as AccessTokenEntity;
-use Synapse\OAuth2\Entity\RefreshToken as RefreshTokenEntity;
 
 use OAuth2\HttpFoundationBridge\Response as BridgeResponse;
 use OAuth2\Server as OAuth2Server;

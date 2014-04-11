@@ -1,10 +1,10 @@
 <?php
 
-namespace Synapse\OAuth2\Entity;
+namespace Synapse\OAuth2;
 
 use Synapse\Entity\AbstractEntity;
 
-class AccessToken extends AbstractEntity
+class AccessTokenEntity extends AbstractEntity
 {
     protected $object = [
         'access_token' => null,

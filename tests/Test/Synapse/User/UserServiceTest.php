@@ -5,7 +5,7 @@ namespace Test\Synapse\User;
 use PHPUnit_Framework_TestCase;
 use Synapse\User\UserService;
 use Synapse\User\UserEntity;
-use Synapse\User\Token\TokenEntity;
+use Synapse\User\TokenEntity;
 use Synapse\Email\EmailEntity;
 
 class UserServiceTest extends PHPUnit_Framework_TestCase
@@ -33,7 +33,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockTokenMapper = $this->getMockBuilder('Synapse\User\Token\TokenMapper')
+        $this->mockTokenMapper = $this->getMockBuilder('Synapse\User\TokenMapper')
             ->disableOriginalConstructor()
             ->getMock();
 
