@@ -88,15 +88,9 @@ class ResetPasswordController extends AbstractRestController
      */
     public function put(Request $request)
     {
-        // Ensure the user in question is logged in
-        if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->getSimpleResponse(403, 'Access denied');
-        }
-
         $token = Arr::get($this->content, 'token');
 
         $conditions = [
-            'user_id' => $user->getId(),
             'token'   => $token,
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
         ];
@@ -108,6 +102,16 @@ class ResetPasswordController extends AbstractRestController
             return $this->getSimpleResponse(404, 'Token not found');
         }
 
+        if ($token->getExpires() < time()) {
+            return $this->getSimpleResponse(404, 'Token not found');
+        }
+
+        $user = $this->userService->findById($token->getUserId());
+
+        if (! $user) {
+            return $this->getSimpleResponse(404, 'User not found');
+        }
+
         $password = Arr::get($this->content, 'password');
 
         // Ensure user input is valid
@@ -115,7 +119,7 @@ class ResetPasswordController extends AbstractRestController
             return $this->getSimpleResponse(422, 'Password cannot be empty');
         }
 
-        $user = $this->userService->resetPassword($user, $password);
+        $this->userService->resetPassword($user, $password);
 
         $this->userService->deleteToken($token);
 

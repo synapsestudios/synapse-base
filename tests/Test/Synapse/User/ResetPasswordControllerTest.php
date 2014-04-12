@@ -13,6 +13,9 @@ class ResetPasswordControllerTest extends ControllerTestCase
 {
     const VERIFY_REGISTRATION_VIEW_STRING_VALUE = 'verify_registration';
     const ACCOUNT_EMAIL_TO_RESET                = 'account@example.com';
+    const TOKEN_VALUE                           = 'abcdefg1234567';
+
+    public $newPassword = 'passw0rd';
 
     public function setUp()
     {
@@ -86,17 +89,21 @@ class ResetPasswordControllerTest extends ControllerTestCase
         return $entity;
     }
 
-    public function createTokenEntity()
+    public function createTokenEntity($expires = null)
     {
+        if ($expires === null) {
+            $expires = time()+1000;
+        }
+
         $entity = new TokenEntity();
 
         $entity = $entity->exchangeArray([
             'id'      => 10,
             'user_id' => 11,
-            'token'   => 'abcdefg1234567',
+            'token'   => self::TOKEN_VALUE,
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
             'created' => time()-1000,
-            'expires' => time()+1000,
+            'expires' => $expires,
         ]);
 
         return $entity;
@@ -139,6 +146,24 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->method('enqueueSendEmailJob');
     }
 
+    public function expectingDeleteTokenCalledOnUserService()
+    {
+        $token = $this->createTokenEntity();
+
+        $this->mockUserService->expects($this->once())
+            ->method('deleteToken')
+            ->with($token);
+    }
+
+    public function expectingResetPasswordCalledOnUserService()
+    {
+        $user = $this->createUserEntity();
+
+        $this->mockUserService->expects($this->once())
+            ->method('resetPassword')
+            ->with($user, $this->newPassword);
+    }
+
     public function performPostRequest()
     {
         $content = ['email' => self::ACCOUNT_EMAIL_TO_RESET];
@@ -158,12 +183,47 @@ class ResetPasswordControllerTest extends ControllerTestCase
         return $this->controller->execute($request);
     }
 
+    public function performPutRequest()
+    {
+        $content = [
+            'token'    => self::ACCOUNT_EMAIL_TO_RESET,
+            'password' => $this->newPassword
+        ];
+
+        if ($this->newPassword === null) {
+            unset($content['password']);
+        }
+
+        $request = new Request(
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            json_encode($content)
+        );
+
+        $request->setMethod('PUT');
+
+        return $this->controller->execute($request);
+    }
+
     public function withUserServiceFindByEmailReturningUser()
     {
         $user = $this->createUserEntity();
 
         $this->mockUserService->expects($this->any())
             ->method('findByEmail')
+            ->will($this->returnValue($user));
+    }
+
+    public function withUserServiceFindByIdReturningUser()
+    {
+        $user = $this->createUserEntity();
+
+        $this->mockUserService->expects($this->any())
+            ->method('findById')
             ->will($this->returnValue($user));
     }
 
@@ -190,6 +250,37 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->mockEmailService->expects($this->any())
             ->method('createFromArray')
             ->will($this->returnValue($email));
+    }
+
+    public function withUserServiceFindTokenByReturningToken()
+    {
+        $token = $this->createTokenEntity();
+
+        $this->mockUserService->expects($this->any())
+            ->method('findTokenBy')
+            ->will($this->returnValue($token));
+    }
+
+    public function withUserServiceFindTokenByReturningFalse()
+    {
+        $this->mockUserService->expects($this->any())
+            ->method('findTokenBy')
+            ->will($this->returnValue(false));
+    }
+
+    public function withUserServiceFindTokenByReturningExpiredToken()
+    {
+        $expiration = time()-1000;
+        $token      = $this->createTokenEntity($expiration);
+
+        $this->mockUserService->expects($this->any())
+            ->method('findTokenBy')
+            ->will($this->returnValue($token));
+    }
+
+    public function withNewPasswordOmittedInRequest()
+    {
+        $this->newPassword = null;
     }
 
     public function testPostFindsUserByEmail()
@@ -268,26 +359,72 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function testPutReturns404IfTokenNotFound()
     {
+        $this->withUserServiceFindTokenByReturningFalse();
+
+        $response = $this->performPutRequest();
+
+        $this->assertEquals(
+            404,
+            $response->getStatusCode()
+        );
     }
 
     public function testPutReturns404IfTokenExpired()
     {
+        $this->withUserServiceFindTokenByReturningExpiredToken();
+
+        $response = $this->performPutRequest();
+
+        $this->assertEquals(
+            404,
+            $response->getStatusCode()
+        );
     }
 
     public function testPutReturns422IfRequestDoesNotContainNewPassword()
     {
+        $this->withNewPasswordOmittedInRequest();
+        $this->withUserServiceFindTokenByReturningToken();
+        $this->withUserServiceFindByIdReturningUser();
+
+        $response = $this->performPutRequest();
+
+        $this->assertEquals(
+            422,
+            $response->getStatusCode()
+        );
     }
 
-    public function testPutReturns200AndUserEntityWithoutPasswordInResponseBodyOnSuccess()
+    public function testPutReturns200AndUserEntityWithPasswordRemoved()
     {
+        $this->withUserServiceFindTokenByReturningToken();
+        $this->withUserServiceFindByIdReturningUser();
+
+        $response = $this->performPutRequest();
+
+        $this->assertEquals(
+            200,
+            $response->getStatusCode()
+        );
     }
 
-    public function testPutCallsResetPasswordOnUserService()
+    public function testPutResetsPassword()
     {
+        $this->withUserServiceFindTokenByReturningToken();
+        $this->withUserServiceFindByIdReturningUser();
+
+        $this->expectingResetPasswordCalledOnUserService();
+
+        $this->performPutRequest();
     }
 
-    public function testPutCallsDeleteTokenOnUserService()
+    public function testPutDeletesToken()
     {
-    }
+        $this->withUserServiceFindTokenByReturningToken();
+        $this->withUserServiceFindByIdReturningUser();
 
+        $this->expectingDeleteTokenCalledOnUserService();
+
+        $this->performPutRequest();
+    }
 }
