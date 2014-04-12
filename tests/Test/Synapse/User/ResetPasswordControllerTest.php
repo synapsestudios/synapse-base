@@ -8,6 +8,7 @@ use Synapse\User\ResetPasswordController;
 use Synapse\Email\EmailEntity;
 use Synapse\User\UserEntity;
 use Synapse\User\TokenEntity;
+use Synapse\Stdlib\Arr;
 
 class ResetPasswordControllerTest extends ControllerTestCase
 {
@@ -405,6 +406,13 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->assertEquals(
             200,
             $response->getStatusCode()
+        );
+
+        $responseBody = json_decode($response->getContent(), true);
+
+        $this->assertEquals(
+            null,
+            Arr::get($responseBody, 'content')
         );
     }
 
