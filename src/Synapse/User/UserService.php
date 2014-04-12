@@ -3,10 +3,7 @@
 namespace Synapse\User;
 
 use Synapse\Email\EmailService;
-use Synapse\User\TokenEntity;
-use Synapse\User\TokenMapper;
 use Synapse\View\Email\VerifyRegistration as VerifyRegistrationView;
-use Synapse\View\Email\ResetPassword as ResetPasswordView;
 use Synapse\Stdlib\Arr;
 use OutOfBoundsException;
 
@@ -26,35 +23,30 @@ class UserService
     const TOKEN_NOT_FOUND           = 6;
 
     /**
-     * @var Synapse\User\Mapper\User
+     * @var UserMapper
      */
     protected $userMapper;
 
     /**
-     * @var Synapse\User\Mapper\UserToken
+     * @var TokenMapper
      */
-    protected $userTokenMapper;
+    protected $tokenMapper;
 
     /**
-     * @var Synapse\Email\EmailService
+     * @var EmailService
      */
     protected $emailService;
 
     /**
-     * @var Synapse\View\Email\VerifyRegistration
+     * @var VerifyRegistrationView
      */
     protected $verifyRegistrationView;
-
-    /**
-     * @var Synapse\View\Email\ResetPassword
-     */
-    protected $resetPasswordView;
 
     /**
      * Find a user by id
      *
      * @param  int|string $id
-     * @return Synapse\User\Entity\User
+     * @return UserEntity
      * @codeCoverageIgnore
      */
     public function findById($id)
@@ -65,8 +57,8 @@ class UserService
     /**
      * Find a user by email
      *
-     * @param  string $email
-     * @return Synapse\User\Entity\User
+     * @param  string     $email
+     * @return UserEntity
      * @codeCoverageIgnore
      */
     public function findByEmail($email)
@@ -146,26 +138,26 @@ class UserService
      */
     public function findTokenBy(array $where)
     {
-        return $this->userTokenMapper->findBy($where);
+        return $this->tokenMapper->findBy($where);
     }
 
     /**
      * Delete a user token
      *
-     * @param  UserToken $token
+     * @param  TokenEntity                 $token
      * @return Zend\Db\ResultSet\ResultSet
      * @codeCoverageIgnore
      */
     public function deleteToken(TokenEntity $token)
     {
-        return $this->userTokenMapper->delete($token);
+        return $this->tokenMapper->delete($token);
     }
 
     /**
      * Register a user
      *
      * @param  array $userData Data with which to populate the user
-     * @return Synapse\User\Entity\User
+     * @return UserEntity
      */
     public function register(array $userData)
     {
@@ -206,6 +198,12 @@ class UserService
         return $user;
     }
 
+    /**
+     * Register a user without a password (used for social login)
+     *
+     * @param  array      $userData
+     * @return UserEntity
+     */
     public function registerWithoutPassword(array $userData)
     {
         $userEntity = new UserEntity;
@@ -215,27 +213,6 @@ class UserService
             ->setEnabled(true);
 
         return $this->userMapper->persist($userEntity);
-    }
-
-    /**
-     * Reset a user's password
-     *
-     * @param  Synapse\User\EntityUserEntity $user
-     * @return Synapse\User\EntityUserEntity
-     */
-    public function sendResetPasswordEmail(UserEntity $user)
-    {
-        $this->resetPasswordView->setUserToken($userToken);
-
-        $email = $this->emailService->createFromArray([
-            'recipient_email' => $user->getEmail(),
-            'subject'         => 'Reset Your Password',
-            'message'         => (string) $this->resetPasswordView,
-        ]);
-
-        $this->emailService->enqueueSendEmailJob($email);
-
-        return $user;
     }
 
     /**
@@ -268,8 +245,8 @@ class UserService
     /**
      * Verify the user given a verify registration token
      *
-     * @param  Synapse\User\Entity\UserToken $token
-     * @return Synapse\User\Entity\User
+     * @param  TokenEntity $token
+     * @return UserEntity
      * @throws OutOfBoundsException
      */
     public function verifyRegistration(TokenEntity $token)
@@ -296,13 +273,13 @@ class UserService
 
         $this->userMapper->persist($user);
 
-        $this->userTokenMapper->delete($token);
+        $this->tokenMapper->delete($token);
 
         return $user;
     }
 
     /**
-     * @param Synapse\User\Mapper\User $mapper
+     * @param UserMapper $mapper
      */
     public function setUserMapper(UserMapper $mapper)
     {
@@ -311,16 +288,16 @@ class UserService
     }
 
     /**
-     * @param Synapse\User\Mapper\UserToken $mapper
+     * @param TokenMapper $mapper
      */
     public function setTokenMapper(TokenMapper $mapper)
     {
-        $this->userTokenMapper = $mapper;
+        $this->tokenMapper = $mapper;
         return $this;
     }
 
     /**
-     * @param Synapse\Email\EmailService $service
+     * @param EmailService $service
      */
     public function setEmailService(EmailService $service)
     {
@@ -329,7 +306,7 @@ class UserService
     }
 
     /**
-     * @param Synapse\View\Email\VerifyRegistration $view
+     * @param VerifyRegistrationView $view
      */
     public function setVerifyRegistrationView(VerifyRegistrationView $view)
     {
@@ -338,19 +315,10 @@ class UserService
     }
 
     /**
-     * @param Synapse\View\Email\ResetPassword $view
-     */
-    public function setResetPasswordView(ResetPasswordView $view)
-    {
-        $this->resetPasswordView = $view;
-        return $this;
-    }
-
-    /**
      * Create a user token and persist it in the database
      *
-     * @param  array  $data Data to populate the user token
-     * @return Synapse\User\Entity\UserToken
+     * @param  array     $data Data to populate the user token
+     * @return UserToken
      */
     public function createUserToken(array $data)
     {
@@ -364,6 +332,6 @@ class UserService
 
         $userToken = $userToken->exchangeArray(array_merge($defaults, $data));
 
-        return $this->userTokenMapper->persist($userToken);
+        return $this->tokenMapper->persist($userToken);
     }
 }

@@ -23,45 +23,47 @@ class UserServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['user.mapper'] = $app->share(function () use ($app) {
+        $app['user.mapper'] = $app->share(function ($app) {
             return new UserMapper($app['db'], new UserEntity);
         });
 
-        $app['user-token.mapper'] = $app->share(function () use ($app) {
+        $app['user-token.mapper'] = $app->share(function ($app) {
             return new TokenMapper($app['db'], new TokenEntity);
         });
 
-        $app['user.service'] = $app->share(function () use ($app) {
+        $app['user.service'] = $app->share(function ($app) {
             $verifyRegistrationView = new VerifyRegistrationView($app['mustache']);
             $verifyRegistrationView->setUrlGenerator($app['url_generator']);
 
-            $resetPasswordView = new ResetPasswordView($app['mustache']);
             $resetPasswordView->setUrlGenerator($app['url_generator']);
 
             $service = new UserService;
             $service->setUserMapper($app['user.mapper'])
                 ->setTokenMapper($app['user-token.mapper'])
                 ->setEmailService($app['email.service'])
-                ->setVerifyRegistrationView($verifyRegistrationView)
-                ->setResetPasswordView($resetPasswordView);
+                ->setVerifyRegistrationView($verifyRegistrationView);
 
             return $service;
         });
 
-        $app['user.controller'] = $app->share(function () use ($app) {
+        $app['user.controller'] = $app->share(function ($app) {
             $controller = new UserController();
             $controller->setUserService($app['user.service']);
             return $controller;
         });
 
-        $app['verify-registration.controller'] = $app->share(function () use ($app) {
+        $app['verify-registration.controller'] = $app->share(function ($app) {
             $controller = new VerifyRegistrationController();
             $controller->setUserService($app['user.service']);
             return $controller;
         });
 
-        $app['reset-password.controller'] = $app->share(function () use ($app) {
-            return new ResetPasswordController($app['user.service']);
+        $app['reset-password.controller'] = $app->share(function ($app) {
+            return new ResetPasswordController(
+                $app['user.service'],
+                $app['email.service'],
+                new ResetPasswordView($app['mustache'])
+            );
         });
 
         $app->match('/users', 'user.controller:rest')
