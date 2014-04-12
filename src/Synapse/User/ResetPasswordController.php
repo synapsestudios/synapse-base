@@ -77,7 +77,7 @@ class ResetPasswordController extends AbstractRestController
 
         $this->emailService->enqueueSendEmailJob($email);
 
-        return $this->userArrayWithoutPassword($user);
+        return $this->getSimpleResponse(204, '');
     }
 
     /**

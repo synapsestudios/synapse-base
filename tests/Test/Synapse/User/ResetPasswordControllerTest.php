@@ -133,6 +133,12 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->method('createUserToken');
     }
 
+    public function expectingEnqueueSendEmailJobCalledOnEmailService()
+    {
+        $this->mockEmailService->expects($this->once())
+            ->method('enqueueSendEmailJob');
+    }
+
     public function performPostRequest()
     {
         $content = ['email' => self::ACCOUNT_EMAIL_TO_RESET];
@@ -161,6 +167,13 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->will($this->returnValue($user));
     }
 
+    public function withUserServiceFindByEmailReturningFalse()
+    {
+        $this->mockUserService->expects($this->any())
+            ->method('findByEmail')
+            ->will($this->returnValue(false));
+    }
+
     public function withUserServiceCreateUserTokenReturningToken()
     {
         $token = $this->createTokenEntity();
@@ -179,7 +192,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->will($this->returnValue($email));
     }
 
-    public function testPostCallsFindByEmailOnUserServiceAndPassesEmail()
+    public function testPostFindsUserByEmail()
     {
         $this->withUserServiceFindByEmailReturningUser();
         $this->withUserServiceCreateUserTokenReturningToken();
@@ -189,7 +202,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->performPostRequest();
     }
 
-    public function testPostCallsCreateUserTokenOnUserServiceIfAccountExists()
+    public function testPostCreatesUserToken()
     {
         $this->withUserServiceCreateUserTokenReturningToken();
         $this->withEmailServiceCreateFromArrayReturningEntity();
@@ -200,7 +213,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->performPostRequest();
     }
 
-    public function testPostCallsCreateFromArrayOnEmailServiceIfAccountExists()
+    public function testPostCreatesEmail()
     {
         $this->withEmailServiceCreateFromArrayReturningEntity();
         $this->withUserServiceFindByEmailReturningUser();
@@ -211,16 +224,46 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->performPostRequest();
     }
 
-    public function testPostCallsEnqueueSendEmailJobOnEmailServiceIfAccountExists()
+    public function testPostEnqueuesEmailJob()
     {
+        $this->withEmailServiceCreateFromArrayReturningEntity();
+        $this->withUserServiceFindByEmailReturningUser();
+        $this->withUserServiceCreateUserTokenReturningToken();
+
+        $this->expectingEnqueueSendEmailJobCalledOnEmailService();
+
+        $this->performPostRequest();
     }
 
-    public function testPostReturns204WithoutAnyContentInTheBodyIfAccountExists()
+    public function testPostReturns204WithoutContent()
     {
+        $this->withEmailServiceCreateFromArrayReturningEntity();
+        $this->withUserServiceFindByEmailReturningUser();
+        $this->withUserServiceCreateUserTokenReturningToken();
+
+        $response = $this->performPostRequest();
+
+        $this->assertEquals(
+            204,
+            $response->getStatusCode()
+        );
+
+        $this->assertEquals(
+            '',
+            $response->getContent()
+        );
     }
 
     public function testPostReturns404IfAccountDoesNotExist()
     {
+        $this->withUserServiceFindByEmailReturningFalse();
+
+        $response = $this->performPostRequest();
+
+        $this->assertEquals(
+            404,
+            $response->getStatusCode()
+        );
     }
 
     public function testPutReturns404IfTokenNotFound()
