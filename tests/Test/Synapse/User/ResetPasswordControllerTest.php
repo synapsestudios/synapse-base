@@ -9,6 +9,7 @@ use Synapse\Email\EmailEntity;
 use Synapse\User\UserEntity;
 use Synapse\User\TokenEntity;
 use Synapse\Stdlib\Arr;
+use stdClass;
 
 class ResetPasswordControllerTest extends ControllerTestCase
 {
@@ -20,6 +21,8 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function setUp()
     {
+        $this->captured = new stdClass();
+
         $this->setUpMockUserService();
         $this->setUpMockEmailService();
         $this->setUpMockResetPasswordView();
@@ -137,8 +140,13 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function expectingCreateUserTokenCalledOnUserService()
     {
+        $captured = $this->captured;
+
         $this->mockUserService->expects($this->once())
-            ->method('createUserToken');
+            ->method('createUserToken')
+            ->will($this->returnCallback(function (array $values) use ($captured) {
+                $captured->createUserTokenValues = $values;
+            }));
     }
 
     public function expectingEnqueueSendEmailJobCalledOnEmailService()
@@ -294,7 +302,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->performPostRequest();
     }
 
-    public function testPostCreatesUserToken()
+    public function testPostCreatesUserTokenExpiringWithin1Hour()
     {
         $this->withUserServiceCreateUserTokenReturningToken();
         $this->withEmailServiceCreateFromArrayReturningEntity();
@@ -303,6 +311,13 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->expectingCreateUserTokenCalledOnUserService();
 
         $this->performPostRequest();
+
+        $oneHourInFuture = strtotime('+1 hour', time());
+
+        $this->assertLessThanOrEqual(
+            $oneHourInFuture,
+            $this->captured->createUserTokenValues['expires']
+        );
     }
 
     public function testPostCreatesEmail()
