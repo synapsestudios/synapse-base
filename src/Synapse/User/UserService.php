@@ -324,9 +324,11 @@ class UserService
     {
         $userToken = new TokenEntity;
 
+        $expires = Arr::get($data, 'expires') ?: strtotime('+1 day', time());
+
         $defaults = [
             'created' => time(),
-            'expires' => strtotime('+1 day', time()),
+            'expires' => $expires,
             'token'   => $userToken->generateToken(),
         ];
 

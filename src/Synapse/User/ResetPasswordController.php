@@ -64,6 +64,7 @@ class ResetPasswordController extends AbstractRestController
         // Create token and send email
         $userToken = $this->userService->createUserToken([
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            'expires' => strtotime('+1 hour', time()),
             'user_id' => $user->getId(),
         ]);
 
