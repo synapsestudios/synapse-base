@@ -16,6 +16,8 @@ class ResetPasswordControllerTest extends ControllerTestCase
     const VERIFY_REGISTRATION_VIEW_STRING_VALUE = 'verify_registration';
     const ACCOUNT_EMAIL_TO_RESET                = 'account@example.com';
     const TOKEN_VALUE                           = 'abcdefg1234567';
+    const NEW_TOKEN_ID                          = 123;
+    const FOUND_TOKEN_ID                        = 456;
 
     public $newPassword = 'passw0rd';
 
@@ -36,9 +38,21 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function setUpMockUserService()
     {
+        $captured = $this->captured;
+
+        $token = $this->createTokenEntity();
+
         $this->mockUserService = $this->getMockBuilder('Synapse\User\UserService')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->mockUserService->expects($this->any())
+            ->method('createUserToken')
+            ->will($this->returnCallback(function (array $values) use ($captured, $token) {
+                $captured->createUserTokenValues = $values;
+
+                return $token;
+            }));
     }
 
     public function setUpMockEmailService()
@@ -50,9 +64,17 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function setUpMockResetPasswordView()
     {
+        $captured = $this->captured;
+
         $mockResetPasswordView = $this->getMockBuilder('Synapse\View\Email\ResetPassword')
             ->disableOriginalConstructor()
             ->getMock();
+
+        $mockResetPasswordView->expects($this->any())
+            ->method('setUserToken')
+            ->will($this->returnCallback(function ($token) use ($captured) {
+                $captured->tokenInEmail = $token;
+            }));
 
         $mockResetPasswordView->expects($this->any())
             ->method('__toString')
@@ -93,7 +115,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
         return $entity;
     }
 
-    public function createTokenEntity($expires = null)
+    public function createTokenEntity($id = self::NEW_TOKEN_ID, $expires = null)
     {
         if ($expires === null) {
             $expires = time()+1000;
@@ -102,7 +124,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $entity = new TokenEntity();
 
         $entity = $entity->exchangeArray([
-            'id'      => 10,
+            'id'      => $id,
             'user_id' => 11,
             'token'   => self::TOKEN_VALUE,
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
@@ -140,13 +162,8 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function expectingCreateUserTokenCalledOnUserService()
     {
-        $captured = $this->captured;
-
         $this->mockUserService->expects($this->once())
-            ->method('createUserToken')
-            ->will($this->returnCallback(function (array $values) use ($captured) {
-                $captured->createUserTokenValues = $values;
-            }));
+            ->method('createUserToken');
     }
 
     public function expectingEnqueueSendEmailJobCalledOnEmailService()
@@ -157,7 +174,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function expectingDeleteTokenCalledOnUserService()
     {
-        $token = $this->createTokenEntity();
+        $token = $this->createTokenEntity(self::FOUND_TOKEN_ID);
 
         $this->mockUserService->expects($this->once())
             ->method('deleteToken')
@@ -263,7 +280,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function withUserServiceFindTokenByReturningToken()
     {
-        $token = $this->createTokenEntity();
+        $token = $this->createTokenEntity(self::FOUND_TOKEN_ID);
 
         $this->mockUserService->expects($this->any())
             ->method('findTokenBy')
@@ -280,7 +297,7 @@ class ResetPasswordControllerTest extends ControllerTestCase
     public function withUserServiceFindTokenByReturningExpiredToken()
     {
         $expiration = time()-1000;
-        $token      = $this->createTokenEntity($expiration);
+        $token      = $this->createTokenEntity(self::FOUND_TOKEN_ID, $expiration);
 
         $this->mockUserService->expects($this->any())
             ->method('findTokenBy')
@@ -302,8 +319,9 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $this->performPostRequest();
     }
 
-    public function testPostCreatesUserTokenExpiringWithin1Hour()
+    public function testPostCreatesUserTokenIfNoTokenExists()
     {
+        $this->withUserServiceFindTokenByReturningFalse();
         $this->withUserServiceCreateUserTokenReturningToken();
         $this->withEmailServiceCreateFromArrayReturningEntity();
         $this->withUserServiceFindByEmailReturningUser();
@@ -312,11 +330,25 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
         $this->performPostRequest();
 
-        $oneHourInFuture = strtotime('+1 hour', time());
+        $oneHourInFuture = strtotime('+1 day', time());
 
         $this->assertLessThanOrEqual(
             $oneHourInFuture,
             $this->captured->createUserTokenValues['expires']
+        );
+    }
+
+    public function testPostUsesCurrentTokenIfOneExists()
+    {
+        $this->withUserServiceFindTokenByReturningToken();
+        $this->withEmailServiceCreateFromArrayReturningEntity();
+        $this->withUserServiceFindByEmailReturningUser();
+
+        $this->performPostRequest();
+
+        $this->assertEquals(
+            self::FOUND_TOKEN_ID,
+            $this->captured->tokenInEmail->getId()
         );
     }
 

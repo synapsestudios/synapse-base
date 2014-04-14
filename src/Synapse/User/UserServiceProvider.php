@@ -35,8 +35,6 @@ class UserServiceProvider implements ServiceProviderInterface
             $verifyRegistrationView = new VerifyRegistrationView($app['mustache']);
             $verifyRegistrationView->setUrlGenerator($app['url_generator']);
 
-            $resetPasswordView->setUrlGenerator($app['url_generator']);
-
             $service = new UserService;
             $service->setUserMapper($app['user.mapper'])
                 ->setTokenMapper($app['user-token.mapper'])
@@ -59,10 +57,14 @@ class UserServiceProvider implements ServiceProviderInterface
         });
 
         $app['reset-password.controller'] = $app->share(function ($app) {
+            $resetPasswordView = new ResetPasswordView($app['mustache']);
+
+            $resetPasswordView->setUrlGenerator($app['url_generator']);
+
             return new ResetPasswordController(
                 $app['user.service'],
                 $app['email.service'],
-                new ResetPasswordView($app['mustache'])
+                $resetPasswordView
             );
         });
 
@@ -78,7 +80,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('POST')
             ->bind('verify-registration');
 
-        $app->match('/users/reset-password', 'reset-password.controller:rest')
+        $app->match('/user/reset-password', 'reset-password.controller:rest')
             ->method('POST|PUT')
             ->bind('reset-password');
 
@@ -113,6 +115,10 @@ class UserServiceProvider implements ServiceProviderInterface
                 ],
                 'verify-registration' => [
                     'pattern'   => $verifyRegistration, // User registration endpoint is public
+                    'anonymous' => true,
+                ],
+                'reset-password' => [
+                    'pattern'   => '^/user/reset-password$',
                     'anonymous' => true,
                 ],
             ];

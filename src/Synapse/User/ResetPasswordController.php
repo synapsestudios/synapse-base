@@ -61,14 +61,23 @@ class ResetPasswordController extends AbstractRestController
             return $this->createNotFoundResponse();
         }
 
-        // Create token and send email
-        $userToken = $this->userService->createUserToken([
-            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-            'expires' => strtotime('+1 hour', time()),
+        // If a token exists that won't expire in the next 5 minutes, send it
+        $token = $this->userService->findTokenBy([
             'user_id' => $user->getId(),
+            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            ['expires', '>', time() + 5*60],
         ]);
 
-        $this->resetPasswordView->setUserToken($userToken);
+        // Otherwise create a new token
+        if (! $token) {
+            $token = $this->userService->createUserToken([
+                'user_id' => $user->getId(),
+                'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+                'expires' => strtotime('+1 day', time()),
+            ]);
+        }
+
+        $this->resetPasswordView->setUserToken($token);
 
         $email = $this->emailService->createFromArray([
             'recipient_email' => $user->getEmail(),
@@ -91,13 +100,11 @@ class ResetPasswordController extends AbstractRestController
     {
         $token = Arr::get($this->content, 'token');
 
-        $conditions = [
+        // Ensure token is valid
+        $token = $this->userService->findTokenBy([
             'token'   => $token,
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-        ];
-
-        // Ensure token is valid
-        $token = $this->userService->findTokenBy($conditions);
+        ]);
 
         if (! $token) {
             return $this->getSimpleResponse(404, 'Token not found');
