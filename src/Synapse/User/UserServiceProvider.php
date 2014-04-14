@@ -23,47 +23,49 @@ class UserServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['user.mapper'] = $app->share(function () use ($app) {
+        $app['user.mapper'] = $app->share(function ($app) {
             return new UserMapper($app['db'], new UserEntity);
         });
 
-        $app['user-token.mapper'] = $app->share(function () use ($app) {
+        $app['user-token.mapper'] = $app->share(function ($app) {
             return new TokenMapper($app['db'], new TokenEntity);
         });
 
-        $app['user.service'] = $app->share(function () use ($app) {
+        $app['user.service'] = $app->share(function ($app) {
             $verifyRegistrationView = new VerifyRegistrationView($app['mustache']);
             $verifyRegistrationView->setUrlGenerator($app['url_generator']);
-
-            $resetPasswordView = new ResetPasswordView($app['mustache']);
-            $resetPasswordView->setUrlGenerator($app['url_generator']);
 
             $service = new UserService;
             $service->setUserMapper($app['user.mapper'])
                 ->setTokenMapper($app['user-token.mapper'])
                 ->setEmailService($app['email.service'])
-                ->setVerifyRegistrationView($verifyRegistrationView)
-                ->setResetPasswordView($resetPasswordView);
+                ->setVerifyRegistrationView($verifyRegistrationView);
 
             return $service;
         });
 
-        $app['user.controller'] = $app->share(function () use ($app) {
+        $app['user.controller'] = $app->share(function ($app) {
             $controller = new UserController();
             $controller->setUserService($app['user.service']);
             return $controller;
         });
 
-        $app['verify-registration.controller'] = $app->share(function () use ($app) {
+        $app['verify-registration.controller'] = $app->share(function ($app) {
             $controller = new VerifyRegistrationController();
             $controller->setUserService($app['user.service']);
             return $controller;
         });
 
-        $app['reset-password.controller'] = $app->share(function () use ($app) {
-            $controller = new ResetPasswordController();
-            $controller->setUserService($app['user.service']);
-            return $controller;
+        $app['reset-password.controller'] = $app->share(function ($app) {
+            $resetPasswordView = new ResetPasswordView($app['mustache']);
+
+            $resetPasswordView->setUrlGenerator($app['url_generator']);
+
+            return new ResetPasswordController(
+                $app['user.service'],
+                $app['email.service'],
+                $resetPasswordView
+            );
         });
 
         $app->match('/users', 'user.controller:rest')
@@ -78,7 +80,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('POST')
             ->bind('verify-registration');
 
-        $app->match('/users/{id}/reset-password', 'reset-password.controller:rest')
+        $app->match('/user/reset-password', 'reset-password.controller:rest')
             ->method('POST|PUT')
             ->bind('reset-password');
 
@@ -113,6 +115,10 @@ class UserServiceProvider implements ServiceProviderInterface
                 ],
                 'verify-registration' => [
                     'pattern'   => $verifyRegistration, // User registration endpoint is public
+                    'anonymous' => true,
+                ],
+                'reset-password' => [
+                    'pattern'   => '^/user/reset-password$',
                     'anonymous' => true,
                 ],
             ];

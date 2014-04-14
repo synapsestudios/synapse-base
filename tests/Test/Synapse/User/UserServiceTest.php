@@ -23,7 +23,6 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         $this->userService->setUserMapper($this->mockUserMapper);
         $this->userService->setTokenMapper($this->mockTokenMapper);
         $this->userService->setVerifyRegistrationView($this->mockVerifyRegistrationView);
-        $this->userService->setResetPasswordView($this->mockResetPasswordView);
         $this->userService->setEmailService($this->mockEmailService);
     }
 
@@ -326,24 +325,6 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
         ]);
 
         $this->assertEquals($captured->persistedUserEntity->getEmail(), 'new@email.com');
-    }
-
-    public function testSendResetPasswordEmailEnqueusResetPasswordEmail()
-    {
-        $this->expectingPersistedUserToken();
-        $capturedEmailCreation = $this->expectingEmailCreatedFromArray();
-        $capturedEmailSending = $this->expectingEmailEnqueued();
-
-        $this->userService->sendResetPasswordEmail($this->getUserEntity());
-
-        $this->assertSame(
-            self::RESET_PASSWORD_VIEW_STRING_VALUE,
-            $capturedEmailCreation->emailArray['message']
-        );
-        $this->assertSame(
-            $capturedEmailCreation->createdEmailEntity,
-            $capturedEmailSending->sentEmailEntity
-        );
     }
 
     public function testResetPasswordPersistsUserWithHashedPasswordSet()

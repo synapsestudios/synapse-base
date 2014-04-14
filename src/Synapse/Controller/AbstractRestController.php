@@ -71,12 +71,8 @@ abstract class AbstractRestController extends AbstractController
      */
     protected function nestedArrayFromEntities(array $entities)
     {
-        $results = [];
-
-        foreach ($entities as $entity) {
-            $results[] = $entity->getArrayCopy();
-        }
-
-        return $results;
+        return array_map(function ($entity) {
+            return $entity->getArrayCopy();
+        }, $entities);
     }
 }

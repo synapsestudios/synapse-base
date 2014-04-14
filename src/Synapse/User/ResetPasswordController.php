@@ -5,41 +5,89 @@ namespace Synapse\User;
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
 use Synapse\User\TokenEntity;
+use Synapse\Email\EmailService;
 use Synapse\Stdlib\Arr;
-use Synapse\Application\SecurityAwareInterface;
-use Synapse\Application\SecurityAwareTrait;
+use Synapse\View\Email\ResetPassword as ResetPasswordView;
 use OutOfBoundsException;
 
 /**
  * Controller for resetting passwords
  */
-class ResetPasswordController extends AbstractRestController implements SecurityAwareInterface
+class ResetPasswordController extends AbstractRestController
 {
-    use SecurityAwareTrait;
-
     /**
-     * @var Synapse\User\UserService
+     * @var UserService
      */
     protected $userService;
 
     /**
-     * Sending reset password email
+     * @var EmailService
+     */
+    protected $emailService;
+
+    /**
+     * @var ResetPasswordView
+     */
+    protected $resetPasswordView;
+
+    /**
+     * @param UserService       $userService
+     * @param EmailService      $emailService
+     * @param ResetPasswordView $resetPasswordView
+     */
+    public function __construct(
+        UserService $userService,
+        EmailService $emailService,
+        ResetPasswordView $resetPasswordView
+    ) {
+        $this->userService       = $userService;
+        $this->emailService      = $emailService;
+        $this->resetPasswordView = $resetPasswordView;
+    }
+
+    /**
+     * Send reset password email
      *
      * @param  Request $request
      * @return array
      */
     public function post(Request $request)
     {
-        $user = $this->user();
+        // Validate user
+        $email = Arr::get($this->content, 'email');
+        $user  = $this->userService->findByEmail($email);
 
-        // Ensure the user in question is logged in
-        if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->getSimpleResponse(403, 'Access denied');
+        if (! $user) {
+            return $this->createNotFoundResponse();
         }
 
-        $user = $this->userService->sendResetPasswordEmail($user);
+        // If a token exists that won't expire in the next 5 minutes, send it
+        $token = $this->userService->findTokenBy([
+            'user_id' => $user->getId(),
+            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            ['expires', '>', time() + 5*60],
+        ]);
 
-        return $this->userArrayWithoutPassword($user);
+        // Otherwise create a new token
+        if (! $token) {
+            $token = $this->userService->createUserToken([
+                'user_id' => $user->getId(),
+                'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+                'expires' => strtotime('+1 day', time()),
+            ]);
+        }
+
+        $this->resetPasswordView->setUserToken($token);
+
+        $email = $this->emailService->createFromArray([
+            'recipient_email' => $user->getEmail(),
+            'subject'         => 'Reset Your Password',
+            'message'         => (string) $this->resetPasswordView,
+        ]);
+
+        $this->emailService->enqueueSendEmailJob($email);
+
+        return $this->getSimpleResponse(204, '');
     }
 
     /**
@@ -50,26 +98,26 @@ class ResetPasswordController extends AbstractRestController implements Security
      */
     public function put(Request $request)
     {
-        $user = $this->user();
-
-        // Ensure the user in question is logged in
-        if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->getSimpleResponse(403, 'Access denied');
-        }
-
         $token = Arr::get($this->content, 'token');
 
-        $conditions = [
-            'user_id' => $user->getId(),
+        // Ensure token is valid
+        $token = $this->userService->findTokenBy([
             'token'   => $token,
             'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-        ];
-
-        // Ensure token is valid
-        $token = $this->userService->findTokenBy($conditions);
+        ]);
 
         if (! $token) {
             return $this->getSimpleResponse(404, 'Token not found');
+        }
+
+        if ($token->getExpires() < time()) {
+            return $this->getSimpleResponse(404, 'Token not found');
+        }
+
+        $user = $this->userService->findById($token->getUserId());
+
+        if (! $user) {
+            return $this->getSimpleResponse(404, 'User not found');
         }
 
         $password = Arr::get($this->content, 'password');
@@ -79,20 +127,11 @@ class ResetPasswordController extends AbstractRestController implements Security
             return $this->getSimpleResponse(422, 'Password cannot be empty');
         }
 
-        $user = $this->userService->resetPassword($user, $password);
+        $this->userService->resetPassword($user, $password);
 
         $this->userService->deleteToken($token);
 
         return $this->userArrayWithoutPassword($user);
-    }
-
-    /**
-     * @param UserService $service
-     */
-    public function setUserService(UserService $service)
-    {
-        $this->userService = $service;
-        return $this;
     }
 
     /**
