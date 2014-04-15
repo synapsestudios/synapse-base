@@ -67,7 +67,7 @@ class Services implements ServicesInterface
      *
      * How to add application-specific firewalls:
      *
-     *     $app->extend('security.firewalls, function ($firewalls, $app) {
+     *     $app->extend('security.firewalls', function ($firewalls, $app) {
      *         $newFirewalls = [...];
      *
      *         return array_merge($newFirewalls, $firewalls);
