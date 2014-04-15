@@ -62,17 +62,4 @@ abstract class AbstractRestController extends AbstractController
             );
         }
     }
-
-    /**
-     * Transform an array of AbstractEntities into an array of arrays representing the entities
-     *
-     * @param  array  $entities Array of AbstractEntity objects
-     * @return array            Array of arrays
-     */
-    protected function nestedArrayFromEntities(array $entities)
-    {
-        return array_map(function ($entity) {
-            return $entity->getArrayCopy();
-        }, $entities);
-    }
 }
