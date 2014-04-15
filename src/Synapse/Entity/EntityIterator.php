@@ -61,7 +61,8 @@ class EntityIterator implements ArraySerializableInterface
     /**
      * Return an array representation of the object
      *
-     * Useful for turning the array of entities as a nested array ready to be JSON encoded
+     * Useful for turning the array of entities into a nested array,
+     * which is then ready to be JSON encoded in a REST response.
      *
      * @return array
      */
