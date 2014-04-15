@@ -4,6 +4,7 @@ namespace Synapse\Mapper;
 
 use InvalidArgumentException;
 use Synapse\Stdlib\Arr;
+use Synapse\Entity\EntityIterator;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
@@ -72,7 +73,7 @@ trait FinderTrait
         $entities = $this->execute($query)
             ->toEntityArray();
 
-        return $entities;
+        return new EntityIterator($entities);
     }
 
     /**
