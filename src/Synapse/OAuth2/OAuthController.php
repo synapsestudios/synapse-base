@@ -89,7 +89,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         }
 
         if (! $correctPassword) {
-            return $this->getSimpleResponse(422, 'Invalid credentials');
+            return $this->createSimpleResponse(422, 'Invalid credentials');
         }
 
         // Automatically authorize the user

@@ -34,7 +34,7 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
         $token = Arr::get($this->content, 'token');
 
         if (! $token) {
-            return $this->getSimpleResponse(422, 'Token not specified.');
+            return $this->createSimpleResponse(422, 'Token not specified.');
         }
 
         $conditions = [
@@ -46,7 +46,7 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
         $token = $this->userService->findTokenBy($conditions);
 
         if (! $token) {
-            return $this->getSimpleResponse(404, 'Token not found.');
+            return $this->createNotFoundResponse();
         }
 
         try {
@@ -58,7 +58,7 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
                 UserService::TOKEN_NOT_FOUND      => 404,
             ];
 
-            return $this->getSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
         }
 
         $user = $user->getArrayCopy();
