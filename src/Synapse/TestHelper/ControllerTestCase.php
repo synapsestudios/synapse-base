@@ -12,7 +12,7 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
     const LOGGED_IN_USER_ID = 79276419;
 
-    public function createJsonRequest($method, $params)
+    public function createJsonRequest($method, array $params = [])
     {
         $this->request = new Request(
             Arr::get($params, 'getParams', []),

@@ -43,6 +43,8 @@ class EntityIterator implements ArraySerializableInterface
                 throw new InvalidArgumentException($message);
             }
         }
+
+        $this->entities = $entities;
     }
 
     /**
