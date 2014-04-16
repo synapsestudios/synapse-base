@@ -91,6 +91,41 @@ class Run extends AbstractUpgradeCommand
     }
 
     /**
+     * Set the install script.  If not set, a default will be used.
+     *
+     * @param AbstractUpgrade $installScript
+     */
+    public function setInstallScript(AbstractUpgrade $installScript)
+    {
+        $this->installScript = $installScript;
+    }
+
+    /**
+     * Get install script
+     *
+     * Use injected script if it exist, otherwise instantiate the default.
+     *
+     * @return AbstractUpgrade|bool  Return false if install script not set and
+     *                               install class not found.
+     */
+    public function getInstallScript()
+    {
+        if (! $this->installScript) {
+            $installClass = $this->upgradeNamespace.'Install';
+
+            if (! class_exists($installClass)) {
+                return false;
+            }
+
+            $installScript = new $installClass;
+
+            $this->installScript = $installScript;
+        }
+
+        return $this->installScript;
+    }
+
+    /**
      * Configure this console command
      */
     protected function configure()
@@ -124,20 +159,18 @@ class Run extends AbstractUpgradeCommand
         $this->createAppVersionsTable();
 
         if (! $databaseVersion = $this->currentDatabaseVersion()) {
-            // Ensure that install class exists
-            $upgradeNamespace = $this->generateInstallCommand->getUpgradeNamespace();
-            $installClass     = $upgradeNamespace.'Install';
 
-            if (! class_exists($installClass)) {
+            $installScript = $this->getInstallScript();
+
+            if (! $installScript) {
                 $output->writeln(
                     sprintf('No install class found at %s. Nothing to do.', $installClass)
                 );
-
                 return;
             }
 
             $this->install(
-                new $installClass,
+                $installScript,
                 $output
             );
 
