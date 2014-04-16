@@ -44,7 +44,7 @@ abstract class AbstractRestController extends AbstractController
         $this->content = json_decode($request->getContent(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return $this->getSimpleResponse(400, 'Could not parse json body');
+            return $this->createSimpleResponse(400, 'Could not parse json body');
         }
 
         $result = $this->{$method}($request);

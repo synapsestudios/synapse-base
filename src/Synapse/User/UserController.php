@@ -34,7 +34,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
             ->findById($id);
 
         if (! $user) {
-            return $this->getSimpleResponse(404, 'User not found');
+            return $this->createNotFoundResponse();
         }
 
         return $this->userArrayWithoutPassword($user);
@@ -51,7 +51,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         $user = $this->content;
 
         if (! isset($user['email'], $user['password'])) {
-            return $this->getSimpleResponse(422, 'Missing required field');
+            return $this->createSimpleResponse(422, 'Missing required field');
         }
 
         try {
@@ -61,15 +61,14 @@ class UserController extends AbstractRestController implements SecurityAwareInte
                 UserService::EMAIL_NOT_UNIQUE => 409,
             ];
 
-            return $this->getSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
         }
 
         $newUser = $this->userArrayWithoutPassword($newUser);
 
         $newUser['_href'] = $this->url('user-entity', array('id' => $newUser['id']));
 
-        $response = $this->getSimpleResponse(201, json_encode($newUser));
-        return $response;
+        return $this->createJsonResponse(201, $newUser);
     }
 
     /**
@@ -84,7 +83,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
 
         // Ensure the user in question is logged in
         if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->getSimpleResponse(403, 'Access denied');
+            return $this->createSimpleResponse(403, 'Access denied');
         }
 
         try {
@@ -95,7 +94,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
                 UserService::FIELD_CANNOT_BE_EMPTY     => 422,
             ];
 
-            return $this->getSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
         }
 
         return $this->userArrayWithoutPassword($user);

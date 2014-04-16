@@ -87,7 +87,7 @@ class ResetPasswordController extends AbstractRestController
 
         $this->emailService->enqueueSendEmailJob($email);
 
-        return $this->getSimpleResponse(204, '');
+        return $this->createSimpleResponse(204, '');
     }
 
     /**
@@ -107,24 +107,24 @@ class ResetPasswordController extends AbstractRestController
         ]);
 
         if (! $token) {
-            return $this->getSimpleResponse(404, 'Token not found');
+            return $this->createNotFoundResponse();
         }
 
         if ($token->getExpires() < time()) {
-            return $this->getSimpleResponse(404, 'Token not found');
+            return $this->createNotFoundResponse();
         }
 
         $user = $this->userService->findById($token->getUserId());
 
         if (! $user) {
-            return $this->getSimpleResponse(404, 'User not found');
+            return $this->createNotFoundResponse();
         }
 
         $password = Arr::get($this->content, 'password');
 
         // Ensure user input is valid
         if (! $password) {
-            return $this->getSimpleResponse(422, 'Password cannot be empty');
+            return $this->createSimpleResponse(422, 'Password cannot be empty');
         }
 
         $this->userService->resetPassword($user, $password);

@@ -37,7 +37,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      * @param  string  $content Response content
      * @return Response
      */
-    protected function getSimpleResponse($code = 500, $content = 'Unknown error')
+    protected function createSimpleResponse($code = 500, $content = 'Unknown error')
     {
         $response = new Response;
         $response->setStatusCode($code)
@@ -53,7 +53,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      * @param  array $data  Response data
      * @return JsonResponse
      */
-    protected function getJsonResponse($code, $data)
+    protected function createJsonResponse($code, $data)
     {
         $response = new JsonResponse;
         $response->setStatusCode($code)
