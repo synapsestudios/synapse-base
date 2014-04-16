@@ -170,7 +170,7 @@ class Run extends AbstractUpgradeCommand
             }
 
             $this->install(
-                $this->getInstallScript(),
+                $installScript,
                 $output
             );
 
