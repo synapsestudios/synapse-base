@@ -12,6 +12,7 @@ use Synapse\OAuth2\ResponseType\AccessToken;
 use OAuth2\HttpFoundationBridge\Response as BridgeResponse;
 use OAuth2\Server as OAuth2Server;
 use OAuth2\GrantType\AuthorizationCode;
+use OAuth2\GrantType\RefreshToken;
 use OAuth2\GrantType\UserCredentials;
 use OAuth2\ResponseType\AuthorizationCode as AuthorizationCodeResponse;
 
@@ -37,6 +38,7 @@ class ServerServiceProvider implements ServiceProviderInterface
 
             $grantTypes = [
                 'authorization_code' => new AuthorizationCode($storage),
+                'refresh_token'      => new RefreshToken($storage),
                 'user_credentials'   => new UserCredentials($storage),
             ];
 
