@@ -17,13 +17,24 @@ trait DeleterTrait
      */
     public function delete(AbstractEntity $entity)
     {
-        $condition = [
+        return $this->deleteWhere([
             'id' => $entity->getId()
-        ];
+        ]);
+    }
 
+    /**
+     * Delete all records in this table that meet the provided conditions
+     *
+     * @param  array  $wheres An array of where conditions in the format:
+     *                        ['column' => 'value'] or
+     *                        ['column', 'operator', 'value']
+     * @return Result
+     */
+    public function deleteWhere(array $wheres)
+    {
         $query = $this->sql()
             ->delete()
-            ->where($condition);
+            ->where($wheres);
 
         return $this->execute($query);
     }
