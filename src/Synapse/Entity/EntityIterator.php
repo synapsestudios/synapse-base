@@ -17,6 +17,20 @@ class EntityIterator implements ArraySerializableInterface
     protected $entities;
 
     /**
+     * Total pages available for a paginated result set
+     *
+     * @var int
+     */
+    protected $pageCount;
+
+    /**
+     * Total results available for a paginated result set
+     *
+     * @var int
+     */
+    protected $resultCount;
+
+    /**
      * @param array $entities Array of AbstractEntity objects
      */
     public function __construct(array $entities = null)
@@ -48,6 +62,26 @@ class EntityIterator implements ArraySerializableInterface
     }
 
     /**
+     * Set the total pages available for a paginated result set
+     *
+     * @var int
+     */
+    public function setPageCount($pageCount)
+    {
+        $this->pageCount = $pageCount;
+    }
+
+    /**
+     * Set the total results available for a paginated result set
+     *
+     * @var int
+     */
+    public function setResultCount($resultCount)
+    {
+        $this->resultCount = $resultCount;
+    }
+
+    /**
      * Exchange internal values from provided array
      *
      * @param  array $array
@@ -68,8 +102,18 @@ class EntityIterator implements ArraySerializableInterface
      */
     public function getArrayCopy()
     {
-        return array_map(function ($entity) {
+        $results = array_map(function ($entity) {
             return $entity->getArrayCopy();
         }, $this->entities);
+
+        if (! $this->pageCount) {
+            return $results;
+        } else {
+            return [
+                'page_count'   => $this->pageCount,
+                'result_count' => $this->resultCount,
+                'results'      => $results
+            ];
+        }
     }
 }

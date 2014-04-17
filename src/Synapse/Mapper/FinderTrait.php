@@ -5,6 +5,7 @@ namespace Synapse\Mapper;
 use InvalidArgumentException;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
@@ -15,6 +16,57 @@ use Zend\Db\Sql\Predicate\Operator;
  */
 trait FinderTrait
 {
+    /**
+     * Whether results are paginated.
+     *
+     * @var boolean
+     */
+    protected $paginated = false;
+
+    /**
+     * Which page to return if pagination is enabled
+     *
+     * @var integer
+     */
+    protected $page = 1;
+
+    /**
+     * Maximum number of results to return if pagination is enabled
+     *
+     * @var integer
+     */
+    protected $resultsPerPage = 50;
+
+    /**
+     * Set whether results are paginated
+     *
+     * @param bool $isPaginated
+     */
+    public function setPaginated($isPaginated)
+    {
+        $this->paginated = $isPaginated;
+    }
+
+    /**
+     * Set which page to return if pagination is enabled
+     *
+     * @param int $page
+     */
+    public function setPage($page)
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * Set maximum number of results to return if pagination is enabled
+     *
+     * @param int $resultsPerPage
+     */
+    public function setResultsPerPage($resultsPerPage)
+    {
+        $this->resultsPerPage = $resultsPerPage;
+    }
+
     /**
      * Find a single entity by specific field values
      *
@@ -59,6 +111,7 @@ trait FinderTrait
      *                        ['column', 'operator', 'value']
      * @param  array $options Array of options for this request
      * @return array          Array of AbstractEntity objects
+     * @throws Exception      If pagination enabled and no 'order' option specified.
      */
     public function findAllBy(array $wheres, array $options = [])
     {
@@ -68,12 +121,37 @@ trait FinderTrait
 
         $this->addWheres($query, $wheres);
 
+        if ($this->paginated && !Arr::get($options, 'order')) {
+            throw new Exception('Must provide an ORDER BY if using pagination');
+        }
+
         $this->setOrder($query, $options);
+
+        if ($this->paginated) {
+            // Get total results
+            $queryClone = clone $query;
+            $queryClone->columns(['count' => new Expression('COUNT(*)')]);
+            $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
+            $result = $statement->execute()->current();
+            $count = $result['count'];
+
+            // Set LIMIT and OFFSET
+            $query->limit($this->resultsPerPage);
+            $query->offset($this->page * $this->resultsPerPage);
+        }
 
         $entities = $this->execute($query)
             ->toEntityArray();
 
-        return new EntityIterator($entities);
+        $entityIterator = new EntityIterator($entities);
+
+        if ($this->paginated) {
+            // Set page and result counts in iterator
+            $entityIterator->setPageCount(floor($count / $this->resultsPerPage) + 1);
+            $entityIterator->setResultCount($count);
+        }
+
+        return $entityIterator;
     }
 
     /**
