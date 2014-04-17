@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Role;
 
 use Synapse\Mapper;
 use Synapse\Entity\AbstractEntity;
+use Synapse\Stdlib\Arr;
 
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -32,7 +33,6 @@ class UserMapper extends Mapper\AbstractMapper implements UserProviderInterface
      * @var string
      */
     protected $tableName = 'users';
-
 
     /**
      * Find user by email
@@ -68,12 +68,7 @@ class UserMapper extends Mapper\AbstractMapper implements UserProviderInterface
 
         $results = $resultSet->toArray();
 
-        $return = [];
-        foreach ($results as $row) {
-            $return[] = $row['name'];
-        }
-
-        return $return;
+        return Arr::pluck($results, 'name');
     }
 
     /**
