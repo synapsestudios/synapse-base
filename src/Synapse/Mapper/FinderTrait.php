@@ -90,28 +90,40 @@ trait FinderTrait
     /**
      * Set the order on the given query
      *
+     * Can specify order as [['column', 'direction'], ['column', 'direction']]
+     * or just ['column', 'direction'] or even [['column', 'direction'], 'column']
+     *
      * @param Select $query
      * @param array  $options Array of options which may or may not include `order`
      */
     protected function setOrder($query, $options)
     {
-        if (! Arr::get($options, 'order')) {
+        $order = Arr::get($options, 'order');
+
+        if (! $order) {
             return $query;
         }
 
-        // Can specify order as [['column', 'direction'], ['column', 'direction']].
-        if (is_array($options['order'])) {
-            foreach ($options['order'] as $order) {
-                if (is_array($order)) {
-                    $query->order(
-                        Arr::get($order, 0).' '.Arr::get($order, 1)
-                    );
-                } else {
-                    $query->order($key.' '.$order);
-                }
-            }
-        } else { // Also support just a single ascending value
+        // Just a single ascending value
+        if (! is_array($order)) {
             return $query->order($options['order']);
+        }
+
+        // Normalize to [['column', 'direction']] format if only one column
+        if (! is_array(Arr::get($order, 0))) {
+            $order = [$order];
+        }
+
+        foreach ($order as $key => $orderValue) {
+            if (is_array($orderValue)) {
+                // Column and direction
+                $query->order(
+                    Arr::get($orderValue, 0).' '.Arr::get($orderValue, 1)
+                );
+            } else {
+                // Ascending column
+                $query->order($orderValue);
+            }
         }
 
         return $query;
