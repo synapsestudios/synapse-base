@@ -88,6 +88,9 @@ class Services implements ServicesInterface
      *         return array_merge($newRules, $rules);
      *     });
      *
+     * @link http://silex.sensiolabs.org/doc/providers/security.html#defining-more-than-one-firewall
+     * @link http://silex.sensiolabs.org/doc/providers/security.html#defining-access-rules
+     *
      * @param  Application $app
      */
     public function registerSecurityFirewalls(Application $app)
