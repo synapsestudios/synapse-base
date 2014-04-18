@@ -137,7 +137,7 @@ trait FinderTrait
 
             // Set LIMIT and OFFSET
             $query->limit($this->resultsPerPage);
-            $query->offset($this->page * $this->resultsPerPage);
+            $query->offset(($this->page - 1) * $this->resultsPerPage);
         }
 
         $entities = $this->execute($query)
