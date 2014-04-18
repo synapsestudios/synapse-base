@@ -62,9 +62,9 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
         return $response;
     }
 
-    protected function constraintViolationArray(ConstraintViolationListInterface $violationList)
+    protected function createConstraintViolationResponse(ConstraintViolationListInterface $violationList)
     {
-        $results = [];
+        $errors = [];
 
         foreach ($violationList as $violation) {
             $field = $violation->getPropertyPath();
@@ -74,9 +74,12 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
                 $field
             );
 
-            $results[$field][] = $violation->getMessage();
+            $errors[$field][] = $violation->getMessage();
         }
 
-        return $results;
+        return $this->createJsonResponse(
+            422,
+            ['errors' => $errors]
+        );
     }
 }
