@@ -2,9 +2,10 @@
 
 namespace Synapse\Entity;
 
-use Zend\Stdlib\ArraySerializableInterface;
-use LogicException;
 use InvalidArgumentException;
+use LogicException;
+use Synapse\Mapper\PaginationData;
+use Zend\Stdlib\ArraySerializableInterface;
 
 /**
  * An iterator for AbstractEntity objects
@@ -55,9 +56,9 @@ class EntityIterator implements ArraySerializableInterface
     /**
      * Set the current page, page count, and result count
      *
-     * @param  Synapse\Mapper\PaginationData $paginationData
+     * @param  PaginationData $paginationData
      */
-    public function setPaginationData($paginationData)
+    public function setPaginationData(PaginationData $paginationData)
     {
         $this->paginationData = $paginationData;
     }
