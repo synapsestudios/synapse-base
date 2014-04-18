@@ -121,8 +121,11 @@ trait FinderTrait
 
         if ($page) {
             // Set page and result counts in iterator
-            $entityIterator->setPageCount($pageCount);
-            $entityIterator->setResultCount($resultCount);
+            $entityIterator->setPaginationData(
+                $page,
+                $pageCount,
+                $resultCount
+            );
         }
 
         return $entityIterator;

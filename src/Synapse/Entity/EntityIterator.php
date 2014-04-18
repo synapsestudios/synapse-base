@@ -17,6 +17,13 @@ class EntityIterator implements ArraySerializableInterface
     protected $entities;
 
     /**
+     * The current page represented by this iterator
+     *
+     * @var int
+     */
+    protected $page;
+
+    /**
      * Total pages available for a paginated result set
      *
      * @var int
@@ -62,22 +69,16 @@ class EntityIterator implements ArraySerializableInterface
     }
 
     /**
-     * Set the total pages available for a paginated result set
+     * Set the current page, page count, and result count
      *
-     * @var int
+     * @param int $page        The current page represented by this iterator
+     * @param int $pageCount   Total pages available for a paginated result set
+     * @param int $resultCount Total results available for a paginated result set
      */
-    public function setPageCount($pageCount)
+    public function setPaginationData($page, $pageCount, $resultCount)
     {
+        $this->page = $page;
         $this->pageCount = $pageCount;
-    }
-
-    /**
-     * Set the total results available for a paginated result set
-     *
-     * @var int
-     */
-    public function setResultCount($resultCount)
-    {
         $this->resultCount = $resultCount;
     }
 
@@ -110,6 +111,7 @@ class EntityIterator implements ArraySerializableInterface
             return $results;
         } else {
             return [
+                'page'         => $this->page,
                 'page_count'   => $this->pageCount,
                 'result_count' => $this->resultCount,
                 'results'      => $results
