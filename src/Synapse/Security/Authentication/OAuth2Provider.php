@@ -13,16 +13,37 @@ use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use Synapse\Security\Authentication\OAuth2UserToken;
+use Synapse\User\RoleService;
 
 class OAuth2Provider implements AuthenticationProviderInterface
 {
+    /**
+     * @var UserProviderInterface
+     */
     private $userProvider;
-    private $server;
-    private $request;
 
-    public function __construct(UserProviderInterface $userProvider, OAuth2Server $server)
-    {
+    /**
+     * @var RoleService
+     */
+    private $roleService;
+
+    /**
+     * @var OAuth2Server
+     */
+    private $server;
+
+    /**
+     * @param UserProviderInterface $userProvider
+     * @param RoleService           $roleService
+     * @param OAuth2Server          $server
+     */
+    public function __construct(
+        UserProviderInterface $userProvider,
+        RoleService $roleService,
+        OAuth2Server $server
+    ) {
         $this->userProvider = $userProvider;
+        $this->roleService  = $roleService;
         $this->server       = $server;
     }
 
@@ -40,9 +61,8 @@ class OAuth2Provider implements AuthenticationProviderInterface
 
         $userData = $this->server->getAccessTokenData($oauthRequest);
 
-
         $user  = $this->userProvider->findById($userData['user_id']);
-        $roles = $this->userProvider->findRolesByUser($user);
+        $roles = $this->roleService->findRoleNamesByUserId($user->getId());
 
         $user->setRoles($roles);
 

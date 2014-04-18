@@ -47,31 +47,6 @@ class UserMapper extends Mapper\AbstractMapper implements UserProviderInterface
     }
 
     /**
-     * Find roles for a user
-     *
-     * @param  UserEntity $user
-     * @return array  Array of role names
-     */
-    public function findRolesByUser(UserEntity $user)
-    {
-        $sql = new Sql($this->dbAdapter);
-
-        $select = new Select('pvt_roles_users');
-        $select->columns([])
-            ->join('user_roles', 'user_roles.id = pvt_roles_users.role_id', ['name'])
-            ->where(['user_id' => $user->getId()]);
-
-        $statement = $sql->prepareStatementForSqlObject($select);
-
-        $resultSet = new ResultSet();
-        $resultSet->initialize($statement->execute());
-
-        $results = $resultSet->toArray();
-
-        return Arr::pluck($results, 'name');
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function loadUserByUsername($username)
