@@ -5,6 +5,7 @@ namespace Synapse\Mapper;
 use InvalidArgumentException;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
@@ -15,6 +16,23 @@ use Zend\Db\Sql\Predicate\Operator;
  */
 trait FinderTrait
 {
+    /**
+     * Default maximum number of results to return if pagination is used
+     *
+     * @var integer
+     */
+    protected $resultsPerPage = 50;
+
+    /**
+     * Set maximum number of results to return if pagination is enabled
+     *
+     * @param int $resultsPerPage
+     */
+    public function setResultsPerPage($resultsPerPage)
+    {
+        $this->resultsPerPage = $resultsPerPage;
+    }
+
     /**
      * Find a single entity by specific field values
      *
@@ -57,8 +75,10 @@ trait FinderTrait
      * @param  array $wheres  An array of where conditions in the format:
      *                        ['column' => 'value'] or
      *                        ['column', 'operator', 'value']
-     * @param  array $options Array of options for this request
+     * @param  array $options Array of options for this request.
+     *                        May include 'order', 'page', or 'resultsPerPage'.
      * @return array          Array of AbstractEntity objects
+     * @throws Exception      If pagination enabled and no 'order' option specified.
      */
     public function findAllBy(array $wheres, array $options = [])
     {
@@ -68,12 +88,33 @@ trait FinderTrait
 
         $this->addWheres($query, $wheres);
 
-        $this->setOrder($query, $options);
+        $page = Arr::get($options, 'page');
+
+        if ($page && !Arr::get($options, 'order')) {
+            throw new Exception('Must provide an ORDER BY if using pagination');
+        }
+
+        if (Arr::get($options, 'order')) {
+            $this->setOrder($query, $options['order']);
+        }
+
+        if ($page) {
+            $paginationData = $this->getPaginationData($query, $options);
+            // Set LIMIT and OFFSET
+            $query->limit($paginationData->getResultsPerPage());
+            $query->offset(($page - 1) * $paginationData->getResultsPerPage());
+        }
 
         $entities = $this->execute($query)
             ->toEntityArray();
 
-        return new EntityIterator($entities);
+        $entityIterator = new EntityIterator($entities);
+
+        if ($page) {
+            $entityIterator->setPaginationData($paginationData);
+        }
+
+        return $entityIterator;
     }
 
     /**
@@ -90,31 +131,64 @@ trait FinderTrait
     /**
      * Set the order on the given query
      *
+     * Can specify order as [['column', 'direction'], ['column', 'direction']]
+     * or just ['column', 'direction'] or even [['column', 'direction'], 'column']
+     *
      * @param Select $query
-     * @param array  $options Array of options which may or may not include `order`
+     * @param array  $order
      */
-    protected function setOrder($query, $options)
+    protected function setOrder($query, array $order)
     {
-        if (! Arr::get($options, 'order')) {
+        if (! $order) {
             return $query;
         }
 
-        // Can specify order as [['column', 'direction'], ['column', 'direction']].
-        if (is_array($options['order'])) {
-            foreach ($options['order'] as $order) {
-                if (is_array($order)) {
-                    $query->order(
-                        Arr::get($order, 0).' '.Arr::get($order, 1)
-                    );
-                } else {
-                    $query->order($key.' '.$order);
-                }
-            }
-        } else { // Also support just a single ascending value
+        // Just a single ascending value
+        if (! is_array($order)) {
             return $query->order($options['order']);
         }
 
+        // Normalize to [['column', 'direction']] format if only one column
+        if (! is_array(Arr::get($order, 0))) {
+            $order = [$order];
+        }
+
+        foreach ($order as $key => $orderValue) {
+            if (is_array($orderValue)) {
+                // Column and direction
+                $query->order(
+                    Arr::get($orderValue, 0).' '.Arr::get($orderValue, 1)
+                );
+            } else {
+                // Ascending column
+                $query->order($orderValue);
+            }
+        }
+
         return $query;
+    }
+
+    protected function getPaginationData($query, $options)
+    {
+        // Get pagination options
+        $page = Arr::get($options, 'page');
+        $page = ((int)$page > 1 ? $page : 1); // Can't be less than 1
+        $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
+
+        // Get total results
+        $queryClone = clone $query;
+        $queryClone->columns(['count' => new Expression('COUNT(*)')]);
+        $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
+        $result = $statement->execute()->current();
+        $resultCount = $result['count'];
+        $pageCount = ceil($resultCount / $resultsPerPage);
+
+        return new PaginationData([
+            'page'             => $page,
+            'page_count'       => $pageCount,
+            'result_count'     => $resultCount,
+            'results_per_page' => $resultsPerPage
+        ]);
     }
 
     /**

@@ -2,9 +2,10 @@
 
 namespace Synapse\Entity;
 
-use Zend\Stdlib\ArraySerializableInterface;
-use LogicException;
 use InvalidArgumentException;
+use LogicException;
+use Synapse\Mapper\PaginationData;
+use Zend\Stdlib\ArraySerializableInterface;
 
 /**
  * An iterator for AbstractEntity objects
@@ -15,6 +16,11 @@ class EntityIterator implements ArraySerializableInterface
      * @var array Array of AbstractEntity objects
      */
     protected $entities;
+
+    /**
+     * @var Synapse\Mapper\PaginationData
+     */
+    protected $paginationData;
 
     /**
      * @param array $entities Array of AbstractEntity objects
@@ -48,6 +54,16 @@ class EntityIterator implements ArraySerializableInterface
     }
 
     /**
+     * Set the current page, page count, and result count
+     *
+     * @param  PaginationData $paginationData
+     */
+    public function setPaginationData(PaginationData $paginationData)
+    {
+        $this->paginationData = $paginationData;
+    }
+
+    /**
      * Exchange internal values from provided array
      *
      * @param  array $array
@@ -68,8 +84,16 @@ class EntityIterator implements ArraySerializableInterface
      */
     public function getArrayCopy()
     {
-        return array_map(function ($entity) {
+        $results = array_map(function ($entity) {
             return $entity->getArrayCopy();
         }, $this->entities);
+
+        if (! $this->paginationData) {
+            return $results;
+        } else {
+            $data = $this->paginationData->getArrayCopy();
+            $data['results'] = $results;
+            return $data;
+        }
     }
 }

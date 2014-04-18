@@ -67,6 +67,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
     {
         $this->dbAdapter = $dbAdapter;
         $this->prototype = $prototype;
+
+        $this->initialize();
     }
 
     /**
@@ -118,6 +120,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
         if (!$this->hydrator instanceof HydratorInterface) {
             $this->hydrator = new ArraySerializable;
         }
+
+        $this->initialized = true;
     }
 
     /**
@@ -128,8 +132,6 @@ abstract class AbstractMapper implements LoggerAwareInterface
      */
     protected function execute(PreparableSqlInterface $query)
     {
-        $this->initialize();
-
         $statement = $this->sql()->prepareStatementForSqlObject($query);
 
         $resultSet = new HydratingResultSet($this->hydrator, $this->prototype);
