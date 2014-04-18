@@ -109,7 +109,8 @@ trait FinderTrait
      * @param  array $wheres  An array of where conditions in the format:
      *                        ['column' => 'value'] or
      *                        ['column', 'operator', 'value']
-     * @param  array $options Array of options for this request
+     * @param  array $options Array of options for this request.
+     *                        May include 'order', 'page', or 'resultsPerPage'.
      * @return array          Array of AbstractEntity objects
      * @throws Exception      If pagination enabled and no 'order' option specified.
      */
@@ -127,17 +128,26 @@ trait FinderTrait
 
         $this->setOrder($query, $options);
 
-        if ($this->paginated) {
+        $paginated = ($this->paginated || Arr::get($options, 'page'));
+
+        if ($paginated) {
+            // Get pagination options
+            $page = Arr::get($options, 'page', $this->page);
+            // Page can't be less than one
+            $page = ((int)$page > 1 ? $page : 1);
+            $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
+
             // Get total results
             $queryClone = clone $query;
             $queryClone->columns(['count' => new Expression('COUNT(*)')]);
             $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
             $result = $statement->execute()->current();
-            $count = $result['count'];
+            $resultCount = $result['count'];
+            $pageCount = ceil($resultCount / $resultsPerPage);
 
             // Set LIMIT and OFFSET
-            $query->limit($this->resultsPerPage);
-            $query->offset(($this->page - 1) * $this->resultsPerPage);
+            $query->limit($resultsPerPage);
+            $query->offset(($page - 1) * $resultsPerPage);
         }
 
         $entities = $this->execute($query)
@@ -145,10 +155,10 @@ trait FinderTrait
 
         $entityIterator = new EntityIterator($entities);
 
-        if ($this->paginated) {
+        if ($paginated) {
             // Set page and result counts in iterator
-            $entityIterator->setPageCount(ceil($count / $this->resultsPerPage));
-            $entityIterator->setResultCount($count);
+            $entityIterator->setPageCount($pageCount);
+            $entityIterator->setResultCount($resultCount);
         }
 
         return $entityIterator;
