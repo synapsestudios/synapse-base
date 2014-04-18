@@ -17,25 +17,9 @@ class EntityIterator implements ArraySerializableInterface
     protected $entities;
 
     /**
-     * The current page represented by this iterator
-     *
-     * @var int
+     * @var Synapse\Mapper\PaginationData
      */
-    protected $page;
-
-    /**
-     * Total pages available for a paginated result set
-     *
-     * @var int
-     */
-    protected $pageCount;
-
-    /**
-     * Total results available for a paginated result set
-     *
-     * @var int
-     */
-    protected $resultCount;
+    protected $paginationData;
 
     /**
      * @param array $entities Array of AbstractEntity objects
@@ -71,15 +55,11 @@ class EntityIterator implements ArraySerializableInterface
     /**
      * Set the current page, page count, and result count
      *
-     * @param int $page        The current page represented by this iterator
-     * @param int $pageCount   Total pages available for a paginated result set
-     * @param int $resultCount Total results available for a paginated result set
+     * @param  Synapse\Mapper\PaginationData $paginationData
      */
-    public function setPaginationData($page, $pageCount, $resultCount)
+    public function setPaginationData($paginationData)
     {
-        $this->page = $page;
-        $this->pageCount = $pageCount;
-        $this->resultCount = $resultCount;
+        $this->paginationData = $paginationData;
     }
 
     /**
@@ -107,15 +87,12 @@ class EntityIterator implements ArraySerializableInterface
             return $entity->getArrayCopy();
         }, $this->entities);
 
-        if (! $this->pageCount) {
+        if (! $this->paginationData) {
             return $results;
         } else {
-            return [
-                'page'         => $this->page,
-                'page_count'   => $this->pageCount,
-                'result_count' => $this->resultCount,
-                'results'      => $results
-            ];
+            $data = $this->paginationData->getArrayCopy();
+            $data['results'] = $results;
+            return $data;
         }
     }
 }

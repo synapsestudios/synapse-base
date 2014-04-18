@@ -97,21 +97,10 @@ trait FinderTrait
         $this->setOrder($query, $options);
 
         if ($page) {
-            // Get pagination options
-            $page = ((int)$page > 1 ? $page : 1); // Can't be less than 1
-            $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
-
-            // Get total results
-            $queryClone = clone $query;
-            $queryClone->columns(['count' => new Expression('COUNT(*)')]);
-            $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
-            $result = $statement->execute()->current();
-            $resultCount = $result['count'];
-            $pageCount = ceil($resultCount / $resultsPerPage);
-
+            $paginationData = $this->getPaginationData($query, $options);
             // Set LIMIT and OFFSET
-            $query->limit($resultsPerPage);
-            $query->offset(($page - 1) * $resultsPerPage);
+            $query->limit($paginationData->getResultsPerPage());
+            $query->offset(($page - 1) * $paginationData->getResultsPerPage());
         }
 
         $entities = $this->execute($query)
@@ -120,12 +109,7 @@ trait FinderTrait
         $entityIterator = new EntityIterator($entities);
 
         if ($page) {
-            // Set page and result counts in iterator
-            $entityIterator->setPaginationData(
-                $page,
-                $pageCount,
-                $resultCount
-            );
+            $entityIterator->setPaginationData($paginationData);
         }
 
         return $entityIterator;
@@ -182,6 +166,29 @@ trait FinderTrait
         }
 
         return $query;
+    }
+
+    protected function getPaginationData($query, $options)
+    {
+        // Get pagination options
+        $page = Arr::get($options, 'page');
+        $page = ((int)$page > 1 ? $page : 1); // Can't be less than 1
+        $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
+
+        // Get total results
+        $queryClone = clone $query;
+        $queryClone->columns(['count' => new Expression('COUNT(*)')]);
+        $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
+        $result = $statement->execute()->current();
+        $resultCount = $result['count'];
+        $pageCount = ceil($resultCount / $resultsPerPage);
+
+        return new PaginationData([
+            'page'             => $page,
+            'page_count'       => $pageCount,
+            'result_count'     => $resultCount,
+            'results_per_page' => $resultsPerPage
+        ]);
     }
 
     /**
