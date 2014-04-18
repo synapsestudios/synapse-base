@@ -4,6 +4,8 @@ namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\ConstraintViolation;
 use Synapse\Stdlib\Arr;
 use Synapse\User\UserEntity;
 use stdClass;
@@ -80,5 +82,18 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
         ]);
 
         return $user;
+    }
+
+    public function createNonEmptyConstraintViolationList()
+    {
+        $builder = $this->getMockBuilder('Symfony\Component\Validator\ConstraintViolation')
+            ->disableOriginalConstructor();
+
+        $violations = [
+            $builder->getMock(),
+            $builder->getMock(),
+        ];
+
+        return new ConstraintViolationList($violations);
     }
 }
