@@ -16,6 +16,14 @@ class DataObject implements ArraySerializableInterface
     protected $object = [];
 
     /**
+     * @param array $data  Initial data
+     */
+    public function __construct(array $data = [])
+    {
+        $this->exchangeArray($data);
+    }
+
+    /**
      * Handle magic getters and setters
      *
      * @param  string $method Name of the method called
