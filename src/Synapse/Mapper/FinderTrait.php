@@ -94,7 +94,9 @@ trait FinderTrait
             throw new Exception('Must provide an ORDER BY if using pagination');
         }
 
-        $this->setOrder($query, $options);
+        if (Arr::get($options, 'order')) {
+            $this->setOrder($query, $options['order']);
+        }
 
         if ($page) {
             $paginationData = $this->getPaginationData($query, $options);
@@ -133,12 +135,10 @@ trait FinderTrait
      * or just ['column', 'direction'] or even [['column', 'direction'], 'column']
      *
      * @param Select $query
-     * @param array  $options Array of options which may or may not include `order`
+     * @param array  $order
      */
-    protected function setOrder($query, $options)
+    protected function setOrder($query, array $order)
     {
-        $order = Arr::get($options, 'order');
-
         if (! $order) {
             return $query;
         }
