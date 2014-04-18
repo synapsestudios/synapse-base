@@ -17,45 +17,11 @@ use Zend\Db\Sql\Predicate\Operator;
 trait FinderTrait
 {
     /**
-     * Whether results are paginated.
-     *
-     * @var boolean
-     */
-    protected $paginated = false;
-
-    /**
-     * Which page to return if pagination is enabled
-     *
-     * @var integer
-     */
-    protected $page = 1;
-
-    /**
-     * Maximum number of results to return if pagination is enabled
+     * Default maximum number of results to return if pagination is used
      *
      * @var integer
      */
     protected $resultsPerPage = 50;
-
-    /**
-     * Set whether results are paginated
-     *
-     * @param bool $isPaginated
-     */
-    public function setPaginated($isPaginated)
-    {
-        $this->paginated = $isPaginated;
-    }
-
-    /**
-     * Set which page to return if pagination is enabled
-     *
-     * @param int $page
-     */
-    public function setPage($page)
-    {
-        $this->page = $page;
-    }
 
     /**
      * Set maximum number of results to return if pagination is enabled
@@ -122,19 +88,17 @@ trait FinderTrait
 
         $this->addWheres($query, $wheres);
 
-        if ($this->paginated && !Arr::get($options, 'order')) {
+        $page = Arr::get($options, 'page');
+
+        if ($page && !Arr::get($options, 'order')) {
             throw new Exception('Must provide an ORDER BY if using pagination');
         }
 
         $this->setOrder($query, $options);
 
-        $paginated = ($this->paginated || Arr::get($options, 'page'));
-
-        if ($paginated) {
+        if ($page) {
             // Get pagination options
-            $page = Arr::get($options, 'page', $this->page);
-            // Page can't be less than one
-            $page = ((int)$page > 1 ? $page : 1);
+            $page = ((int)$page > 1 ? $page : 1); // Can't be less than 1
             $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
 
             // Get total results
@@ -155,7 +119,7 @@ trait FinderTrait
 
         $entityIterator = new EntityIterator($entities);
 
-        if ($paginated) {
+        if ($page) {
             // Set page and result counts in iterator
             $entityIterator->setPageCount($pageCount);
             $entityIterator->setResultCount($resultCount);
