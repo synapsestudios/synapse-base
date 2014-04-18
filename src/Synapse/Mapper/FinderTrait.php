@@ -147,7 +147,7 @@ trait FinderTrait
 
         if ($this->paginated) {
             // Set page and result counts in iterator
-            $entityIterator->setPageCount(floor($count / $this->resultsPerPage) + 1);
+            $entityIterator->setPageCount(ceil($count / $this->resultsPerPage));
             $entityIterator->setResultCount($count);
         }
 
