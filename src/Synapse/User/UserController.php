@@ -21,6 +21,11 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     protected $userService;
 
     /**
+     * @var UserValidator
+     */
+    protected $userValidator;
+
+    /**
      * Return a user entity
      *
      * @param  Request $request
@@ -50,8 +55,10 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     {
         $user = $this->content;
 
-        if (! isset($user['email'], $user['password'])) {
-            return $this->createSimpleResponse(422, 'Missing required field');
+        $errors = $this->userValidator->validate($this->content ?: []);
+
+        if (count($errors) > 0) {
+            return $this->createConstraintViolationResponse($errors);
         }
 
         try {
@@ -86,12 +93,24 @@ class UserController extends AbstractRestController implements SecurityAwareInte
             return $this->createSimpleResponse(403, 'Access denied');
         }
 
+        $userValidationCopy = clone $user;
+
+        // Validate the modified fields
+        $errors = $this->userValidator->validate(
+            $userValidationCopy->exchangeArray($this->content ?: [])->getArrayCopy()
+        );
+
+        if (count($errors) > 0) {
+            return $this->createConstraintViolationResponse($errors);
+        }
+
         try {
             $user = $this->userService->update($user, $this->content);
         } catch (OutOfBoundsException $e) {
             $httpCodes = [
                 UserService::CURRENT_PASSWORD_REQUIRED => 403,
                 UserService::FIELD_CANNOT_BE_EMPTY     => 422,
+                UserService::EMAIL_NOT_UNIQUE          => 409,
             ];
 
             return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
@@ -106,6 +125,15 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     public function setUserService(UserService $service)
     {
         $this->userService = $service;
+        return $this;
+    }
+
+    /**
+     * @param UserValidator $validator
+     */
+    public function setUserValidator(UserValidator $validator)
+    {
+        $this->userValidator = $validator;
         return $this;
     }
 

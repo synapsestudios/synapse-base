@@ -23,12 +23,14 @@ class UserControllerTest extends ControllerTestCase
         $this->userController = new UserController;
 
         $this->setUpMockUserService();
+        $this->setUpMockUserValidator();
         $this->setUpMockUrlGenerator();
         $this->setUpMockSecurityContext();
 
-        $this->userController->setUserService($this->mockUserService);
-        $this->userController->setUrlGenerator($this->mockUrlGenerator);
-        $this->userController->setSecurityContext($this->mockSecurityContext);
+        $this->userController->setUserService($this->mockUserService)
+            ->setUserValidator($this->mockUserValidator)
+            ->setUrlGenerator($this->mockUrlGenerator)
+            ->setSecurityContext($this->mockSecurityContext);
     }
 
     public function setUpExistingUser()
@@ -86,6 +88,13 @@ class UserControllerTest extends ControllerTestCase
         $this->captured = $captured;
     }
 
+    public function setUpMockUserValidator()
+    {
+        $this->mockUserValidator = $this->getMockBuilder('Synapse\User\UserValidator')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     public function setUpMockUrlGenerator()
     {
         $captured = $this->captured;
@@ -127,24 +136,6 @@ class UserControllerTest extends ControllerTestCase
         return $this->userController->execute($this->request);
     }
 
-    public function makePostRequestWithPasswordOnly()
-    {
-        $this->createJsonRequest('post', [
-            'content' => ['password' => '12345']
-        ]);
-
-        return $this->userController->execute($this->request);
-    }
-
-    public function makePostRequestWithEmailOnly()
-    {
-        $this->createJsonRequest('post', [
-            'content' => ['email' => 'posted@user.com']
-        ]);
-
-        return $this->userController->execute($this->request);
-    }
-
     public function makePostRequestWithNonUniqueEmail()
     {
         $this->createJsonRequest('post', [
@@ -157,7 +148,7 @@ class UserControllerTest extends ControllerTestCase
         return $this->userController->execute($this->request);
     }
 
-    public function makeValidPostRequest()
+    public function makePostRequest()
     {
         $this->createJsonRequest('post', [
             'content' => [
@@ -179,7 +170,20 @@ class UserControllerTest extends ControllerTestCase
         return $this->userController->execute($this->request);
     }
 
-    public function makeValidPutRequest()
+    public function makePutRequestWithNonUniqueEmail()
+    {
+        $this->createJsonRequest('put', [
+            'attributes' => ['id' => self::LOGGED_IN_USER_ID],
+            'content' => [
+                'email'    => $this->existingUser->getEmail(),
+                'password' => '12345'
+            ]
+        ]);
+
+        return $this->userController->execute($this->request);
+    }
+
+    public function makePutRequest()
     {
         $this->createJsonRequest('put', [
             'attributes' => ['id' => self::LOGGED_IN_USER_ID],
@@ -217,6 +221,15 @@ class UserControllerTest extends ControllerTestCase
         $this->captured = $captured;
     }
 
+    public function withValidatorValidateReturningErrors()
+    {
+        $errors = $this->createNonEmptyConstraintViolationList();
+
+        $this->mockUserValidator->expects($this->any())
+            ->method('validate')
+            ->will($this->returnValue($errors));
+    }
+
     public function testGetReturnsUserArrayWithoutThePassword()
     {
         $response = $this->makeGetRequestForUserId(self::EXISTING_USER_ID);
@@ -242,16 +255,10 @@ class UserControllerTest extends ControllerTestCase
         );
     }
 
-    public function testPostReturns422IfEmailIsMissing()
+    public function testPostReturns422IfValidationConstraintsAreViolated()
     {
-        $response = $this->makePostRequestWithPasswordOnly();
-
-        $this->assertEquals(422, $response->getStatusCode());
-    }
-
-    public function testPostReturns422IfPasswordIsMissing()
-    {
-        $response = $this->makePostRequestWithEmailOnly();
+        $this->withValidatorValidateReturningErrors();
+        $response = $this->makePostRequest();
 
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -265,14 +272,14 @@ class UserControllerTest extends ControllerTestCase
 
     public function testPostReturns201IfValid()
     {
-        $response = $this->makeValidPostRequest();
+        $response = $this->makePostRequest();
 
         $this->assertEquals(201, $response->getStatusCode());
     }
 
     public function testPostReturnsResponseWithUserDataAndUrlForUserEndpoint()
     {
-        $response = $this->makeValidPostRequest();
+        $response = $this->makePostRequest();
 
         $expected = $this->captured->registeredUser->getArrayCopy();
         unset($expected['password']);
@@ -297,7 +304,7 @@ class UserControllerTest extends ControllerTestCase
             UserService::CURRENT_PASSWORD_REQUIRED
         );
 
-        $response = $this->makeValidPutRequest();
+        $response = $this->makePutRequest();
 
         $this->assertEquals(403, $response->getStatusCode());
     }
@@ -308,16 +315,36 @@ class UserControllerTest extends ControllerTestCase
             UserService::FIELD_CANNOT_BE_EMPTY
         );
 
-        $response = $this->makeValidPutRequest();
+        $response = $this->makePutRequest();
 
         $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    public function testPutReturns422IfValidationConstraintsAreViolated()
+    {
+        $this->withValidatorValidateReturningErrors();
+
+        $response = $this->makePutRequest();
+
+        $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    public function testPutReturns409IfEmailExists()
+    {
+        $this->withUserUpdateThrowingExceptionWithCode(
+            UserService::EMAIL_NOT_UNIQUE
+        );
+
+        $response = $this->makePutRequestWithNonUniqueEmail();
+
+        $this->assertEquals(409, $response->getStatusCode());
     }
 
     public function testPutUpdatesUserWithNewData()
     {
         $this->withExpectedUserUpdate();
 
-        $response = $this->makeValidPutRequest();
+        $response = $this->makePutRequest();
 
         $updatedUser = $this->captured->updatedUser;
 
@@ -335,7 +362,7 @@ class UserControllerTest extends ControllerTestCase
     {
         $this->withExpectedUserUpdate();
 
-        $response = $this->makeValidPutRequest();
+        $response = $this->makePutRequest();
 
         $expected = $this->captured->userReturnedFromSecurityContext->getArrayCopy();
         unset($expected['password']);
@@ -347,7 +374,7 @@ class UserControllerTest extends ControllerTestCase
     {
         $this->withExpectedUserUpdate();
 
-        $response = $this->makeValidPutRequest();
+        $response = $this->makePutRequest();
 
         $this->assertEquals(200, $response->getStatusCode());
     }
