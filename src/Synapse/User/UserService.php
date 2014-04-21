@@ -103,6 +103,17 @@ class UserService
                 );
             }
 
+            if ( $data['email'] !== $user->getEmail()) {
+                $alreadyCreatedUser = $this->userMapper->findByEmail($data['email']);
+
+                if ($alreadyCreatedUser) {
+                    throw new OutOfBoundsException(
+                        'A user was already created with this email address.',
+                        self::EMAIL_NOT_UNIQUE
+                    );
+                }
+            }
+
             $update['email'] = $data['email'];
         }
 

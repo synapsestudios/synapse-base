@@ -170,6 +170,19 @@ class UserControllerTest extends ControllerTestCase
         return $this->userController->execute($this->request);
     }
 
+    public function makePutRequestWithNonUniqueEmail()
+    {
+        $this->createJsonRequest('put', [
+            'attributes' => ['id' => self::LOGGED_IN_USER_ID],
+            'content' => [
+                'email'    => $this->existingUser->getEmail(),
+                'password' => '12345'
+            ]
+        ]);
+
+        return $this->userController->execute($this->request);
+    }
+
     public function makePutRequest()
     {
         $this->createJsonRequest('put', [
@@ -314,6 +327,17 @@ class UserControllerTest extends ControllerTestCase
         $response = $this->makePutRequest();
 
         $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    public function testPutReturns409IfEmailExists()
+    {
+        $this->withUserUpdateThrowingExceptionWithCode(
+            UserService::EMAIL_NOT_UNIQUE
+        );
+
+        $response = $this->makePutRequestWithNonUniqueEmail();
+
+        $this->assertEquals(409, $response->getStatusCode());
     }
 
     public function testPutUpdatesUserWithNewData()

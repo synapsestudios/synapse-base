@@ -93,9 +93,11 @@ class UserController extends AbstractRestController implements SecurityAwareInte
             return $this->createSimpleResponse(403, 'Access denied');
         }
 
+        $userValidationCopy = clone $user;
+
         // Validate the modified fields
         $errors = $this->userValidator->validate(
-            $user->exchangeArray($this->content ?: [])->getArrayCopy()
+            $userValidationCopy->exchangeArray($this->content ?: [])->getArrayCopy()
         );
 
         if (count($errors) > 0) {
@@ -108,6 +110,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
             $httpCodes = [
                 UserService::CURRENT_PASSWORD_REQUIRED => 403,
                 UserService::FIELD_CANNOT_BE_EMPTY     => 422,
+                UserService::EMAIL_NOT_UNIQUE          => 409,
             ];
 
             return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
