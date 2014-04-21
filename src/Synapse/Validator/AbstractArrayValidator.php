@@ -31,17 +31,32 @@ abstract class AbstractArrayValidator
     }
 
     /**
-     * Validate an associative array using the constraints returned from getConstraints()
+     * Validate an associative array using the constraints defined in
+     * getConstraints() and getOptionalConstraints().
+     *
+     * All constraints from getConstraints() are used.
+     *
+     * Constraints from getOptionalConstraints() are only used if the field exists in $values.
      *
      * @param  array                   $values Values to validate
      * @return ConstraintViolationList
      */
     public function validate(array $values)
     {
-        $constraints     = $this->getConstraints();
-        $arrayConstraint = new Assert\Collection($constraints);
+        $optionalConstraints = array_intersect_key(
+            $this->getOptionalConstraints(),
+            $values
+        );
 
+        $constraints = array_merge(
+            $optionalConstraints,
+            $this->getConstraints()
+        );
+
+        // Remove any fields that are not constrained
         $values = array_intersect_key($values, $constraints);
+
+        $arrayConstraint = new Assert\Collection($constraints);
 
         return $this->validator->validateValue(
             $values,
@@ -54,7 +69,21 @@ abstract class AbstractArrayValidator
      *
      * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
-     *               objects sharing keys from $this->object
+     *               objects sharing keys from the array being validated.
      */
     abstract protected function getConstraints();
+
+    /**
+     * Return an array of validation rules for optional fields
+     *
+     * This is necessary because there is no concept of optional fields in Symfony Validation
+     *
+     * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
+     * @return array Associative array of Symfony\Component\Validator\Constraints\*
+     *               objects sharing keys from the array being validated.
+     */
+    protected function getOptionalConstraints()
+    {
+        return [];
+    }
 }
