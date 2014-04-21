@@ -79,6 +79,18 @@ class Services implements ServicesInterface
      * Application-specific firewalls should only be needed to allow passthrough
      * for public endpoints, since 'base.api' requires authentication.
      *
+     * The same can be done with security.access_rules, which are used to restrict
+     * sections of the application based on a user's role:
+     *
+     *     $app->extend('security.access_rules', function ($rules, $app) {
+     *         $newRules = [...];
+     *
+     *         return array_merge($newRules, $rules);
+     *     });
+     *
+     * @link http://silex.sensiolabs.org/doc/providers/security.html#defining-more-than-one-firewall
+     * @link http://silex.sensiolabs.org/doc/providers/security.html#defining-access-rules
+     *
      * @param  Application $app
      */
     public function registerSecurityFirewalls(Application $app)
@@ -87,11 +99,20 @@ class Services implements ServicesInterface
             return [
                 'base.api' => [
                     'pattern'   => '^/',
-                    // Order of oauth and anonymous matters!
+                    /**
+                     * Using both oauth and anonymous listeners in this order allows
+                     * the endpoint to be accessible even if the user is not logged in.
+                     * However, if the user is logged in it authenticates the user
+                     * allowing their information to be accessible to the controller.
+                     */
                     'oauth'     => true,
                     'anonymous' => true,
                 ],
             ];
+        });
+
+        $app['security.access_rules'] = $app->share(function () {
+            return [];
         });
     }
 }

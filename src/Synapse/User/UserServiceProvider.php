@@ -31,6 +31,14 @@ class UserServiceProvider implements ServiceProviderInterface
             return new TokenMapper($app['db'], new TokenEntity);
         });
 
+        $app['user-role-pivot.mapper'] = $app->share(function ($app) {
+            return new UserRolePivotMapper($app['db']);
+        });
+
+        $app['role.service'] = $app->share(function ($app) {
+            return new RoleService($app['user-role-pivot.mapper']);
+        });
+
         $app['user.service'] = $app->share(function ($app) {
             $verifyRegistrationView = new VerifyRegistrationView($app['mustache']);
             $verifyRegistrationView->setUrlGenerator($app['url_generator']);

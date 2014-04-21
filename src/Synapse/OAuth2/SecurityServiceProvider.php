@@ -17,7 +17,11 @@ class SecurityServiceProvider implements ServiceProviderInterface
     {
         $app['security.authentication_listener.factory.oauth'] = $app->protect(function ($name, $options) use ($app) {
             $app['security.authentication_provider.'.$name.'.oauth'] = $app->share(function () use ($app) {
-                return new OAuth2Provider($app['user.mapper'], $app['oauth_server']);
+                return new OAuth2Provider(
+                    $app['user.mapper'],
+                    $app['role.service'],
+                    $app['oauth_server']
+                );
             });
 
             $app['security.authentication_listener.'.$name.'.oauth'] = $app->share(function () use ($app) {
