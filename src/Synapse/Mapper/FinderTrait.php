@@ -186,9 +186,15 @@ trait FinderTrait
 
         // Get total results
         $queryClone = clone $query;
-        $queryClone->columns(['count' => new Expression('COUNT(*)')]);
+
+        $columns = $queryClone->getRawState()[Select::COLUMNS];
+        $columns['count'] = new Expression('COUNT(*)');
+
+        $queryClone->columns($columns);
+
         $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
         $result = $statement->execute()->current();
+
         $resultCount = $result['count'];
         $pageCount = ceil($resultCount / $resultsPerPage);
 
