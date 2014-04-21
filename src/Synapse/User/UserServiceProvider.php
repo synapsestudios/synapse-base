@@ -44,9 +44,15 @@ class UserServiceProvider implements ServiceProviderInterface
             return $service;
         });
 
+        $app['user.validator'] = $app->share(function ($app) {
+            return new UserValidator($app['validator']);
+        });
+
         $app['user.controller'] = $app->share(function ($app) {
             $controller = new UserController();
-            $controller->setUserService($app['user.service']);
+            $controller
+                ->setUserService($app['user.service'])
+                ->setUserValidator($app['user.validator']);
             return $controller;
         });
 

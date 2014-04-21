@@ -41,6 +41,8 @@ abstract class AbstractArrayValidator
         $constraints     = $this->getConstraints();
         $arrayConstraint = new Assert\Collection($constraints);
 
+        $values = array_intersect_key($values, $constraints);
+
         return $this->validator->validateValue(
             $values,
             $arrayConstraint
