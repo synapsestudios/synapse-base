@@ -3,9 +3,11 @@
 namespace Synapse\Mapper;
 
 use InvalidArgumentException;
+use Synapse\Mapper\PaginationData;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
@@ -137,7 +139,7 @@ trait FinderTrait
      * @param Select $query
      * @param array  $order
      */
-    protected function setOrder($query, array $order)
+    protected function setOrder(Select $query, array $order)
     {
         if (! $order) {
             return $query;
@@ -168,7 +170,14 @@ trait FinderTrait
         return $query;
     }
 
-    protected function getPaginationData($query, $options)
+    /**
+     * Get data object with pagination data like page and page_count
+     *
+     * @param  Select $query
+     * @param  array $options
+     * @return PaginationData
+     */
+    protected function getPaginationData(Select $query, array $options)
     {
         // Get pagination options
         $page = Arr::get($options, 'page');
@@ -194,13 +203,14 @@ trait FinderTrait
     /**
      * Add where clauses to query
      *
-     * @param Zend\Db\Sql\Select $query
+     * @param Select $query
      * @param array              $wheres An array of where conditions in the format:
      *                                   ['column' => 'value'] or
      *                                   ['column', 'operator', 'value']
+     * @return Select
      * @throws InvalidArgumentException  If a WHERE requirement is in an unsupported format.
      */
-    protected function addWheres($query, $wheres)
+    protected function addWheres(Select $query, array $wheres)
     {
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
@@ -263,5 +273,7 @@ trait FinderTrait
                 $query->where([$key => $where]);
             }
         }
+
+        return $query;
     }
 }
