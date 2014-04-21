@@ -212,6 +212,8 @@ trait FinderTrait
      */
     protected function addWheres(Select $query, array $wheres)
     {
+        $wheres = $this->performPreWhereLogic($query, $wheres);
+
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
                 $operator = $where[1];
@@ -275,5 +277,19 @@ trait FinderTrait
         }
 
         return $query;
+    }
+
+    /**
+     * Perform query logic that occurs before handling the
+     * array of where conditions
+     *
+     * @param  Select $query
+     * @param  array  $wheres
+     * @return array           The updated $wheres
+     */
+    protected function performPreWhereLogic(Select $query, array $wheres)
+    {
+        // Override in mapper if needed
+        return $wheres;
     }
 }
