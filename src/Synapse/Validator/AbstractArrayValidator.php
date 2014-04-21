@@ -71,7 +71,10 @@ abstract class AbstractArrayValidator
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
      *               objects sharing keys from the array being validated.
      */
-    abstract protected function getConstraints();
+    protected function getConstraints()
+    {
+        return [];
+    }
 
     /**
      * Return an array of validation rules for optional fields
