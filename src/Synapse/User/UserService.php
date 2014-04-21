@@ -103,7 +103,7 @@ class UserService
                 );
             }
 
-            if ( $data['email'] !== $user->getEmail()) {
+            if ($data['email'] !== $user->getEmail()) {
                 $alreadyCreatedUser = $this->userMapper->findByEmail($data['email']);
 
                 if ($alreadyCreatedUser) {
