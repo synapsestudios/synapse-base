@@ -87,13 +87,13 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
-     * Return the entity prototype
+     * Return a clone of the entity prototype
      *
      * @return AbstractEntity
      */
     public function getPrototype()
     {
-        return $this->prototype;
+        return clone $this->prototype;
     }
 
     /**
