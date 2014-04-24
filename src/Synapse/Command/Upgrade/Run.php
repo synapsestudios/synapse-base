@@ -173,6 +173,9 @@ class Run extends AbstractUpgradeCommand
                 $installScript,
                 $output
             );
+
+            // Refresh database version
+            $databaseVersion = $this->currentDatabaseVersion();
         }
 
         // Run all migrations
