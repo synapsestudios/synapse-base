@@ -72,7 +72,10 @@ abstract class AbstractArrayValidator
      *         new Assert\NotNull(),
      *     ])
      *
-     * @link http://symfony.com/doc/current/reference/constraints/Collection.html#required-and-optional-field-constraints
+     * Alternatively, configuration options such as allowMissingFields and
+     * allowExtraFields can be set in the constraints array.
+     *
+     * @link http://symfony.com/doc/current/reference/constraints/Collection.html#presence-and-absence-of-fields
      *
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
      *               objects sharing keys from the array being validated.
