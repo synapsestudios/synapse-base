@@ -126,7 +126,7 @@ class Run extends AbstractInstallCommand
     protected function configure()
     {
         $this->setName('install:run')
-            ->setDescription('Perform initial installation of app from scratch (WARNING: drops tables)');
+            ->setDescription('Perform fresh install of the app (WARNING: drops tables)');
     }
 
     /**
