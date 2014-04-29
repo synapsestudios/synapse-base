@@ -10,6 +10,7 @@ use Zend\Db\Sql\Where;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
 use Zend\Db\Sql\Predicate\Operator;
+use Zend\Db\Sql\Predicate\In;
 
 /**
  * Use this trait to add find functionality to AbstractMappers.
@@ -143,11 +144,6 @@ trait FinderTrait
             return $query;
         }
 
-        // Just a single ascending value
-        if (! is_array($order)) {
-            return $query->order($options['order']);
-        }
-
         // Normalize to [['column', 'direction']] format if only one column
         if (! is_array(Arr::get($order, 0))) {
             $order = [$order];
@@ -255,6 +251,9 @@ trait FinderTrait
                         break;
                     case 'NOT LIKE':
                         $predicate = new NotLike($where[0], $where[2]);
+                        break;
+                    case 'IN':
+                        $predicate = new In($where[0], $where[2]);
                         break;
                 }
 
