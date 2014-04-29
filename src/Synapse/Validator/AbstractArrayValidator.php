@@ -43,18 +43,7 @@ abstract class AbstractArrayValidator
      */
     public function validate(array $values)
     {
-        $optionalConstraints = array_intersect_key(
-            $this->getOptionalConstraints(),
-            $values
-        );
-
-        $constraints = array_merge(
-            $optionalConstraints,
-            $this->getConstraints()
-        );
-
-        // Remove any fields that are not constrained
-        $values = array_intersect_key($values, $constraints);
+        $constraints = $this->getConstraints();
 
         $arrayConstraint = new Assert\Collection($constraints);
 
@@ -68,25 +57,28 @@ abstract class AbstractArrayValidator
      * Return an array of validation rules for use with Symfony Validator
      *
      * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
+     *
+     * In order to make a field optional, simply use the Optional constraint.
+     *
+     * If a field should be optional, but should have constraints if it exists,
+     * simply provide the constraints to the constructor of the Optional constraint as such:
+     *
+     *     'first_name' => new Assert\Optional(new Assert\NotBlank())
+     *
+     * To add multiple constraints, provide an array:
+     *
+     *     'first_name' => new Assert\Optional([
+     *         new Assert\NotBlank(),
+     *         new Assert\NotNull(),
+     *     ])
+     *
+     * Alternatively, configuration options such as allowMissingFields and
+     * allowExtraFields can be set in the constraints array.
+     *
+     * @link http://symfony.com/doc/current/reference/constraints/Collection.html#presence-and-absence-of-fields
+     *
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
      *               objects sharing keys from the array being validated.
      */
-    protected function getConstraints()
-    {
-        return [];
-    }
-
-    /**
-     * Return an array of validation rules for optional fields
-     *
-     * This is necessary because there is no concept of optional fields in Symfony Validation
-     *
-     * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
-     * @return array Associative array of Symfony\Component\Validator\Constraints\*
-     *               objects sharing keys from the array being validated.
-     */
-    protected function getOptionalConstraints()
-    {
-        return [];
-    }
+    abstract protected function getConstraints();
 }

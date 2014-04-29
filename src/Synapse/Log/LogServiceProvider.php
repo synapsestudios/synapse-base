@@ -21,7 +21,7 @@ use RollbarNotifier;
  *
  * Register application logger and injected log handlers.
  */
-class ServiceProvider implements ServiceProviderInterface
+class LogServiceProvider implements ServiceProviderInterface
 {
     /**
      * Log configuration
