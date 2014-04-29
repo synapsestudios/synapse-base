@@ -44,8 +44,8 @@ class MandrillSender implements SenderInterface
         $result = array_shift($result);
 
         $email->setStatus($result['status']);
-        $email->setDateSent($time);
-        $email->setDateUpdated($time);
+        $email->setSent($time);
+        $email->setUpdated($time);
 
         $this->mapper->update($email);
 

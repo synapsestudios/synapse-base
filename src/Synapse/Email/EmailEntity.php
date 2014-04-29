@@ -37,9 +37,9 @@ class EmailEntity extends AbstractEntity
         'bcc'             => null,
         'attachments'     => null,
         'headers'         => null,
-        'date_sent'       => null,
-        'date_created'    => null,
-        'date_updated'    => null,
+        'sent'            => null,
+        'created'         => null,
+        'updated'         => null,
     ];
 
     /**
@@ -49,7 +49,7 @@ class EmailEntity extends AbstractEntity
     {
         $entity = parent::exchangeArray($values);
 
-        $entity->setDateCreated(time());
+        $entity->setCreated(time());
         $entity->setStatus(self::STATUS_PENDING);
 
         return $entity;
