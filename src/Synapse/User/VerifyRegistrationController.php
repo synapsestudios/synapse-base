@@ -6,8 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
 use Synapse\User\TokenEntity;
 use Synapse\Stdlib\Arr;
-use Synapse\Application\SecurityAwareInterface;
-use Synapse\Application\SecurityAwareTrait;
+use Synapse\Security\SecurityAwareInterface;
+use Synapse\Security\SecurityAwareTrait;
 use OutOfBoundsException;
 
 /**

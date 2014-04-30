@@ -4,8 +4,8 @@ namespace Synapse\User;
 
 use Symfony\Component\HttpFoundation\Request;
 use Synapse\Controller\AbstractRestController;
-use Synapse\Application\SecurityAwareInterface;
-use Synapse\Application\SecurityAwareTrait;
+use Synapse\Security\SecurityAwareInterface;
+use Synapse\Security\SecurityAwareTrait;
 use OutOfBoundsException;
 
 /**
