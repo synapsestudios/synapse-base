@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Application;
+namespace Synapse\Security;
 
 use Symfony\Component\Security\Core\SecurityContext;
 

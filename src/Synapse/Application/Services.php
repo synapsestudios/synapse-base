@@ -11,7 +11,6 @@ class Services implements ServicesInterface
 {
     /**
      * {@inheritDoc}
-     * @param  Application $app
      */
     public function register(Application $app)
     {
@@ -20,6 +19,7 @@ class Services implements ServicesInterface
 
         // Register security component before other providers attempt to extend $app['security.firewalls']
         $app->register(new \Silex\Provider\SecurityServiceProvider);
+
         $this->registerSecurityFirewalls($app);
 
         $this->registerServiceProviders($app);
@@ -42,6 +42,7 @@ class Services implements ServicesInterface
         $app->register(new \Synapse\User\UserServiceProvider);
         $app->register(new \Synapse\Migration\MigrationServiceProvider);
         $app->register(new \Synapse\Install\InstallServiceProvider);
+        $app->register(new \Synapse\Security\SecurityServiceProvider);
         $app->register(new \Synapse\Session\SessionServiceProvider);
         $app->register(new \Synapse\SocialLogin\SocialLoginServiceProvider);
 

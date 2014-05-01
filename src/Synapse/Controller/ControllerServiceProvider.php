@@ -25,14 +25,6 @@ class ControllerServiceProvider implements ServiceProviderInterface
                 return $object;
             }
         );
-
-        $app->initializer(
-            'Synapse\\Application\\SecurityAwareInterface',
-            function ($object) use ($app) {
-                $object->setSecurityContext($app['security']);
-                return $object;
-            }
-        );
     }
 
     /**

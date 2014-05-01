@@ -14,8 +14,8 @@ use OAuth2\HttpFoundationBridge\Response as BridgeResponse;
 use OAuth2\HttpFoundationBridge\Request as OAuthRequest;
 use OAuth2\Server as OAuth2Server;
 
-use Synapse\Application\SecurityAwareInterface;
-use Synapse\Application\SecurityAwareTrait;
+use Synapse\Security\SecurityAwareInterface;
+use Synapse\Security\SecurityAwareTrait;
 use Synapse\Controller\AbstractController;
 use Synapse\Stdlib\Arr;
 
