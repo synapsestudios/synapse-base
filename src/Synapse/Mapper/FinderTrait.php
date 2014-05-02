@@ -6,9 +6,8 @@ use InvalidArgumentException;
 use Synapse\Mapper\PaginationData;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
-use Zend\Db\Sql\Where;
+use Zend\Db\Sql\PreparableSqlInterface;
 use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
 use Zend\Db\Sql\Predicate\Operator;
@@ -176,17 +175,21 @@ trait FinderTrait
     protected function getPaginationData(Select $query, array $options)
     {
         // Get pagination options
-        $page = Arr::get($options, 'page');
-        $page = ((int)$page > 1 ? $page : 1); // Can't be less than 1
-        $resultsPerPage = Arr::get($options, 'resultsPerPage', $this->resultsPerPage);
+        $page = (int) Arr::get($options, 'page');
+
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $resultsPerPage = Arr::get(
+            $options,
+            'resultsPerPage',
+            $this->resultsPerPage
+        );
 
         // Get total results
-        $queryClone = clone $query;
-        $queryClone->columns(['count' => new Expression('COUNT(*)')]);
-        $statement = $this->sql()->prepareStatementForSqlObject($queryClone);
-        $result = $statement->execute()->current();
-        $resultCount = $result['count'];
-        $pageCount = ceil($resultCount / $resultsPerPage);
+        $resultCount = $this->getQueryResultCount($query);
+        $pageCount   = ceil($resultCount / $resultsPerPage);
 
         return new PaginationData([
             'page'             => $page,
@@ -197,16 +200,37 @@ trait FinderTrait
     }
 
     /**
+     * Get the count of results from a given query
+     *
+     * @param  Select $query
+     * @return int
+     */
+    protected function getQueryResultCount(Select $query)
+    {
+        $queryString = $this->sql()->getSqlStringForSqlObject($query);
+
+        $format = 'Select count(*) as `count` from (%s) as `query_count`';
+
+        $countQueryString = sprintf($format, $queryString);
+
+        $countQuery = $this->dbAdapter->query($countQueryString);
+
+        $result = $countQuery->execute()->current();
+
+        return (int) $result['count'];
+    }
+
+    /**
      * Add where clauses to query
      *
-     * @param Select $query
+     * @param PreparableSqlInterface $query
      * @param array              $wheres An array of where conditions in the format:
      *                                   ['column' => 'value'] or
      *                                   ['column', 'operator', 'value']
-     * @return Select
+     * @return PreparableSqlInterface
      * @throws InvalidArgumentException  If a WHERE requirement is in an unsupported format.
      */
-    protected function addWheres(Select $query, array $wheres)
+    protected function addWheres(PreparableSqlInterface $query, array $wheres)
     {
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
