@@ -153,10 +153,11 @@ abstract class AbstractMapper implements LoggerAwareInterface
      *
      * @param  PreparableSqlInterface $query
      * @param  array                  $wheres
+     * @param  array                  $options
      * @return array                          Updated $wheres that may include
      *                                        fully qualified names.
      */
-    protected function addJoins($query, $wheres)
+    protected function addJoins($query, $wheres, $options = [])
     {
         // Override if joins are required
         return $wheres;

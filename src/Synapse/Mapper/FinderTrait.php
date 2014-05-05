@@ -86,9 +86,9 @@ trait FinderTrait
     {
         $query = $this->sql()->select();
 
-        $wheres = $this->addJoins($query, $wheres);
+        $wheres = $this->addJoins($query, $wheres, $options);
 
-        $this->addWheres($query, $wheres);
+        $this->addWheres($query, $wheres, $options);
 
         $page = Arr::get($options, 'page');
 
@@ -227,10 +227,11 @@ trait FinderTrait
      * @param array              $wheres An array of where conditions in the format:
      *                                   ['column' => 'value'] or
      *                                   ['column', 'operator', 'value']
+     * @param  array             $options
      * @return PreparableSqlInterface
      * @throws InvalidArgumentException  If a WHERE requirement is in an unsupported format.
      */
-    protected function addWheres(PreparableSqlInterface $query, array $wheres)
+    protected function addWheres(PreparableSqlInterface $query, array $wheres, array $options = [])
     {
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
