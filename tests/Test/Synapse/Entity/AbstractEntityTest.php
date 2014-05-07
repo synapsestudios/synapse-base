@@ -4,6 +4,7 @@ namespace Test\Synapse\Entity;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\Entity\AbstractEntity;
+use ReflectionClass;
 
 class AbstractEntityTest extends PHPUnit_Framework_TestCase
 {
@@ -46,5 +47,25 @@ class AbstractEntityTest extends PHPUnit_Framework_TestCase
     public function testMagicCallMethodOnlyAcceptsGettersAndSetters()
     {
         $this->entity->notAGetterOrSetter('foo');
+    }
+
+    public function testExchangeArrayDerivesSetterMethodNamesCorrectlyForMultipleWordProperties()
+    {
+        $expected = 'f00.b4r';
+
+        $this->entity->exchangeArray([
+            'two_word_property' => $expected
+        ]);
+
+        $reflectionObject = new ReflectionClass($this->entity);
+
+        $reflectionProperty = $reflectionObject->getProperty('object');
+        $reflectionProperty->setAccessible(true);
+        $objectPropertyOfEntity = $reflectionProperty->getValue($this->entity);
+
+        $this->assertEquals(
+            $expected,
+            $objectPropertyOfEntity['two_word_property']
+        );
     }
 }
