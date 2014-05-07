@@ -59,9 +59,9 @@ class AbstractEntityTest extends PHPUnit_Framework_TestCase
 
         $reflectionObject = new ReflectionClass($this->entity);
 
-        $entityObject = $reflectionObject->getProperty('object');
-        $entityObject->setAccessible(true);
-        $entityObject = $entityObject->getValue($this->entity);
+        $reflectionProperty = $reflectionObject->getProperty('object');
+        $reflectionProperty->setAccessible(true);
+        $entityObject = $reflectionProperty->getValue($this->entity);
 
         $this->assertEquals(
             $value,
