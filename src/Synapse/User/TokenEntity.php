@@ -10,19 +10,19 @@ use Synapse\Entity\AbstractEntity;
 class TokenEntity extends AbstractEntity
 {
     // Token types
-    const TYPE_VERIFY_REGISTRATION = 'Verify registration';
-    const TYPE_RESET_PASSWORD      = 'Reset password';
+    const TYPE_VERIFY_REGISTRATION = 1;
+    const TYPE_RESET_PASSWORD      = 2;
 
     /**
      * {@inheritDoc}
      */
     protected $object = [
-        'id'      => null,
-        'user_id' => null,
-        'token'   => null,
-        'type'    => null,
-        'created' => null,
-        'expires' => null,
+        'id'            => null,
+        'user_id'       => null,
+        'token'         => null,
+        'token_type_id' => null,
+        'created'       => null,
+        'expires'       => null,
     ];
 
     /**
