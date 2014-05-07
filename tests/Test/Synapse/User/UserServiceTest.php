@@ -360,8 +360,8 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     {
         $userToken = new TokenEntity();
         $userToken->exchangeArray([
-            'id'   => '1',
-            'type' => TokenEntity::TYPE_RESET_PASSWORD
+            'id'            => '1',
+            'token_type_id' => TokenEntity::TYPE_RESET_PASSWORD
         ]);
 
         $this->userService->verifyRegistration($userToken);
@@ -374,9 +374,9 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     {
         $userToken = new TokenEntity();
         $userToken->exchangeArray([
-            'id'      => '1',
-            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
-            'expires' => time() - 1000
+            'id'            => '1',
+            'token_type_id' => TokenEntity::TYPE_VERIFY_REGISTRATION,
+            'expires'       => time() - 1000
         ]);
 
         $this->userService->verifyRegistration($userToken);
@@ -389,10 +389,10 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
 
         $userToken = new TokenEntity();
         $userToken->exchangeArray([
-            'id'      => '1',
-            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
-            'expires' => time() + 1000,
-            'user_id' => $user->getId()
+            'id'            => '1',
+            'token_type_id' => TokenEntity::TYPE_VERIFY_REGISTRATION,
+            'expires'       => time() + 1000,
+            'user_id'       => $user->getId()
         ]);
         $this->expectingDeletedToken($userToken);
 
