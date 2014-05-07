@@ -83,7 +83,7 @@ class DataObject implements ArraySerializableInterface
     {
         foreach ($this->object as $key => $value) {
             if (array_key_exists($key, $values)) {
-                $setter = 'set'.ucfirst($key);
+                $setter = $this->getSetter($key);
                 $this->$setter($values[$key]);
             }
         }
@@ -99,5 +99,22 @@ class DataObject implements ArraySerializableInterface
     public function getArrayCopy()
     {
         return $this->object;
+    }
+
+    /**
+     * Return the method name for the setter of a given variable
+     *
+     * Example: Converts 'user_id' to 'setUserId'
+     *
+     * @param  string $key Key of the variable in $this->object
+     * @return string
+     */
+    protected function getSetter($key)
+    {
+        $key = str_replace('_', ' ', $key);
+        $key = ucwords($key);
+        $key = str_replace(' ', '', $key);
+
+        return 'set'.$key;
     }
 }
