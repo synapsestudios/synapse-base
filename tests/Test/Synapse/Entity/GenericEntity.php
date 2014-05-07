@@ -7,8 +7,9 @@ use Synapse\Entity\AbstractEntity;
 class GenericEntity extends AbstractEntity
 {
     protected $object = [
-        'foo'      => null,
-        'baz'      => null,
-        'default1' => 1,
+        'foo'               => null,
+        'baz'               => null,
+        'default1'          => 1,
+        'two_word_property' => null,
     ];
 }
