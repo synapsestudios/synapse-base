@@ -17,6 +17,10 @@ trait InserterTrait
      */
     public function insert(AbstractEntity $entity)
     {
+        if ($this->createdTimestampColumn) {
+            $entity->exchangeArray([$this->createdTimestampColumn => time()]);
+        }
+
         $values = $entity->getDbValues();
 
         $columns = array_keys($values);
