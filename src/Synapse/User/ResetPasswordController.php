@@ -54,7 +54,7 @@ class ResetPasswordController extends AbstractRestController
     public function post(Request $request)
     {
         // Validate user
-        $email = Arr::get($this->content, 'email');
+        $email = Arr::get($this->getContentAsArray($request), 'email');
         $user  = $this->userService->findByEmail($email);
 
         if (! $user) {
@@ -98,7 +98,7 @@ class ResetPasswordController extends AbstractRestController
      */
     public function put(Request $request)
     {
-        $token = Arr::get($this->content, 'token');
+        $token = Arr::get($this->getContentAsArray($request), 'token');
 
         // Ensure token is valid
         $token = $this->userService->findTokenBy([
@@ -120,7 +120,7 @@ class ResetPasswordController extends AbstractRestController
             return $this->createNotFoundResponse();
         }
 
-        $password = Arr::get($this->content, 'password');
+        $password = Arr::get($this->getContentAsArray($request), 'password');
 
         // Ensure user input is valid
         if (! $password) {

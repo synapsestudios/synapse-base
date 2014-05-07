@@ -53,9 +53,9 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      */
     public function post(Request $request)
     {
-        $user = $this->content;
+        $userData = $this->getContentAsArray($request);
 
-        $errors = $this->userValidator->validate($this->content ?: []);
+        $errors = $this->userValidator->validate($userData ?: []);
 
         if (count($errors) > 0) {
             return $this->createConstraintViolationResponse($errors);
@@ -105,7 +105,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         }
 
         try {
-            $user = $this->userService->update($user, $this->content);
+            $user = $this->userService->update($user, $this->getContentAsArray($request));
         } catch (OutOfBoundsException $e) {
             $httpCodes = [
                 UserService::CURRENT_PASSWORD_REQUIRED => 403,
