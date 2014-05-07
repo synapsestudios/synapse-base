@@ -32,34 +32,8 @@ class DataObject implements ArraySerializableInterface
      */
     public function __call($method, array $args)
     {
-        // If the method name is less than or equal to four characters
-        // then it's not a getter or a setter
-        if (strlen($method) <= 4) {
-            throw new BadMethodCallException('Method not found');
-        }
-
-        // Whether we are setting or getting
-        $type = substr($method, 0, 3);
-
-        if ($type !== 'get' and $type !== 'set') {
-            throw new BadMethodCallException('Method not found');
-        }
-
-        // Get the property name
-        $property = lcfirst(substr($method, 3));
-
-        $transform = function ($letters) {
-            $letter = array_shift($letters);
-
-            return '_' . strtolower($letter);
-        };
-
-        $property = preg_replace_callback('/([A-Z])/', $transform, $property);
-
-        // Make sure the property exists
-        if (! array_key_exists($property, $this->object)) {
-            throw new InvalidArgumentException('Property, '.$property.', not found');
-        }
+        $type     = $this->getMagicMethodType($method);
+        $property = $this->getMagicMethodProperty($method);
 
         if ($type === 'get') {
             // Return the property
@@ -116,5 +90,56 @@ class DataObject implements ArraySerializableInterface
         $key = str_replace(' ', '', $key);
 
         return 'set'.$key;
+    }
+
+    /**
+     * Determine whether the method being called is a getter or setter
+     *
+     * @param  string $method Method being called
+     * @return string
+     */
+    protected function getMagicMethodType($method)
+    {
+        // If the method name is less than or equal to four characters
+        // then it's not a getter or a setter
+        if (strlen($method) <= 3) {
+            throw new BadMethodCallException('Method not found');
+        }
+
+        // Whether we are setting or getting
+        $type = substr($method, 0, 3);
+
+        if ($type !== 'get' and $type !== 'set') {
+            throw new BadMethodCallException('Method not found');
+        }
+
+        return $type;
+    }
+
+    /**
+     * Determine the property that is being set or get
+     *
+     * @param  string $method Method being called
+     * @return string
+     */
+    protected function getMagicMethodProperty($method)
+    {
+        // Get the property name
+        $property = lcfirst(substr($method, 3));
+
+        $transform = function ($letters) {
+            $letter = array_shift($letters);
+
+            return '_' . strtolower($letter);
+        };
+
+        $property = preg_replace_callback('/([A-Z])/', $transform, $property);
+
+        // Make sure the property exists
+        if (! array_key_exists($property, $this->object)) {
+            throw new InvalidArgumentException('Property, '.$property.', not found');
+        }
+
+        return $property;
     }
 }
