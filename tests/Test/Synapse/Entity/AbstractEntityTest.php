@@ -51,10 +51,10 @@ class AbstractEntityTest extends PHPUnit_Framework_TestCase
 
     public function testExchangeArrayDerivesSetterMethodNamesCorrectlyForMultipleWordProperties()
     {
-        $value = 'f00.b4r';
+        $expected = 'f00.b4r';
 
         $this->entity->exchangeArray([
-            'two_word_property' => $value
+            'two_word_property' => $expected
         ]);
 
         $reflectionObject = new ReflectionClass($this->entity);
@@ -64,7 +64,7 @@ class AbstractEntityTest extends PHPUnit_Framework_TestCase
         $entityObject = $reflectionProperty->getValue($this->entity);
 
         $this->assertEquals(
-            $value,
+            $expected,
             $entityObject['two_word_property']
         );
     }
