@@ -61,11 +61,11 @@ class AbstractEntityTest extends PHPUnit_Framework_TestCase
 
         $reflectionProperty = $reflectionObject->getProperty('object');
         $reflectionProperty->setAccessible(true);
-        $entityObject = $reflectionProperty->getValue($this->entity);
+        $objectPropertyOfEntity = $reflectionProperty->getValue($this->entity);
 
         $this->assertEquals(
             $expected,
-            $entityObject['two_word_property']
+            $objectPropertyOfEntity['two_word_property']
         );
     }
 }
