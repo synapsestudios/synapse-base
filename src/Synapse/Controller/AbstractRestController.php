@@ -42,8 +42,6 @@ abstract class AbstractRestController extends AbstractController
             );
         }
 
-        $this->content = json_decode($request->getContent(), true);
-
         if (json_last_error() !== JSON_ERROR_NONE) {
             return $this->createSimpleResponse(400, 'Could not parse json body');
         }
@@ -64,5 +62,16 @@ abstract class AbstractRestController extends AbstractController
                 )
             );
         }
+    }
+
+    /**
+     * Get a JSON decoded array from the request content
+     *
+     * @param  Request $request
+     * @return array
+     */
+    protected function getContentAsArray(Request $request)
+    {
+        return json_decode($request->getContent(), true);
     }
 }
