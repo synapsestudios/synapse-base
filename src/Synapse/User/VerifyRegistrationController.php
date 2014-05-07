@@ -38,9 +38,9 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
         }
 
         $conditions = [
-            'user_id' => $id,
-            'token'   => $token,
-            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
+            'user_id'       => $id,
+            'token'         => $token,
+            'token_type_id' => TokenEntity::TYPE_VERIFY_REGISTRATION,
         ];
 
         $token = $this->userService->findTokenBy($conditions);

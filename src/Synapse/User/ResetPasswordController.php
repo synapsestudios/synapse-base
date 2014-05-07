@@ -63,17 +63,17 @@ class ResetPasswordController extends AbstractRestController
 
         // If a token exists that won't expire in the next 5 minutes, send it
         $token = $this->userService->findTokenBy([
-            'user_id' => $user->getId(),
-            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            'user_id'       => $user->getId(),
+            'token_type_id' => TokenEntity::TYPE_RESET_PASSWORD,
             ['expires', '>', time() + 5*60],
         ]);
 
         // Otherwise create a new token
         if (! $token) {
             $token = $this->userService->createUserToken([
-                'user_id' => $user->getId(),
-                'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-                'expires' => strtotime('+1 day', time()),
+                'user_id'       => $user->getId(),
+                'token_type_id' => TokenEntity::TYPE_RESET_PASSWORD,
+                'expires'       => strtotime('+1 day', time()),
             ]);
         }
 
@@ -102,8 +102,8 @@ class ResetPasswordController extends AbstractRestController
 
         // Ensure token is valid
         $token = $this->userService->findTokenBy([
-            'token'   => $token,
-            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
+            'token'         => $token,
+            'token_type_id' => TokenEntity::TYPE_RESET_PASSWORD,
         ]);
 
         if (! $token) {
