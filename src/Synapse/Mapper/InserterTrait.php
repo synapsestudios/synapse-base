@@ -10,6 +10,13 @@ use Synapse\Entity\AbstractEntity;
 trait InserterTrait
 {
     /**
+     * The name of the column where a time created timestamp is stored
+     *
+     * @var string
+     */
+    protected $createdTimestampColumn = null;
+
+    /**
      * Insert the given entity into the database
      *
      * @param  AbstractEntity $entity
@@ -17,6 +24,10 @@ trait InserterTrait
      */
     public function insert(AbstractEntity $entity)
     {
+        if ($this->createdTimestampColumn) {
+            $entity->exchangeArray([$this->createdTimestampColumn => time()]);
+        }
+
         $values = $entity->getDbValues();
 
         $columns = array_keys($values);
