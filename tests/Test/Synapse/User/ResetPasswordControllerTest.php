@@ -124,12 +124,12 @@ class ResetPasswordControllerTest extends ControllerTestCase
         $entity = new TokenEntity();
 
         $entity = $entity->exchangeArray([
-            'id'      => $id,
-            'user_id' => 11,
-            'token'   => self::TOKEN_VALUE,
-            'type'    => TokenEntity::TYPE_RESET_PASSWORD,
-            'created' => time()-1000,
-            'expires' => $expires,
+            'id'            => $id,
+            'user_id'       => 11,
+            'token'         => self::TOKEN_VALUE,
+            'token_type_id' => TokenEntity::TYPE_RESET_PASSWORD,
+            'created'       => time()-1000,
+            'expires'       => $expires,
         ]);
 
         return $entity;
