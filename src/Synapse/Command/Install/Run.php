@@ -108,8 +108,8 @@ class Run extends AbstractInstallCommand
      *
      * Use injected script if it exist, otherwise instantiate the default.
      *
-     * @return AbstractInstall|bool  Return false if install script not set and
-     *                               install class not found.
+     * @return AbstractInstall
+     * @throws RuntimeException If the install class cannot be found
      */
     public function getInstallScript()
     {
