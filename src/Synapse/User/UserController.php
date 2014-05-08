@@ -62,7 +62,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         }
 
         try {
-            $newUser = $this->userService->register($user);
+            $newUser = $this->userService->register($userData);
         } catch (OutOfBoundsException $e) {
             $httpCodes = [
                 UserService::EMAIL_NOT_UNIQUE => 409,
