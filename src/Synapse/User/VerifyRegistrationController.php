@@ -31,7 +31,7 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
     public function post(Request $request)
     {
         $id    = $request->attributes->get('id');
-        $token = Arr::get($this->content, 'token');
+        $token = Arr::get($this->getContentAsArray($request), 'token');
 
         if (! $token) {
             return $this->createSimpleResponse(422, 'Token not specified.');

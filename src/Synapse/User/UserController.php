@@ -53,16 +53,16 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      */
     public function post(Request $request)
     {
-        $user = $this->content;
+        $userData = $this->getContentAsArray($request);
 
-        $errors = $this->userValidator->validate($this->content ?: []);
+        $errors = $this->userValidator->validate($userData ?: []);
 
         if (count($errors) > 0) {
             return $this->createConstraintViolationResponse($errors);
         }
 
         try {
-            $newUser = $this->userService->register($user);
+            $newUser = $this->userService->register($userData);
         } catch (OutOfBoundsException $e) {
             $httpCodes = [
                 UserService::EMAIL_NOT_UNIQUE => 409,
@@ -97,7 +97,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
 
         // Validate the modified fields
         $errors = $this->userValidator->validate(
-            $userValidationCopy->exchangeArray($this->content ?: [])->getArrayCopy()
+            $userValidationCopy->exchangeArray($this->getContentAsArray($request) ?: [])->getArrayCopy()
         );
 
         if (count($errors) > 0) {
@@ -105,7 +105,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         }
 
         try {
-            $user = $this->userService->update($user, $this->content);
+            $user = $this->userService->update($user, $this->getContentAsArray($request));
         } catch (OutOfBoundsException $e) {
             $httpCodes = [
                 UserService::CURRENT_PASSWORD_REQUIRED => 403,
