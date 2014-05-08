@@ -42,11 +42,11 @@ abstract class AbstractRestController extends AbstractController
             );
         }
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        try {
+            $result = $this->{$method}($request);
+        } catch (BadRequestException $e) {
             return $this->createSimpleResponse(400, 'Could not parse json body');
         }
-
-        $result = $this->{$method}($request);
 
         if ($result instanceof ArraySerializableInterface) {
             return new JsonResponse($result->getArrayCopy());
@@ -72,6 +72,12 @@ abstract class AbstractRestController extends AbstractController
      */
     protected function getContentAsArray(Request $request)
     {
-        return json_decode($request->getContent(), true);
+        $content = json_decode($request->getContent(), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new BadRequestException();
+        }
+
+        return $content;
     }
 }

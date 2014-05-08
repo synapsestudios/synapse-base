@@ -47,4 +47,17 @@ class AbstractRestControllerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Symfony\\Component\\HttpFoundation\\Response', $response);
         $this->assertEquals('{"test":"test"}', (string) $response->getContent());
     }
+
+    public function testGetContentAsArrayThrowsExceptionWhichExecuteCatchesAndReturns400IfContentInvalid()
+    {
+        $invalidJson = 'This is not JSON.';
+
+        $request = new Request([], [], [], [], [], [], $invalidJson);
+
+        $request->setMethod('delete');
+
+        $response = $this->controller->execute($request);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
 }
