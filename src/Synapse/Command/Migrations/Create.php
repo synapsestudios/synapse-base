@@ -24,6 +24,8 @@ class Create extends Command
      */
     protected $newMigrationView;
 
+    protected $migrationNamespace = 'Application\\Migrations\\';
+
     /**
      * Set the injected new migration view, call the parent constructor
      *
@@ -34,6 +36,17 @@ class Create extends Command
         $this->newMigrationView = $newMigrationView;
 
         parent::__construct();
+    }
+
+    /**
+     * Set the namespace for the migrations
+     *
+     * @param string $namespace
+     */
+    public function setMigrationNamespace($namespace)
+    {
+        $this->migrationNamespace = $namespace;
+        return $this;
     }
 
     /**
@@ -61,7 +74,7 @@ class Create extends Command
         $description = $input->getArgument('description');
         $time        = date('YmdHis');
         $classname   = $this->classname($time, $description);
-        $filepath    = APPDIR.'/src/Application/Migrations/'.$classname.'.php';
+        $filepath    = APPDIR.'/src/'.$this->namespaceToPath().$classname.'.php';
 
         if (! is_dir(dirname($filepath))) {
             mkdir(dirname($filepath), 0775, true);
@@ -102,5 +115,15 @@ class Create extends Command
         $description = ucwords($description);
         $description = preg_replace('/[^a-zA-Z]+/', '', $description);
         return $description.$time;
+    }
+
+    /**
+     * Returns the path to the migration namespace
+     *
+     * @return string
+     */
+    protected function namespaceToPath()
+    {
+        return str_replace('\\', '/', $this->migrationNamespace);
     }
 }
