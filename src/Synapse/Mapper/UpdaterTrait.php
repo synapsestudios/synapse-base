@@ -17,6 +17,10 @@ trait UpdaterTrait
      */
     public function update(AbstractEntity $entity)
     {
+        if ($this->updatedTimestampColumn) {
+            $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
+        }
+
         $dbValueArray = $entity->getDbValues();
 
         unset($dbValueArray['id']);
