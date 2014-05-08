@@ -191,8 +191,8 @@ class UserService
         $user = $this->userMapper->persist($userEntity);
 
         $userToken = $this->createUserToken([
-            'type'    => TokenEntity::TYPE_VERIFY_REGISTRATION,
-            'user_id' => $user->getId(),
+            'token_type_id' => TokenEntity::TYPE_VERIFY_REGISTRATION,
+            'user_id'       => $user->getId(),
         ]);
 
         // Create the verify registration email
@@ -266,9 +266,9 @@ class UserService
             throw new OutOfBoundsException('Token not found.', self::TOKEN_NOT_FOUND);
         }
 
-        if ($token->getType() !== TokenEntity::TYPE_VERIFY_REGISTRATION) {
+        if ((int) $token->getTokenTypeId() !== TokenEntity::TYPE_VERIFY_REGISTRATION) {
             $format  = 'Token specified is of type %s. Expected %s.';
-            $message = sprintf($format, $token->getType(), TokenEntity::TYPE_VERIFY_REGISTRATION);
+            $message = sprintf($format, $token->getTokenTypeId(), TokenEntity::TYPE_VERIFY_REGISTRATION);
 
             throw new OutOfBoundsException($message, self::INCORRECT_TOKEN_TYPE);
         }

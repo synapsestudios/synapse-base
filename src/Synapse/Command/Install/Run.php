@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 use SplFileObject;
+use RuntimeException;
 
 /**
  * Console command to initially install the app.
@@ -23,6 +24,13 @@ class Run extends AbstractInstallCommand
      * @var string
      */
     protected $installNamespace = 'Application\Install\\';
+
+    /**
+     * Location of install script
+     *
+     * @var string
+     */
+    protected $installScript;
 
     /**
      * Current version of the application
@@ -100,8 +108,8 @@ class Run extends AbstractInstallCommand
      *
      * Use injected script if it exist, otherwise instantiate the default.
      *
-     * @return AbstractInstall|bool  Return false if install script not set and
-     *                               install class not found.
+     * @return AbstractInstall
+     * @throws RuntimeException If the install class cannot be found
      */
     public function getInstallScript()
     {
@@ -109,7 +117,9 @@ class Run extends AbstractInstallCommand
             $installClass = $this->installNamespace.'Install';
 
             if (! class_exists($installClass)) {
-                return false;
+                $message = sprintf('No install class found at %s. Nothing to do.', $installClass);
+
+                throw new RuntimeException($message);
             }
 
             $installScript = new $installClass;
@@ -143,12 +153,10 @@ class Run extends AbstractInstallCommand
         $output->write(['  Dropping tables', ''], true);
         $this->dropTables();
 
-        $installScript = $this->getInstallScript();
-
-        if (! $installScript) {
-            $output->writeln(
-                sprintf('No install class found at %s. Nothing to do.', $installClass)
-            );
+        try {
+            $installScript = $this->getInstallScript();
+        } catch (RuntimeException $e) {
+            $output->writeln($e->getMessage());
             return;
         }
 
