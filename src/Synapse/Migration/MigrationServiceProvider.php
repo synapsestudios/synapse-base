@@ -18,15 +18,29 @@ class MigrationServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['migrations.create'] = $app->share(function () use ($app) {
-            return new \Synapse\Command\Migrations\Create(
+            $command = new \Synapse\Command\Migrations\Create(
                 new \Synapse\View\Migration\Create($app['mustache'])
             );
+
+            $config = $app['config']->load('init');
+
+            if (isset($config['migrations'])) {
+                $command->setMigrationNamespace($config['migrations']);
+            }
+
+            return $command;
         });
 
         $app['migrations.run'] = $app->share(function () use ($app) {
             $command = new \Synapse\Command\Migrations\Run;
 
             $command->setDatabaseAdapter($app['db']);
+
+            $config = $app['config']->load('init');
+
+            if (isset($config['migrations'])) {
+                $command->setMigrationNamespace($config['migrations']);
+            }
 
             return $command;
         });
