@@ -24,8 +24,8 @@ class MigrationServiceProvider implements ServiceProviderInterface
 
             $config = $app['config']->load('init');
 
-            if (isset($config['migrations'])) {
-                $command->setMigrationNamespace($config['migrations']);
+            if (isset($config['migrations_namespace'])) {
+                $command->setMigrationNamespace($config['migrations_namespace']);
             }
 
             return $command;
@@ -38,8 +38,8 @@ class MigrationServiceProvider implements ServiceProviderInterface
 
             $config = $app['config']->load('init');
 
-            if (isset($config['migrations'])) {
-                $command->setMigrationNamespace($config['migrations']);
+            if (isset($config['migrations_namespace'])) {
+                $command->setMigrationNamespace($config['migrations_namespace']);
             }
 
             return $command;
