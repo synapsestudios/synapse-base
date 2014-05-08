@@ -97,7 +97,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
 
         // Validate the modified fields
         $errors = $this->userValidator->validate(
-            $userValidationCopy->exchangeArray($this->content ?: [])->getArrayCopy()
+            $userValidationCopy->exchangeArray($this->getContentAsArray($request) ?: [])->getArrayCopy()
         );
 
         if (count($errors) > 0) {
