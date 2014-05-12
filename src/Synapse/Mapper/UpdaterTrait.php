@@ -10,13 +10,6 @@ use Synapse\Entity\AbstractEntity;
 trait UpdaterTrait
 {
     /**
-     * The name of the column where a time updated timestamp is stored
-     *
-     * @var string
-     */
-    protected $updatedTimestampColumn = null;
-
-    /**
      * Update the given entity in the database
      *
      * @param  AbstractEntity $entity

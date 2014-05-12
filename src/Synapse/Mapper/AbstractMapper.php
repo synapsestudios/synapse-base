@@ -58,6 +58,20 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $hydrator;
 
     /**
+     * The name of the column where a time created timestamp is stored
+     *
+     * @var string
+     */
+    protected $createdTimestampColumn = null;
+
+    /**
+     * The name of the column where a time updated timestamp is stored
+     *
+     * @var string
+     */
+    protected $updatedTimestampColumn = null;
+
+    /**
      * Set injected objects as properties
      *
      * @param DbAdapter      $db        Query builder object
