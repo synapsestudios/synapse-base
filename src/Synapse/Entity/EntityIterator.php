@@ -146,16 +146,25 @@ class EntityIterator implements ArraySerializableInterface, Iterator
         return $this->position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function next()
     {
         $this->position += 1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rewind()
     {
         $this->position = 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function valid()
     {
         return isset($this->entities[$this->position]);
