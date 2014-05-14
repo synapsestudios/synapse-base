@@ -2,8 +2,9 @@
 
 namespace Synapse\Entity;
 
-use Iterator;
+use Countable;
 use InvalidArgumentException;
+use Iterator;
 use LogicException;
 use Synapse\Mapper\PaginationData;
 use Zend\Stdlib\ArraySerializableInterface;
@@ -11,7 +12,7 @@ use Zend\Stdlib\ArraySerializableInterface;
 /**
  * An iterator for AbstractEntity objects
  */
-class EntityIterator implements ArraySerializableInterface, Iterator
+class EntityIterator implements ArraySerializableInterface, Iterator, Countable
 {
     /**
      * @var array Array of AbstractEntity objects
@@ -168,5 +169,14 @@ class EntityIterator implements ArraySerializableInterface, Iterator
     public function valid()
     {
         return isset($this->entities[$this->position]);
+    }
+
+    /**********************************
+     * Methods inherited from Countable
+     **********************************/
+
+    public function count($mode = COUNT_NORMAL)
+    {
+        return count($this->entities);
     }
 }

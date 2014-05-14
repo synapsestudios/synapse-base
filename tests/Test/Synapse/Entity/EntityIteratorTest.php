@@ -53,4 +53,9 @@ class EntityIteratorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(range(1, 10), $ids);
     }
+
+    public function testCountingWorksCorrectly()
+    {
+        $this->assertEquals(10, count($this->iterator));
+    }
 }
