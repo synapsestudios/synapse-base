@@ -78,6 +78,10 @@ abstract class AbstractRestController extends AbstractController
             throw new BadRequestException();
         }
 
+        if ($content === null) {
+            return [];
+        }
+
         return $content;
     }
 }
