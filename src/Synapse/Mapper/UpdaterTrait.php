@@ -27,7 +27,7 @@ trait UpdaterTrait
 
         $condition = ['id' => $entity->getId()];
 
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->update()
             ->set($dbValueArray)
             ->where($condition);

@@ -26,7 +26,7 @@ class RefreshTokenMapper extends Mapper\AbstractMapper
 
         $condition = ['refresh_token' => $entity->getRefreshToken()];
 
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->update()
             ->set($dbValueArray)
             ->where($condition);

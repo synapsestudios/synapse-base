@@ -41,15 +41,16 @@ trait FinderTrait
      * @param  array  $wheres An array of where conditions in the format:
      *                        ['column' => 'value'] or
      *                        ['column', 'operator', 'value']
+     * @param  array  $options
      * @return AbstractEntity|bool
      */
-    public function findBy(array $wheres)
+    public function findBy(array $wheres, array $options = [])
     {
-        $query = $this->sql()->select();
+        $query = $this->getSqlObject()->select();
 
         $wheres = $this->addJoins($query, $wheres);
 
-        $this->addWheres($query, $wheres);
+        $this->addWheres($query, $wheres, $options);
 
         $data = $this->execute($query)->current();
 
@@ -84,7 +85,7 @@ trait FinderTrait
      */
     public function findAllBy(array $wheres, array $options = [])
     {
-        $query = $this->sql()->select();
+        $query = $this->getSqlObject()->select();
 
         $wheres = $this->addJoins($query, $wheres, $options);
 
@@ -207,7 +208,7 @@ trait FinderTrait
      */
     protected function getQueryResultCount(Select $query)
     {
-        $queryString = $this->sql()->getSqlStringForSqlObject($query);
+        $queryString = $this->getSqlObject()->getSqlStringForSqlObject($query, $this->dbAdapter->getPlatform());
 
         $format = 'Select count(*) as `count` from (%s) as `query_count`';
 
@@ -217,7 +218,7 @@ trait FinderTrait
 
         $result = $countQuery->execute()->current();
 
-        return (int) $result['count'];
+        return (int) Arr::get($result, 'count');
     }
 
     /**
