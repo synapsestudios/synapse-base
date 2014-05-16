@@ -58,6 +58,13 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $hydrator;
 
     /**
+     * Factory that creates SQL objects
+     *
+     * @var SqlFactory
+     */
+    protected $sqlFactory;
+
+    /**
      * The name of the column where a time created timestamp is stored
      *
      * @var string
@@ -83,6 +90,24 @@ abstract class AbstractMapper implements LoggerAwareInterface
         $this->prototype = $prototype;
 
         $this->initialize();
+    }
+
+    /**
+     * Set the SqlFactory object used in getSqlObject
+     *
+     * @param SqlFactory $sqlFactory
+     */
+    public function setSqlFactory(SqlFactory $sqlFactory)
+    {
+        $this->sqlFactory = $sqlFactory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableName()
+    {
+        return $this->tableName;
     }
 
     /**
@@ -146,10 +171,20 @@ abstract class AbstractMapper implements LoggerAwareInterface
      */
     protected function execute(PreparableSqlInterface $query)
     {
-        $statement = $this->sql()->prepareStatementForSqlObject($query);
+        $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
 
         $resultSet = new HydratingResultSet($this->hydrator, $this->prototype);
         return $resultSet->initialize($statement->execute());
+    }
+
+    /**
+     * Rename to getSqlObject, but this method kept for backwards compatibility
+     *
+     * @return Sql
+     */
+    protected function sql()
+    {
+        return $this->getSqlObject();
     }
 
     /**
@@ -157,9 +192,17 @@ abstract class AbstractMapper implements LoggerAwareInterface
      *
      * @return Sql
      */
-    protected function sql()
+    protected function getSqlObject()
     {
-        return new Sql($this->dbAdapter, $this->tableName);
+        // For backwards compatibility, support the old unmockable way
+        if (! $this->sqlFactory) {
+            return new Sql($this->dbAdapter, $this->tableName);
+        }
+
+        return $this->sqlFactory->getSqlObject(
+            $this->dbAdapter,
+            $this->tableName
+        );
     }
 
     /**
