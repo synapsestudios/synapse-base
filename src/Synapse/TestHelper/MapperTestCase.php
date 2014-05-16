@@ -22,6 +22,8 @@ use Zend\Db\Sql\Update;
  */
 abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 {
+    const GENERATED_ID = 123;
+
     protected $sqlStrings = [];
 
     protected $queries = [];
@@ -61,7 +63,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
         $mockResult->expects($this->any())
             ->method('getGeneratedValue')
-            ->will($this->returnValue(1));
+            ->will($this->returnValue(self::GENERATED_ID));
 
         return $mockResult;
     }
