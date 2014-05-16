@@ -28,6 +28,8 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
     protected $queries = [];
 
+    protected $fallbackTableName = 'table';
+
     public function setUp()
     {
         $this->sqlStrings = [];
@@ -138,7 +140,11 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $mockSql->expects($this->any())
             ->method('select')
             ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: ($this->mapper ? $this->mapper->getTableName() : $this->tableName);
+                $table = $mockSql->getTable() ?: (
+                    $this->mapper ?
+                    $this->mapper->getTableName() :
+                    $this->fallbackTableName
+                );
                 $select = new Select($table);
 
                 $this->queries[] = $select;
@@ -149,7 +155,11 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $mockSql->expects($this->any())
             ->method('insert')
             ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: ($this->mapper ? $this->mapper->getTableName() : $this->tableName);
+                $table = $mockSql->getTable() ?: (
+                    $this->mapper ?
+                    $this->mapper->getTableName() :
+                    $this->fallbackTableName
+                );
                 $insert = new Insert($table);
 
                 $this->queries[] = $insert;
@@ -160,7 +170,11 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $mockSql->expects($this->any())
             ->method('update')
             ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: ($this->mapper ? $this->mapper->getTableName() : $this->tableName);
+                $table = $mockSql->getTable() ?: (
+                    $this->mapper ?
+                    $this->mapper->getTableName() :
+                    $this->fallbackTableName
+                );
                 $update = new Update($table);
 
                 $this->queries[] = $update;
@@ -171,7 +185,11 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $mockSql->expects($this->any())
             ->method('delete')
             ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: ($this->mapper ? $this->mapper->getTableName() : $this->tableName);
+                $table = $mockSql->getTable() ?: (
+                    $this->mapper ?
+                    $this->mapper->getTableName() :
+                    $this->fallbackTableName
+                );
                 $delete = new Delete($table);
 
                 $this->queries[] = $delete;
