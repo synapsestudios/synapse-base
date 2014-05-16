@@ -30,7 +30,7 @@ trait DeleterTrait
      */
     public function deleteWhere(array $wheres)
     {
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->delete()
             ->where($wheres);
 

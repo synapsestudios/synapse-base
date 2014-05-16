@@ -26,7 +26,7 @@ class UserRolePivotMapper extends Mapper\AbstractMapper
      */
     public function findRoleNamesByUserId($userId)
     {
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->select()
             ->join('user_roles', 'user_roles.id = pvt_roles_users.role_id', ['name'])
             ->where(['user_id' => $userId]);

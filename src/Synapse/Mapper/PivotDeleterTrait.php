@@ -22,7 +22,7 @@ trait PivotDeleterTrait
     {
         $conditions = $entity->getArrayCopy();
 
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->delete()
             ->where($conditions);
 

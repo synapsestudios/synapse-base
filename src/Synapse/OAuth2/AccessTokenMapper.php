@@ -26,7 +26,7 @@ class AccessTokenMapper extends Mapper\AbstractMapper
 
         $condition = ['access_token' => $entity->getAccessToken()];
 
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->update()
             ->set($dbValueArray)
             ->where($condition);

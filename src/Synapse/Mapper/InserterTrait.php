@@ -25,12 +25,12 @@ trait InserterTrait
 
         $columns = array_keys($values);
 
-        $query = $this->sql()
+        $query = $this->getSqlObject()
             ->insert()
             ->columns($columns)
             ->values($values);
 
-        $statement = $this->sql()->prepareStatementForSqlObject($query);
+        $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
 
         $result = $statement->execute();
 
