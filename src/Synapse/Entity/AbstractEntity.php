@@ -10,7 +10,7 @@ use Synapse\Stdlib\DataObject;
 /**
  * An abstract class for representing database records as entity objects
  */
-abstract class AbstractEntity extends DataObject implements LoggerAwareInterface
+abstract class AbstractEntity extends DataObject implements AbstractEntityInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
