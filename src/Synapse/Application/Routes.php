@@ -2,6 +2,7 @@
 
 namespace Synapse\Application;
 
+use Symfony\Component\HttpFoundation\Response;
 use Synapse\Application;
 
 /**
@@ -16,7 +17,7 @@ class Routes implements RoutesInterface
     public function define(Application $app)
     {
         $app->error(function (\Synapse\Rest\Exception\MethodNotImplementedException $e, $code) {
-            $response = new Symfony\Component\HttpFoundation\Response('Method not implemented');
+            $response = new Response('Method not implemented');
             $response->setStatusCode(501);
             return $response;
         });
@@ -25,7 +26,7 @@ class Routes implements RoutesInterface
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
             if ($app['debug'] === false) {
-                return new \Symfony\Component\HttpFoundation\Response('Something went wrong with your request');
+                return new Response('Something went wrong with your request');
             } else {
                 throw $e;
             }
