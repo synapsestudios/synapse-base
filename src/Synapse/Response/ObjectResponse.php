@@ -21,12 +21,11 @@ class ObjectResponse extends JsonResponse
     /**
      * Constructor.
      *
-     * @param ArraySerializableInterface  $data  The response data as an object implementing
-     *                                           ArraySerializableInterface
+     * @param ArraySerializableInterface  $data
      * @param integer $status                    The response status code
      * @param array   $headers                   An array of response headers
      */
-    public function __construct(ArraySerializableInterface $data = null, $status = 200, $headers = array())
+    public function __construct(ArraySerializableInterface $data, $status = 200, $headers = array())
     {
         $this->object = $data;
 
