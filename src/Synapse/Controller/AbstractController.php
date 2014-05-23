@@ -6,9 +6,11 @@ use Synapse\Application\UrlGeneratorAwareInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
+use Synapse\Response\ObjectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Zend\Stdlib\ArraySerializableInterface;
 
 /**
  * Abstract controller defining universal helper methods
@@ -59,6 +61,19 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
         $response->setStatusCode($code)
             ->setData($data);
 
+        return $response;
+    }
+
+    /**
+     * Create a response from an ArraySerializable object.
+     *
+     * @param  int                        $code
+     * @param  ArraySerializableInterface $object
+     * @return ObjectResponse
+     */
+    protected function createObjectResponse($code, ArraySerializableInterface $object)
+    {
+        $response = new ObjectResponse($object, $code);
         return $response;
     }
 
