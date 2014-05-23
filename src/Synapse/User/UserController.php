@@ -68,7 +68,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
 
         $newUser['_href'] = $this->url('user-entity', array('id' => $newUser['id']));
 
-        return $this->createJsonResponse(201, $newUser);
+        return $this->createJsonResponse($newUser, 201);
     }
 
     /**

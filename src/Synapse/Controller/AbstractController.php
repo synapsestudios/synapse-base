@@ -51,27 +51,24 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
     /**
      * Create and return a JSON response object
      *
-     * @param  int $code    HTTP response code
      * @param  array $data  Response data
+     * @param  int $code    HTTP response code
      * @return JsonResponse
      */
-    protected function createJsonResponse($code, $data)
+    protected function createJsonResponse($data, $code = 200)
     {
-        $response = new JsonResponse;
-        $response->setStatusCode($code)
-            ->setData($data);
-
+        $response = new JsonResponse($data, $code);
         return $response;
     }
 
     /**
      * Create a response from an ArraySerializable object.
      *
-     * @param  int                        $code
      * @param  ArraySerializableInterface $object
+     * @param  int                        $code
      * @return ObjectResponse
      */
-    protected function createObjectResponse($code, ArraySerializableInterface $object)
+    protected function createObjectResponse(ArraySerializableInterface $object, $code = 200)
     {
         $response = new ObjectResponse($object, $code);
         return $response;
@@ -93,8 +90,8 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
         }
 
         return $this->createJsonResponse(
-            422,
-            ['errors' => $errors]
+            ['errors' => $errors],
+            422
         );
     }
 }
