@@ -33,14 +33,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      */
     public function get(Request $request)
     {
-        $id = $request->attributes->get('id');
-
-        $user = $this->userService
-            ->findById($id);
-
-        if (! $user) {
-            return $this->createNotFoundResponse();
-        }
+        $user = $this->user();
 
         return $this->userArrayWithoutPassword($user);
     }
@@ -87,11 +80,6 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     public function put(Request $request)
     {
         $user = $this->user();
-
-        // Ensure the user in question is logged in
-        if ($request->attributes->get('id') !== $user->getId()) {
-            return $this->createSimpleResponse(403, 'Access denied');
-        }
 
         $userValidationCopy = clone $user;
 

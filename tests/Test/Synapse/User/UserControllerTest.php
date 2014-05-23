@@ -127,11 +127,9 @@ class UserControllerTest extends ControllerTestCase
         return $user;
     }
 
-    public function makeGetRequestForUserId($userId)
+    public function makeGetRequestForUser()
     {
-        $this->createJsonRequest('get', [
-            'attributes' => ['id' => $userId]
-        ]);
+        $this->createJsonRequest('get');
 
         return $this->userController->execute($this->request);
     }
@@ -155,16 +153,6 @@ class UserControllerTest extends ControllerTestCase
                 'email'    => 'posted@user.com',
                 'password' => '12345'
             ]
-        ]);
-
-        return $this->userController->execute($this->request);
-    }
-
-    public function makePutRequestForNonLoggedInUser()
-    {
-        $this->createJsonRequest('put', [
-            'attributes' => ['id' => self::EXISTING_USER_ID],
-            'content'    => ['email' => 'new@email.com']
         ]);
 
         return $this->userController->execute($this->request);
@@ -203,7 +191,7 @@ class UserControllerTest extends ControllerTestCase
             ->will($this->throwException(new OutOfBoundsException('', $code)));
     }
 
-    public function withExpectedUserUpdate()
+    public function expectingUserUpdate()
     {
         $captured = $this->captured;
 
@@ -232,26 +220,16 @@ class UserControllerTest extends ControllerTestCase
 
     public function testGetReturnsUserArrayWithoutThePassword()
     {
-        $response = $this->makeGetRequestForUserId(self::EXISTING_USER_ID);
+        $response = $this->makeGetRequestForUser();
 
         $userArrayWithoutPassword = array_diff_key(
-            $this->existingUser->getArrayCopy(),
+            $this->getLoggedInUserEntity()->getArrayCopy(),
             ['password' => '']
         );
 
         $this->assertEquals(
             $userArrayWithoutPassword,
             json_decode($response->getContent(), true)
-        );
-    }
-
-    public function testGetReturns404IfUserNotFound()
-    {
-        $response = $this->makeGetRequestForUserId(self::NON_EXISTENT_USER_ID);
-
-        $this->assertEquals(
-            404,
-            $response->getStatusCode()
         );
     }
 
@@ -289,13 +267,6 @@ class UserControllerTest extends ControllerTestCase
             $expected,
             json_decode($response->getContent(), true)
         );
-    }
-
-    public function testPutReturns403IfIdDoesNotMatchIdOfLoggedInUser()
-    {
-        $response = $this->makePutRequestForNonLoggedInUser();
-
-        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function testPutReturns403IfOutOfBoundsExceptionThrownWithPasswordRequiredErrorCode()
@@ -342,7 +313,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function testPutUpdatesUserWithNewData()
     {
-        $this->withExpectedUserUpdate();
+        $this->expectingUserUpdate();
 
         $response = $this->makePutRequest();
 
@@ -360,7 +331,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function testPutReturnsUserDataMinusPassword()
     {
-        $this->withExpectedUserUpdate();
+        $this->expectingUserUpdate();
 
         $response = $this->makePutRequest();
 
@@ -372,7 +343,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function testValidPutReturns200()
     {
-        $this->withExpectedUserUpdate();
+        $this->expectingUserUpdate();
 
         $response = $this->makePutRequest();
 
