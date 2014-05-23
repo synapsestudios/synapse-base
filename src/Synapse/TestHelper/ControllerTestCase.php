@@ -23,7 +23,7 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
             [],
             [],
             [],
-            Arr::get($params, 'content') ? json_encode($params['content']) : ''
+            Arr::get($params, 'content') !== null ? json_encode($params['content']) : ''
         );
         $this->request->setMethod($method);
         $this->request->headers->set('CONTENT_TYPE', 'application/json');
