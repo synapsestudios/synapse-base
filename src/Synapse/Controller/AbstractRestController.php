@@ -7,6 +7,7 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Synapse\Response\ObjectResponse;
 use Synapse\Rest\Exception\MethodNotImplementedException;
 use Zend\Stdlib\ArraySerializableInterface;
 
@@ -49,7 +50,7 @@ abstract class AbstractRestController extends AbstractController
         }
 
         if ($result instanceof ArraySerializableInterface) {
-            return new JsonResponse($result->getArrayCopy());
+            return new ObjectResponse($result);
         } elseif (is_array($result)) {
             return new JsonResponse($result);
         } elseif ($result instanceof Response) {
