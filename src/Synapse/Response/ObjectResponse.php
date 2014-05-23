@@ -2,6 +2,7 @@
 
 namespace Synapse\Response;
 
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Zend\Stdlib\ArraySerializableInterface;
 
