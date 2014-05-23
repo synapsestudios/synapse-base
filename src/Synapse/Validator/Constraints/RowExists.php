@@ -27,7 +27,12 @@ class RowExists extends Constraint
     public function __construct(AbstractMapper $mapper, $options = null)
     {
         if (! method_exists($mapper, 'findById')) {
-            throw new LogicException('Mapper given to RowExists validator constraint must use FinderTrait');
+            $message = sprintf(
+                'Mapper injected in into %s must use FinderTrait',
+                get_class($this)
+            );
+
+            throw new LogicException($message);
         }
 
         $this->mapper = $mapper;
