@@ -301,4 +301,19 @@ trait FinderTrait
 
         return $query;
     }
+
+    /**
+     * Add any necessary joins to the query.
+     *
+     * @param  PreparableSqlInterface $query
+     * @param  array                  $wheres
+     * @param  array                  $options
+     * @return array                          Updated $wheres that may include
+     *                                        fully qualified names.
+     */
+    protected function addJoins($query, $wheres, $options = [])
+    {
+        // Override if joins are required
+        return $wheres;
+    }
 }
