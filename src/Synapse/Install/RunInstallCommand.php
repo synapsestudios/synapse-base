@@ -2,7 +2,6 @@
 
 namespace Synapse\Install;
 
-use Synapse\Command\Install\Generate;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -210,17 +209,17 @@ class RunInstallCommand extends AbstractInstallCommand
 
         // Install the database structure
         $this->runSql(
-            $dataPath.DIRECTORY_SEPARATOR.Generate::STRUCTURE_FILE,
+            $dataPath.DIRECTORY_SEPARATOR.GenerateInstallCommand::STRUCTURE_FILE,
             '  Creating initial database schema',
-            sprintf('  Database schema file %s not found', Generate::STRUCTURE_FILE),
+            sprintf('  Database schema file %s not found', GenerateInstallCommand::STRUCTURE_FILE),
             $output
         );
 
         // Install the database data
         $this->runSql(
-            $dataPath.DIRECTORY_SEPARATOR.Generate::DATA_FILE,
+            $dataPath.DIRECTORY_SEPARATOR.GenerateInstallCommand::DATA_FILE,
             '  Inserting initial data',
-            sprintf('  Database data file %s not found', Generate::DATA_FILE),
+            sprintf('  Database data file %s not found', GenerateInstallCommand::DATA_FILE),
             $output
         );
 
