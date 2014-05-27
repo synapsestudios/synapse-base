@@ -63,7 +63,7 @@ class LogServiceProvider implements ServiceProviderInterface
             $handlers[] = $this->rollbarHandler($app['environment']);
         }
 
-        $app['log'] = $app->share(function () use ($app, $handlers) {
+        $app['log'] = $app->share(function ($app) use ($handlers) {
             return new Logger('main', $handlers);
         });
 

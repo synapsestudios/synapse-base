@@ -15,7 +15,7 @@ class ServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['config'] = $app->share(function () use ($app) {
+        $app['config'] = $app->share(function ($app) {
             $config = new Config();
 
             foreach ($app['config_dirs'] as $directory) {

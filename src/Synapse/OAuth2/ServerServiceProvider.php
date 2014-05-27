@@ -25,7 +25,7 @@ class ServerServiceProvider implements ServiceProviderInterface
      */
     public function setup(Application $app)
     {
-        $app['oauth.storage'] = $app->share(function () use ($app) {
+        $app['oauth.storage'] = $app->share(function ($app) {
             // Create the storage object
             $storage = new OAuth2ZendDb($app['db']);
             $storage->setUserMapper($app['user.mapper']);
@@ -33,7 +33,7 @@ class ServerServiceProvider implements ServiceProviderInterface
             return $storage;
         });
 
-        $app['oauth_server'] = $app->share(function () use ($app) {
+        $app['oauth_server'] = $app->share(function ($app) {
             $storage = $app['oauth.storage'];
 
             $grantTypes = [
@@ -59,7 +59,7 @@ class ServerServiceProvider implements ServiceProviderInterface
             );
         });
 
-        $app['oauth.controller'] = $app->share(function () use ($app) {
+        $app['oauth.controller'] = $app->share(function ($app) {
             return new OAuthController(
                 $app['oauth_server'],
                 $app['user.service'],
@@ -70,11 +70,11 @@ class ServerServiceProvider implements ServiceProviderInterface
             );
         });
 
-        $app['oauth-access-token.mapper'] = $app->share(function () use ($app) {
+        $app['oauth-access-token.mapper'] = $app->share(function ($app) {
             return new AccessTokenMapper($app['db'], new AccessTokenEntity);
         });
 
-        $app['oauth-refresh-token.mapper'] = $app->share(function () use ($app) {
+        $app['oauth-refresh-token.mapper'] = $app->share(function ($app) {
             return new RefreshTokenMapper($app['db'], new RefreshTokenEntity);
         });
     }

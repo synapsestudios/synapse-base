@@ -19,7 +19,7 @@ class DbServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['db'] = $app->share(function () use ($app) {
+        $app['db'] = $app->share(function ($app) {
             return new Adapter($app['config']->load('db'));
         });
     }
