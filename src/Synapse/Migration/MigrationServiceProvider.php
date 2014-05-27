@@ -18,7 +18,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['migrations.create'] = $app->share(function () use ($app) {
+        $app['migrations.create'] = $app->share(function ($app) {
             $view = new CreateMigrationView($app['mustache']);
 
             $command = new CreateMigrationCommand('migrations:create', $view);
@@ -32,7 +32,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
-        $app['migrations.run'] = $app->share(function () use ($app) {
+        $app['migrations.run'] = $app->share(function ($app) {
             $command = new RunMigrationsCommand('migrations:run');
 
             $command->setDatabaseAdapter($app['db']);

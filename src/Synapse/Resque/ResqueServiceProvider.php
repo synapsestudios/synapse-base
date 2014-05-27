@@ -16,11 +16,11 @@ class ResqueServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['resque'] = $app->share(function () use ($app) {
+        $app['resque'] = $app->share(function ($app) {
             return new ResqueService($app['config']->load('resque'));
         });
 
-        $app['resque.command'] = $app->share(function () use ($app) {
+        $app['resque.command'] = $app->share(function ($app) {
             $command = new ResqueCommand('resque');
             $command->setResque($app['resque']);
             return $command;

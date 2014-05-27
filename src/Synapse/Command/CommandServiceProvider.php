@@ -17,7 +17,7 @@ class CommandServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['console'] = $app->share(function () use ($app) {
+        $app['console'] = $app->share(function ($app) {
             return new ConsoleApplication;
         });
     }
