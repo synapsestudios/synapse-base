@@ -26,8 +26,6 @@ abstract class AbstractConsoleWork
 
         $command = $this->getConsoleCommand($app);
 
-        $this->args['command'] = $command->getName();
-
         // Create Input object with $this->args loaded as Input arguments
         $input  = new ArrayInput($this->args);
         $output = new ConsoleOutput;
