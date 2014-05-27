@@ -6,7 +6,7 @@ use Synapse\Application\UrlGeneratorAwareInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
-use Synapse\Response\ObjectResponse;
+use Synapse\Response\EntityResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -66,11 +66,11 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      *
      * @param  ArraySerializableInterface $object
      * @param  int                        $code
-     * @return ObjectResponse
+     * @return EntityResponse
      */
     protected function createObjectResponse(ArraySerializableInterface $object, $code = 200)
     {
-        $response = new ObjectResponse($object, $code);
+        $response = new EntityResponse($object, $code);
         return $response;
     }
 

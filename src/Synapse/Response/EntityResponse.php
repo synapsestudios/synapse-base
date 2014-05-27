@@ -7,9 +7,10 @@ use Zend\Stdlib\ArraySerializableInterface;
 
 /**
  * A response whose data comes from an object implementing
- * ArraySerializableInterface.
+ * ArraySerializableInterface, which in practice will either be
+ * an Entity or an EntityIterator.
  */
-class ObjectResponse extends JsonResponse
+class EntityResponse extends JsonResponse
 {
     /**
      * An entity or entity iterator.
