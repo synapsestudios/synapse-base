@@ -15,6 +15,10 @@ class RowsExistValidator extends RowExistsValidator
      */
     public function validate($ids, Constraint $constraint)
     {
+        if (! is_array($ids)) {
+            $ids = [$ids];
+        }
+
         foreach ($ids as $id) {
             parent::validate($id, $constraint);
         }
