@@ -68,7 +68,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      * @param  int                        $code
      * @return EntityResponse
      */
-    protected function createObjectResponse(ArraySerializableInterface $object, $code = 200)
+    protected function createEntityResponse(ArraySerializableInterface $object, $code = 200)
     {
         $response = new EntityResponse($object, $code);
         return $response;
