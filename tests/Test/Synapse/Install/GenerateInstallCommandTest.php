@@ -1,15 +1,15 @@
 <?php
 
-namespace Test\Synapse\Command\Install;
+namespace Test\Synapse\Install;
 
 use PHPUnit_Framework_TestCase;
-use Synapse\Command\Install\Generate;
+use Synapse\Install\GenerateInstallCommand;
 
-class GenerateTest extends PHPUnit_Framework_TestCase
+class GenerateInstallCommandTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->command = new Generate;
+        $this->command = new GenerateInstallCommand('install:generate');
     }
 
     public function testGetDumpStructureCommand()
