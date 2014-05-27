@@ -21,7 +21,7 @@ class SocialLoginServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['social-login.controller'] = $app->share(function () use ($app) {
+        $app['social-login.controller'] = $app->share(function ($app) {
             $config = $app['config']->load('social-login');
 
             $controller = new SocialLoginController;
@@ -34,11 +34,11 @@ class SocialLoginServiceProvider implements ServiceProviderInterface
             return $controller;
         });
 
-        $app['social-login.mapper'] = $app->share(function () use ($app) {
+        $app['social-login.mapper'] = $app->share(function ($app) {
             return new SocialLoginMapper($app['db'], new SocialLoginEntity);
         });
 
-        $app['social-login.service'] = $app->share(function () use ($app) {
+        $app['social-login.service'] = $app->share(function ($app) {
             $service = new SocialLoginService;
             $service->setUserService($app['user.service'])
                 ->setSocialLoginMapper($app['social-login.mapper'])

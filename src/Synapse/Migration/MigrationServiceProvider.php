@@ -17,7 +17,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
-        $app['migrations.create'] = $app->share(function () use ($app) {
+        $app['migrations.create'] = $app->share(function ($app) {
             $command = new \Synapse\Command\Migrations\Create(
                 new \Synapse\View\Migration\Create($app['mustache'])
             );
@@ -31,7 +31,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
-        $app['migrations.run'] = $app->share(function () use ($app) {
+        $app['migrations.run'] = $app->share(function ($app) {
             $command = new \Synapse\Command\Migrations\Run;
 
             $command->setDatabaseAdapter($app['db']);
