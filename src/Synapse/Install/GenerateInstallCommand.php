@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Command\Install;
+namespace Synapse\Install;
 
 use Synapse\Stdlib\Arr;
 use Symfony\Component\Console\Command\Command;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * CLI command for creating database install files. (DbData, DbStructure.) Based on Kohana Minion task-upgrade.
  */
-class Generate extends Command
+class GenerateInstallCommand extends Command
 {
     /**
      * Filename of the database structure install file
@@ -88,8 +88,7 @@ class Generate extends Command
      */
     protected function configure()
     {
-        $this->setName('install:generate')
-            ->setDescription('Generate database install files to match the current database');
+        $this->setDescription('Generate database install files to match the current database');
     }
 
     /**

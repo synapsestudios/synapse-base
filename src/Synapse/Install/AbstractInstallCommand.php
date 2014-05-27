@@ -1,9 +1,8 @@
 <?php
 
-namespace Synapse\Command\Install;
+namespace Synapse\Install;
 
 use Synapse\Command\AbstractDatabaseCommand;
-use Zend\Db\Adapter\Adapter as DbAdapter;
 
 /**
  * Abstract class for install commands
