@@ -1,8 +1,7 @@
 <?php
 
-namespace Synapse\Command\Migrations;
+namespace Synapse\Migration;
 
-use Synapse\Migration\AbstractMigration;
 use Synapse\Command\AbstractDatabaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +15,7 @@ use ArrayObject;
  *
  * Uses the app_migrations table to record which migrations have already been run.
  */
-class Run extends AbstractDatabaseCommand
+class RunMigrationsCommand extends AbstractDatabaseCommand
 {
     /**
      * Root namespace of migration classes
@@ -40,8 +39,7 @@ class Run extends AbstractDatabaseCommand
      */
     protected function configure()
     {
-        $this->setName('migrations:run')
-            ->setDescription('Run all new database migrations');
+        $this->setDescription('Run all new database migrations');
     }
 
     /**
