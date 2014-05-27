@@ -28,7 +28,7 @@ class RowExists extends Constraint
     {
         if (! method_exists($mapper, 'findById')) {
             $message = sprintf(
-                'Mapper injected in into %s must use FinderTrait',
+                'Mapper injected into %s must use FinderTrait',
                 get_class($this)
             );
 
