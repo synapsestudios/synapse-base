@@ -233,6 +233,39 @@ class UserControllerTest extends ControllerTestCase
         );
     }
 
+    public function testGetReturnsUserFoundWithoutThePasswordIfUserIsProvided()
+    {
+        $userEntity = $this->existingUser;
+
+        $request = $this->createJsonRequest('GET', [
+            'attributes' => [
+                'user' => $userEntity
+            ]
+        ]);
+
+        $response = $this->userController->get($request);
+
+        $expectedArray = array_diff_key(
+            $this->existingUser->getArrayCopy(),
+            ['password' => '']
+        );
+
+        $this->assertSame($expectedArray, $response);
+    }
+
+    public function testGetReturns404WhenUserProvidedDoesntExist()
+    {
+        $request = $this->createJsonRequest('GET', [
+            'attributes' => [
+                'user' => false
+            ]
+        ]);
+
+        $response = $this->userController->get($request);
+
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
     public function testPostReturns422IfValidationConstraintsAreViolated()
     {
         $this->withValidatorValidateReturningErrors();
