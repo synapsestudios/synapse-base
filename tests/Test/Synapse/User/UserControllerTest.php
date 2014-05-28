@@ -253,6 +253,19 @@ class UserControllerTest extends ControllerTestCase
         $this->assertSame($expectedArray, $response);
     }
 
+    public function testGetReturns404WhenUserProvidedDoesntExist()
+    {
+        $request = $this->createJsonRequest('GET', [
+            'attributes' => [
+                'user' => false
+            ]
+        ]);
+
+        $response = $this->userController->get($request);
+
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
     public function testPostReturns422IfValidationConstraintsAreViolated()
     {
         $this->withValidatorValidateReturningErrors();
