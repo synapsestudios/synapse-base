@@ -94,7 +94,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('GET|PUT')
             ->bind('user-entity-self');
 
-        $app->match('/user/{user}', 'user.controller:get')
+        $app->match('/user/{user}', 'user.controller:rest')
             ->method('GET')
             ->bind('user-entity')
             ->assert('user', '\d+')

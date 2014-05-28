@@ -1,8 +1,9 @@
 <?php
 
-namespace Application\User;
+namespace Synapse\User;
 
 use Symfony\Component\HtpFoundation\Request;
+use Synapse\User\UserMapper;
 
 class UserConverter
 {
