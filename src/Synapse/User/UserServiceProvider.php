@@ -94,7 +94,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('GET|PUT')
             ->bind('user-entity-self');
 
-        $app->match('/user/{user}', 'user.controller:rest')
+        $app->match('/users/{user}', 'user.controller:rest')
             ->method('GET')
             ->bind('user-entity')
             ->assert('user', '\d+')
@@ -108,7 +108,7 @@ class UserServiceProvider implements ServiceProviderInterface
             ->method('POST|PUT')
             ->bind('reset-password');
 
-        $this->setFirewalls($app);
+        $this->setFirewallsAndAccessRules($app);
     }
 
     /**
@@ -126,7 +126,7 @@ class UserServiceProvider implements ServiceProviderInterface
      *
      * @param Application $app
      */
-    protected function setFirewalls(Application $app)
+    protected function setFirewallsAndAccessRules(Application $app)
     {
         $app->extend('security.firewalls', function ($firewalls, $app) {
             $createUser = new RequestMatcher('^/users$', null, ['POST']);
@@ -148,6 +148,14 @@ class UserServiceProvider implements ServiceProviderInterface
             ];
 
             return array_merge($userFirewalls, $firewalls);
+        });
+
+        $app->extend('security.access_rules', function ($rules, $app) {
+            $usersAdminFunctionRequestMatcher = new RequestMatcher('^/users/\d+$', null, ['GET']);
+            $newRules = [
+                [$usersAdminFunctionRequestMatcher, 'ROLE_ADMIN']
+            ];
+            return array_merge($newRules, $rules);
         });
     }
 }
