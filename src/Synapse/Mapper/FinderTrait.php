@@ -48,6 +48,8 @@ trait FinderTrait
     {
         $query = $this->getSqlObject()->select();
 
+        $this->setColumns($query, $options);
+
         $wheres = $this->addJoins($query, $wheres);
 
         $this->addWheres($query, $wheres, $options);
@@ -86,6 +88,8 @@ trait FinderTrait
     public function findAllBy(array $wheres, array $options = [])
     {
         $query = $this->getSqlObject()->select();
+
+        $this->setColumns($query, $options);
 
         $wheres = $this->addJoins($query, $wheres, $options);
 
@@ -300,5 +304,34 @@ trait FinderTrait
         }
 
         return $query;
+    }
+
+    /**
+     * Add any necessary joins to the query.
+     *
+     * @param  PreparableSqlInterface $query
+     * @param  array                  $wheres
+     * @param  array                  $options
+     * @return array                          Updated $wheres that may include
+     *                                        fully qualified names.
+     */
+    protected function addJoins($query, $wheres, $options = [])
+    {
+        // Override if joins are required
+        return $wheres;
+    }
+
+    /**
+     * Set the columns to be selected
+     *
+     * By default selects all of the columns for the table
+     * associated with the mapper
+     *
+     * @param PreparableSqlInterface $query
+     * @param array                  $options
+     */
+    protected function setColumns($query, $options = [])
+    {
+        $query->columns(['*']);
     }
 }
