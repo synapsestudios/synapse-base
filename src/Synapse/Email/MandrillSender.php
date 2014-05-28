@@ -2,8 +2,6 @@
 
 namespace Synapse\Email;
 
-use Synapse\Email\Entity\Email;
-use Synapse\Email\Mapper\Email as EmailMapper;
 use Mandrill;
 
 /**
@@ -17,13 +15,13 @@ class MandrillSender implements SenderInterface
     protected $mandrill;
 
     /**
-     * @var Synapse\Mapper\Email
+     * @var EmailMapper
      */
     protected $mapper;
 
     /**
-     * @param Mandrill             $mandrill
-     * @param Synapse\Mapper\Email $mapper
+     * @param Mandrill    $mandrill
+     * @param EmailMapper $mapper
      */
     public function __construct(Mandrill $mandrill, EmailMapper $mapper)
     {
@@ -34,7 +32,7 @@ class MandrillSender implements SenderInterface
     /**
      * {@inheritDoc}
      */
-    public function send(Email $email)
+    public function send(EmailEntity $email)
     {
         $time = time();
 
@@ -57,10 +55,10 @@ class MandrillSender implements SenderInterface
      *
      * Documentation at https://mandrillapp.com/api/docs/messages.php.html
      *
-     * @param  Email  $emails
+     * @param  EmailEntity  $emails
      * @return array
      */
-    protected function buildMessage(Email $email)
+    protected function buildMessage(EmailEntity $email)
     {
         // Create attachments array
         $attachments = json_decode($email->getAttachments(), true);

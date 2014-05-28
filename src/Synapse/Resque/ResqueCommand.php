@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Command;
+namespace Synapse\Resque;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,7 +17,7 @@ use Resque_Worker;
 
 use RuntimeException;
 
-class Resque extends Command implements LoggerAwareInterface
+class ResqueCommand extends Command implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -47,8 +47,7 @@ class Resque extends Command implements LoggerAwareInterface
      */
     protected function configure()
     {
-        $this->setName('resque')
-            ->setDescription('Control worker processes')
+        $this->setDescription('Control worker processes')
             ->addArgument(
                 'queue',
                 InputArgument::IS_ARRAY,

@@ -18,7 +18,7 @@ class InstallServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['install.generate'] = $app->share(function ($app) {
-            $command = new \Synapse\Command\Install\Generate;
+            $command = new GenerateInstallCommand('install:generate');
 
             $command->setDbConfig($app['config']->load('db'));
             $command->setInstallConfig($app['config']->load('install'));
@@ -27,7 +27,7 @@ class InstallServiceProvider implements ServiceProviderInterface
         });
 
         $app['install.run'] = $app->share(function ($app) {
-            $command = new \Synapse\Command\Install\Run;
+            $command = new RunInstallCommand('install:run');
 
             $command->setDatabaseAdapter($app['db']);
             $command->setAppVersion($app['version']);

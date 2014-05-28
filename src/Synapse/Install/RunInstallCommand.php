@@ -1,10 +1,7 @@
 <?php
 
-namespace Synapse\Command\Install;
+namespace Synapse\Install;
 
-use Synapse\Command\Install\AbstractInstallCommand;
-use Synapse\Command\Install\Generate;
-use Synapse\Install\AbstractInstall;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,7 +13,7 @@ use RuntimeException;
 /**
  * Console command to initially install the app.
  */
-class Run extends AbstractInstallCommand
+class RunInstallCommand extends AbstractInstallCommand
 {
     /**
      * Root namespace of install classes
@@ -135,8 +132,7 @@ class Run extends AbstractInstallCommand
      */
     protected function configure()
     {
-        $this->setName('install:run')
-            ->setDescription('Perform fresh install of the app (WARNING: drops tables)');
+        $this->setDescription('Perform fresh install of the app (WARNING: drops tables)');
     }
 
     /**
@@ -202,8 +198,8 @@ class Run extends AbstractInstallCommand
     /**
      * Install fresh version of the database from db_structure and db_data files
      *
-     * @param  Synapse\Upgrade\AbstractInstall $installScript
-     * @param  OutputInterface                 $output        Command line output interface
+     * @param  AbstractInstall $installScript
+     * @param  OutputInterface $output        Command line output interface
      */
     protected function install(AbstractInstall $installScript, OutputInterface $output)
     {
@@ -213,17 +209,17 @@ class Run extends AbstractInstallCommand
 
         // Install the database structure
         $this->runSql(
-            $dataPath.DIRECTORY_SEPARATOR.Generate::STRUCTURE_FILE,
+            $dataPath.DIRECTORY_SEPARATOR.GenerateInstallCommand::STRUCTURE_FILE,
             '  Creating initial database schema',
-            sprintf('  Database schema file %s not found', Generate::STRUCTURE_FILE),
+            sprintf('  Database schema file %s not found', GenerateInstallCommand::STRUCTURE_FILE),
             $output
         );
 
         // Install the database data
         $this->runSql(
-            $dataPath.DIRECTORY_SEPARATOR.Generate::DATA_FILE,
+            $dataPath.DIRECTORY_SEPARATOR.GenerateInstallCommand::DATA_FILE,
             '  Inserting initial data',
-            sprintf('  Database data file %s not found', Generate::DATA_FILE),
+            sprintf('  Database data file %s not found', GenerateInstallCommand::DATA_FILE),
             $output
         );
 

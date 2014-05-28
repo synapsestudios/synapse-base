@@ -1,17 +1,17 @@
 <?php
 
-namespace Test\Synapse\Command\Email;
+namespace Test\Synapse\Email;
 
 use PHPUnit_Framework_TestCase;
-use Synapse\Command\Email\Send;
+use Synapse\Email\SendEmailCommand;
 use Synapse\Command\Install\Generate;
 use Synapse\Email\EmailEntity;
 
-class SendTest extends PHPUnit_Framework_TestCase
+class SendEmailCommandTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->sendCommand = new Send();
+        $this->sendCommand = new SendEmailCommand('email:send');
 
         // Create mocks
         $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')

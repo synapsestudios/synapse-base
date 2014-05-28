@@ -1,6 +1,6 @@
 <?php
 
-namespace Synapse\Command\Migrations;
+namespace Synapse\Migration;
 
 use Synapse\View\Migration\Create as CreateMigrationView;
 use Symfony\Component\Console\Command\Command;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Example usage:
  *     ./console migrations:create 'Add email field to users table'
  */
-class Create extends Command
+class CreateMigrationCommand extends Command
 {
     /**
      * View for new migration files
@@ -29,13 +29,14 @@ class Create extends Command
     /**
      * Set the injected new migration view, call the parent constructor
      *
-     * @param Synapse\View\Migration\Create $newMigrationView
+     * @param string              $name             Name of the console command
+     * @param CreateMigrationView $newMigrationView
      */
-    public function __construct(CreateMigrationView $newMigrationView)
+    public function __construct($name, CreateMigrationView $newMigrationView)
     {
         $this->newMigrationView = $newMigrationView;
 
-        parent::__construct();
+        parent::__construct($name);
     }
 
     /**
@@ -54,8 +55,7 @@ class Create extends Command
      */
     protected function configure()
     {
-        $this->setName('migrations:create')
-            ->setDescription('Create a new database migration')
+        $this->setDescription('Create a new database migration')
             ->addArgument(
                 'description',
                 InputArgument::REQUIRED,

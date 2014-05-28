@@ -1,27 +1,24 @@
 <?php
 
-namespace Synapse\Command\Email;
+namespace Synapse\Email;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Synapse\Email\EmailEntity;
-use Synapse\Email\EmailMapper;
-use Synapse\Email\SenderInterface;
 
 use LogicException;
 use OutOfBoundsException;
 
-class Send extends Command
+class SendEmailCommand extends Command
 {
     /**
-     * @var Synapse\Email\EmailMapper
+     * @var EmailMapper
      */
     protected $emailMapper;
 
     /**
-     * @var Synapse\Email\SenderInterface
+     * @var SenderInterface
      */
     protected $emailSender;
 
@@ -50,8 +47,7 @@ class Send extends Command
      */
     protected function configure()
     {
-        $this->setName('email:send')
-            ->setDescription('Send an email')
+        $this->setDescription('Send an email')
             ->addArgument(
                 'id',
                 InputArgument::REQUIRED,

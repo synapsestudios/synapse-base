@@ -2,6 +2,7 @@
 
 namespace Synapse\Migration;
 
+use Synapse\View\Migration\Create as CreateMigrationView;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
@@ -18,9 +19,9 @@ class MigrationServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['migrations.create'] = $app->share(function ($app) {
-            $command = new \Synapse\Command\Migrations\Create(
-                new \Synapse\View\Migration\Create($app['mustache'])
-            );
+            $view = new CreateMigrationView($app['mustache']);
+
+            $command = new CreateMigrationCommand('migrations:create', $view);
 
             $config = $app['config']->load('init');
 
@@ -32,7 +33,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
         });
 
         $app['migrations.run'] = $app->share(function ($app) {
-            $command = new \Synapse\Command\Migrations\Run;
+            $command = new RunMigrationsCommand('migrations:run');
 
             $command->setDatabaseAdapter($app['db']);
 

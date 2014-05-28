@@ -4,7 +4,6 @@ namespace Synapse\Email;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Synapse\Command\Email\Send as SendEmailCommand;
 use Synapse\Stdlib\Arr;
 use Mandrill;
 
@@ -46,7 +45,7 @@ class EmailServiceProvider implements ServiceProviderInterface
         });
 
         $app['email.send'] = $app->share(function (Application $app) {
-            $command = new SendEmailCommand;
+            $command = new SendEmailCommand('email:send');
 
             $command->setEmailMapper($app['email.mapper']);
 
@@ -63,6 +62,7 @@ class EmailServiceProvider implements ServiceProviderInterface
      */
     public function boot(Application $app)
     {
+        // Register command routes
         $app->command('email.send');
     }
 }
