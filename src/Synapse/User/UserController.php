@@ -33,9 +33,14 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      */
     public function get(Request $request)
     {
-        $user = $this->user();
-
-        return $this->userArrayWithoutPassword($user);
+        if ($request->attributes->get('user') === NULL) {
+            $user = $this->user();
+            return $this->userArrayWithoutPassword($user);
+        } else if ($request->attributes->get('user')) {
+            return $this->userArrayWithoutPassword($request->attributes->get('user'));
+        } else {
+            return $this->createNotFoundResponse();
+        }
     }
 
     /**

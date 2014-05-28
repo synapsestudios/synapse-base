@@ -64,6 +64,10 @@ class UserServiceProvider implements ServiceProviderInterface
             return $controller;
         });
 
+        $app['user.converter'] = $app->share(function ($app) {
+            return new UserConverter($app['user.mapper']);
+        });
+
         $app['verify-registration.controller'] = $app->share(function ($app) {
             $controller = new VerifyRegistrationController();
             $controller->setUserService($app['user.service']);
@@ -88,7 +92,13 @@ class UserServiceProvider implements ServiceProviderInterface
 
         $app->match('/user', 'user.controller:rest')
             ->method('GET|PUT')
-            ->bind('user-entity');
+            ->bind('user-entity-self');
+
+        $app->match('/user/{user}', 'user.controller:get')
+            ->method('GET')
+            ->bind('user-entity')
+            ->assert('user', '\d+')
+            ->convert('user', 'user.converter:getUser');
 
         $app->match('/users/{id}/verify-registration', 'verify-registration.controller:rest')
             ->method('POST')
