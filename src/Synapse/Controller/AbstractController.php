@@ -74,6 +74,25 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
         return $response;
     }
 
+    /**
+     * Create a response for constraint violations
+     *
+     * Response has a list of errors that looks like this:
+     * {
+     *     "errors" : {
+     *         "current_password" : [
+     *             "This field is expected"
+     *         ],
+     *         "field_2" : [
+     *             "This field cannot be the same as current_password",
+     *             "This field must be less than 5 characters long"
+     *         ]
+     *     }
+     * }
+     *
+     * @param  ConstraintViolationListInterface $violationList
+     * @return JsonResponse
+     */
     protected function createConstraintViolationResponse(ConstraintViolationListInterface $violationList)
     {
         $errors = [];
