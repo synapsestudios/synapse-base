@@ -22,6 +22,16 @@ abstract class AbstractArrayValidator
     protected $validator;
 
     /**
+     * @var array
+     */
+    protected $contextData;
+
+    /**
+     * @var AbstractEntity
+     */
+    protected $contextEntity;
+
+    /**
      * @param Validator $validator
      */
     public function __construct(Validator $validator)
@@ -55,6 +65,28 @@ abstract class AbstractArrayValidator
     }
 
     /**
+     * Set the data being validated so that it can be passed to
+     * validators that need it.
+     *
+     * @param array $contextData
+     */
+    public function setContextData(array $contextData)
+    {
+        $this->contextData = $contextData;
+    }
+
+    /**
+     * Set the entity that will be updated with the data being validated so
+     * that it can be passed to validators that need it.
+     *
+     * @param AbstractEntity $contextEntity
+     */
+    public function setContextEntity(AbstractEntity $contextEntity)
+    {
+        $this->contextEntity = $contextEntity;
+    }
+
+    /**
      * Return an array of validation rules for use with Symfony Validator
      *
      * @link http://silex.sensiolabs.org/doc/providers/validator.html#validating-associative-arrays
@@ -81,5 +113,5 @@ abstract class AbstractArrayValidator
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
      *               objects sharing keys from the array being validated.
      */
-    abstract protected function getConstraints(array $contextData = [], AbstractEntity $contextEntity = null);
+    abstract protected function getConstraints();
 }
