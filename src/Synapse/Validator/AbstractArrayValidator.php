@@ -54,6 +54,8 @@ abstract class AbstractArrayValidator
      */
     public function validate(array $values)
     {
+        $this->contextData = $values;
+
         $constraints = $this->getConstraints();
 
         $arrayConstraint = new Assert\Collection($constraints);
@@ -62,17 +64,6 @@ abstract class AbstractArrayValidator
             $values,
             $arrayConstraint
         );
-    }
-
-    /**
-     * Set the data being validated so that it can be passed to
-     * validators that need it.
-     *
-     * @param array $contextData
-     */
-    public function setContextData(array $contextData)
-    {
-        $this->contextData = $contextData;
     }
 
     /**
