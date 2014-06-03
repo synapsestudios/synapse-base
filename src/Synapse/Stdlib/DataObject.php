@@ -6,7 +6,7 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use Zend\Stdlib\ArraySerializableInterface;
 
-class DataObject implements ArraySerializableInterface
+abstract class DataObject implements ArraySerializableInterface
 {
     /**
      * Entity data
