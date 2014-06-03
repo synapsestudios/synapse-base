@@ -52,9 +52,9 @@ abstract class AbstractArrayValidator
      * @param  array                   $values Values to validate
      * @return ConstraintViolationList
      */
-    public function validate(array $values, AbstractEntity $entity = null)
+    public function validate(array $values)
     {
-        $constraints = $this->getConstraints($values, $entity);
+        $constraints = $this->getConstraints();
 
         $arrayConstraint = new Assert\Collection($constraints);
 
