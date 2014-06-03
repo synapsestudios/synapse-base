@@ -25,22 +25,18 @@ class BelongsToEntityValidator extends ConstraintValidator
             return $this->addViolation($id, $constraint);
         }
 
-        $relatedEntity = $constraint->getMapper()->findById($id);
+        $relatedEntity = $constraint->getMapper()->findBy([
+            'id'                      => $id,
+            $constraint->getIdField() => $mainEntity->getId()
+        ]);
 
         // Invalid if related entity not found
         if (! $relatedEntity instanceof AbstractEntity) {
             return $this->addViolation($id, $constraint);
         }
 
-        $relatedEntityArrayCopy = $relatedEntity->getArrayCopy();
-
-        // Valid if related entity belongs to the main entity
-        if ((int) Arr::get($relatedEntityArrayCopy, $constraint->getIdField()) === (int) $mainEntity->getId()) {
-            return;
-        }
-
-        // Otherwise invalid
-        $this->addViolation($id, $constraint);
+        // Otherwise valid
+        return;
     }
 
     /**
