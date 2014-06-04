@@ -541,4 +541,20 @@ class Arr
 
         return $flat;
     }
+
+    /**
+     * Unset and return an element from an array
+     *
+     * @param  array $array
+     * @param  string $key
+     * @return mixed
+     */
+    public static function remove(array & $array, $key)
+    {
+        $value = $array[$key];
+
+        unset($array[$key]);
+
+        return $value;
+    }
 }
