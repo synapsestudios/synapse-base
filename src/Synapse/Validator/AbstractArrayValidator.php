@@ -22,16 +22,6 @@ abstract class AbstractArrayValidator
     protected $validator;
 
     /**
-     * @var array
-     */
-    protected $contextData;
-
-    /**
-     * @var AbstractEntity
-     */
-    protected $contextEntity;
-
-    /**
      * @param Validator $validator
      */
     public function __construct(Validator $validator)
@@ -64,17 +54,6 @@ abstract class AbstractArrayValidator
             $values,
             $arrayConstraint
         );
-    }
-
-    /**
-     * Set the entity that will be updated with the data being validated so
-     * that it can be passed to validators that need it.
-     *
-     * @param AbstractEntity $contextEntity
-     */
-    public function setContextEntity(AbstractEntity $contextEntity)
-    {
-        $this->contextEntity = $contextEntity;
     }
 
     /**
