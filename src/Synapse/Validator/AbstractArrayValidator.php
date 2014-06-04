@@ -5,6 +5,7 @@ namespace Synapse\Validator;
 use Symfony\Component\Validator\Validator;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints as Assert;
+use Synapse\Entity\AbstractEntity;
 
 /**
  * Abstract class for validating arrays
@@ -39,11 +40,15 @@ abstract class AbstractArrayValidator
      * Constraints from getOptionalConstraints() are only used if the field exists in $values.
      *
      * @param  array                   $values Values to validate
+     * @param  AbstractEntity $contextEntity   The existing entity to which the validated values
+     *                                         will be applied.  Optional.
      * @return ConstraintViolationList
      */
-    public function validate(array $values)
+    public function validate(array $values, AbstractEntity $contextEntity = null)
     {
-        $constraints = $this->getConstraints();
+        $this->contextData = $values;
+
+        $constraints = $this->getConstraints($values, $contextEntity);
 
         $arrayConstraint = new Assert\Collection($constraints);
 
@@ -77,8 +82,11 @@ abstract class AbstractArrayValidator
      *
      * @link http://symfony.com/doc/current/reference/constraints/Collection.html#presence-and-absence-of-fields
      *
+     * @param  array $contextData             Context data that may be passed to a constraint if needed.
+     * @param  AbstractEntity $contextEntity  The existing entity to which the validated values will be applied.
+     *                                        Optional.
      * @return array Associative array of Symfony\Component\Validator\Constraints\*
      *               objects sharing keys from the array being validated.
      */
-    abstract protected function getConstraints();
+    abstract protected function getConstraints(array $contextData, AbstractEntity $contextEntity = null);
 }

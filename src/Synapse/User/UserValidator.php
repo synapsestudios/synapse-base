@@ -2,15 +2,16 @@
 
 namespace Synapse\User;
 
-use Synapse\Validator\AbstractArrayValidator;
 use Symfony\Component\Validator\Constraints as Assert;
+use Synapse\Entity\AbstractEntity;
+use Synapse\Validator\AbstractArrayValidator;
 
 class UserValidator extends AbstractArrayValidator
 {
     /**
      * {@inheritDoc}
      */
-    public function getConstraints()
+    protected function getConstraints(array $contextData, AbstractEntity $contextEntity = null)
     {
         return [
             'email' => new Assert\Email([
