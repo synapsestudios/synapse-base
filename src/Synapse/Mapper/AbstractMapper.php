@@ -111,6 +111,14 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
+     * @return DbAdapter
+     */
+    public function getDbAdapter()
+    {
+        return $this->dbAdapter;
+    }
+
+    /**
      * Persist this entity, inserting it if new and otherwise updating it
      *
      * @param  AbstractEntity $entity
