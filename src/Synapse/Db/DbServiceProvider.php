@@ -4,7 +4,7 @@ namespace Synapse\Db;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Zend\Db\Adapter\Adapter;
+use Synapse\Db\Adapter\Adapter;
 use Zend\Db\Sql\Sql;
 
 /**
