@@ -17,7 +17,7 @@ class Adapter extends ZendDbAdapter
     {
         $driver = parent::createDriver($parameters);
 
-        if ($driver instanceof \Zend\Db\Adapter\Mysqli\Mysqli) {
+        if ($driver instanceof \Zend\Db\Adapter\Driver\Mysqli\Mysqli) {
             $connection = $driver->getConnection();
 
             $nestedTransactionConnection = new MysqliNestedTransactionConnection(
