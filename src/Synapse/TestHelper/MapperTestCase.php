@@ -10,6 +10,7 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\SqlInterface;
 use Zend\Db\Sql\Update;
+use Synapse\Stdlib\Arr;
 
 /**
  * Class for testing mappers.  Currently expects that you are using Mysqli.
@@ -220,5 +221,12 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         }, $this->queries);
 
         return array_merge($stringifiedQueries, $this->sqlStrings);
+    }
+
+    protected function getSqlString($key = 0)
+    {
+        $sqlStrings = $this->getSqlStrings();
+
+        return Arr::get($sqlStrings, $key);
     }
 }
