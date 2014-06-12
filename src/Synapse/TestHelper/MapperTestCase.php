@@ -35,8 +35,8 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
     {
         $this->sqlStrings = [];
 
+        $this->setUpMockResult();
         $this->setUpMockAdapter();
-
         $this->setUpMockSqlFactory();
     }
 
@@ -60,15 +60,15 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         return $query->getSqlString($this->getPlatform());
     }
 
-    public function getMockResult()
+    public function setUpMockResult()
     {
-        $mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
+        $this->mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
 
-        $mockResult->expects($this->any())
+        $this->mockResult->expects($this->any())
             ->method('getGeneratedValue')
             ->will($this->returnValue(self::GENERATED_ID));
 
-        return $mockResult;
+        return $this->mockResult;
     }
 
     public function getMockStatement()
@@ -77,7 +77,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
         $mockStatement->expects($this->any())
             ->method('execute')
-            ->will($this->returnValue($this->getMockResult()));
+            ->will($this->returnValue($this->mockResult));
 
         return $mockStatement;
     }
@@ -96,7 +96,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
                 if ($mode === 'prepare') {
                     return $this->getMockStatement();
                 } else {
-                    return $this->getMockResult();
+                    return $this->mockResult;
                 }
             }));
 
