@@ -4,6 +4,7 @@ namespace Test\Synapse\Mapper;
 
 use Synapse\TestHelper\MapperTestCase;
 use Synapse\User\UserEntity;
+use ReflectionClass;
 
 class AbstractMapperTest extends MapperTestCase
 {
@@ -84,5 +85,29 @@ class AbstractMapperTest extends MapperTestCase
         $this->mapper->persist($entity);
 
         $this->assertRegExpOnSqlString('/INSERT/');
+    }
+
+    /**
+     * On initialize, the hydrator is set.
+     *
+     * Use reflection to indirectly test that initialize only runs once even if called twice
+     * by testing that the hydrator has not changed.
+     */
+    public function testInitializeOnlyEverRunsOnce()
+    {
+        $reflectionObject = new ReflectionClass($this->mapper);
+
+        $hydrator1 = $reflectionObject->getProperty('hydrator');
+        $hydrator1->setAccessible(true);
+
+        $this->mapper->__construct($this->mockAdapter);
+
+        $hydrator2 = $reflectionObject->getProperty('hydrator');
+        $hydrator2->setAccessible(true);
+
+        $this->assertSame(
+            $hydrator1->getValue($hydrator1),
+            $hydrator2->getValue($hydrator2)
+        );
     }
 }
