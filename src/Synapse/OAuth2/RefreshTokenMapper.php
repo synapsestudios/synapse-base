@@ -3,7 +3,7 @@
 namespace Synapse\OAuth2;
 
 use Synapse\Mapper;
-use Synapse\OAuth2\Entity\RefreshToken as RefreshTokenEntity;
+use Synapse\OAuth2\RefreshTokenEntity;
 
 class RefreshTokenMapper extends Mapper\AbstractMapper
 {
