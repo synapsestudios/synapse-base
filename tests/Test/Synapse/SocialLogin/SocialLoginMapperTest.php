@@ -22,7 +22,7 @@ class SocialLoginMapperTest extends MapperTestCase
 
         $this->mapper->findByUserId($userId);
 
-        $regexp = sprintf('/WHERE `user_id` = \'%s\'/', $userId);
+        $regexp = sprintf('/WHERE `user_id` = \'%s\'$/', $userId);
 
         $this->assertRegExp($regexp, $this->getSqlString());
     }
@@ -35,7 +35,7 @@ class SocialLoginMapperTest extends MapperTestCase
         $this->mapper->findByProviderUserId($provider, $providerUserId);
 
         $regexp = sprintf(
-            '/WHERE `provider` = \'%s\' AND `provider_user_id` = \'%s\'/',
+            '/WHERE `provider` = \'%s\' AND `provider_user_id` = \'%s\'$/',
             $provider,
             $providerUserId
         );
