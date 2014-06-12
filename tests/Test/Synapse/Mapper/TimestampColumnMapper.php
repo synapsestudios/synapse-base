@@ -7,6 +7,7 @@ use Synapse\Mapper as MapperNamepace;
 class TimestampColumnMapper extends MapperNamepace\AbstractMapper
 {
     use MapperNamepace\InserterTrait;
+    use MapperNamepace\UpdaterTrait;
 
     /**
      * {@inheritdoc}

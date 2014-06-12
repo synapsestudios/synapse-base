@@ -12,14 +12,23 @@ class UpdaterTraitTest extends MapperTestCase
         parent::setUp();
 
         $this->prototype = $this->createPrototype();
+        $this->timestampPrototype = $this->createTimestampPrototype();
 
         $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
         $this->mapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
+        $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
     {
         return new UserEntity();
+    }
+
+    public function createTimestampPrototype()
+    {
+        return new TimestampColumnEntity();
     }
 
     public function createEntityToUpdate()
@@ -32,6 +41,16 @@ class UpdaterTraitTest extends MapperTestCase
             'created'    => time(),
             'enabled'    => '0',
             'verified'   => '0',
+        ]);
+    }
+
+    public function createTimestampEntityToUpdate()
+    {
+        return new TimestampColumnEntity([
+            'id'      => 1234567,
+            'foo'     => 'bar',
+            'created' => time(),
+            'updated' => null,
         ]);
     }
 
@@ -91,5 +110,19 @@ class UpdaterTraitTest extends MapperTestCase
         $this->mapper->update($entity);
 
         $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
+    public function testUpdateSetsUpdatedTimestampColumnAutomatically()
+    {
+        $entity = $this->createTimestampEntityToUpdate()
+            ->setUpdated(null);
+
+        $this->timestampMapper->update($entity);
+
+        $regexp = sprintf('/\SET .+ `updated` = \'[0-9]+\' WHERE/');
+
+        $this->assertRegExp($regexp, $this->getSqlString());
+
+        $this->assertNotNull($entity->getUpdated());
     }
 }
