@@ -34,4 +34,20 @@ class AbstractMapperTest extends MapperTestCase
             $this->mapper->getPrototype()->getArrayCopy()
         );
     }
+
+    /**
+     * The AbstractMapper includes a provision for backwards compatibility in getSqlObject, an internal method
+     * of the class
+     *
+     * This method tests the backwards compatibility by making sure that no exception is thrown when no
+     * SqlFactory has been set on the mapper
+     */
+    public function testGetSqlObjectDoesNotThrowExceptionIfSqlFactoryNotSet()
+    {
+        $this->mapper->findById(1);
+
+        // Perform a dummy assertion so that this test does not appear as "risky"
+        $this->assertTrue(true);
+    }
+
 }

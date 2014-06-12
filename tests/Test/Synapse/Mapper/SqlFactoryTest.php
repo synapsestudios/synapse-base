@@ -11,9 +11,9 @@ class SqlFactoryTest extends MapperTestCase
 
     public function setUp()
     {
-        $this->factory = new SqlFactory();
+        parent::setUp();
 
-        $this->setUpMockAdapter();
+        $this->factory = new SqlFactory();
     }
 
     public function testGetSqlObjectReturnsSqlObject()

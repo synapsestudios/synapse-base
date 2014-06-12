@@ -36,8 +36,8 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $this->sqlStrings = [];
 
         $this->setUpMockResult();
-        $this->setUpMockAdapter();
         $this->setUpMockSqlFactory();
+        $this->setUpMockAdapter();
     }
 
     public function getPlatform()
@@ -68,7 +68,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
             ->method('getGeneratedValue')
             ->will($this->returnValue(self::GENERATED_ID));
 
-        return $this->mockResult;
+        $this->mockResult;
     }
 
     public function getMockStatement()
@@ -109,6 +109,10 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $this->mockDriver->expects($this->any())
             ->method('getConnection')
             ->will($this->returnValue($this->mockConnection));
+
+        $this->mockDriver->expects($this->any())
+            ->method('createStatement')
+            ->will($this->returnValue($this->getMockStatement()));
 
         $this->mockConnection->expects($this->any())
             ->method('getResource')
