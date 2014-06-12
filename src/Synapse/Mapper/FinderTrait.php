@@ -158,9 +158,6 @@ trait FinderTrait
                 $query->order(
                     Arr::get($orderValue, 0).' '.Arr::get($orderValue, 1)
                 );
-            } else {
-                // Ascending column
-                $query->order($orderValue);
             }
         }
 
