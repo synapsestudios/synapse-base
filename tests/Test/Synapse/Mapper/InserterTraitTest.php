@@ -25,7 +25,6 @@ class InserterTraitTest extends MapperTestCase
     public function createEntityToInsert()
     {
         return new UserEntity([
-            'id'         => 1234,
             'email'      => 'test@example.com',
             'password'   => 'password',
             'last_login' => time(),
@@ -44,6 +43,42 @@ class InserterTraitTest extends MapperTestCase
         $this->mapper->insert($entity);
 
         $regexp = sprintf('/INSERT INTO `%s`/', $tableName);
+
+        $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
+    public function testInsertInsertsCorrectValues()
+    {
+        $entity = $this->createEntityToInsert();
+
+        // $arrayCopy = $entity->getArrayCopy();
+        $arrayCopy = $entity->getDbValues();
+
+        $columns = sprintf(
+            '\(`%s`\)',
+            implode('`, `', array_keys($arrayCopy))
+        );
+
+        $insertValues = [];
+
+        foreach ($arrayCopy as $key => $value) {
+            if ($value === null) {
+                $value = 'NULL';
+            } else {
+                $value = "'$value'";
+            }
+
+            $insertValues[$key] = $value;
+        }
+
+        $values = sprintf(
+            '\(%s\)',
+            implode(', ', $insertValues)
+        );
+
+        $regexp = sprintf('/%s VALUES %s/', $columns, $values);
+
+        $this->mapper->insert($entity);
 
         $this->assertRegExp($regexp, $this->getSqlString());
     }
