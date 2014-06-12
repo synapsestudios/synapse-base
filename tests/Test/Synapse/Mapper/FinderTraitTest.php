@@ -245,10 +245,116 @@ class FinderTraitTest extends MapperTestCase
         $this->assertRegExp($regexp, $this->getSqlString());
     }
 
+    public function testFindAllByFormsExplicitEqualWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '=', 'barbazqux']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` = \'barbazqux\'/');
+    }
+
+    public function testFindAllByFormsNotEqualWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '!=', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` != \'bar\'/');
+    }
+
+    public function testFindAllByFormsGreaterThanWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '>', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` > \'bar\'/');
+    }
+
+    public function testFindAllByFormsLessThanWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '<', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` < \'bar\'/');
+    }
+
+    public function testFindAllByFormsGreaterThanOrEqualToWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '>=', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` >= \'bar\'/');
+    }
+
+    public function testFindAllByFormsLessThanOrEqualToWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', '<=', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` <= \'bar\'/');
+    }
+
+    public function testFindAllByFormsLikeWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', 'LIKE', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` LIKE \'bar\'/');
+    }
+
+    public function testFindAllByFormsNotLikeWhereClausesCorrectly()
+    {
+        $constraints = [
+            ['foo', 'NOT LIKE', 'bar']
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` NOT LIKE \'bar\'/');
+    }
+
+    public function testFindAllByFormsInWhereClausesCorrectly()
+    {
+        $inArray = ['bar', 'baz', 'qux'];
+
+        $constraints = [
+            ['foo', 'IN', $inArray]
+        ];
+
+        $this->mapper->findAllBy($constraints);
+
+        $regexp = sprintf(
+            '/WHERE `foo` IN \(\'%s\'\)/',
+            implode('\', \'', $inArray)
+        );
+
+        $this->assertRegExpOnSqlString($regexp);
+    }
+
     /**
      * @expectedException LogicException
      */
-    public function testFindAllByThrowExceptionIfPageGivenButOrderNotGiven()
+    public function testFindAllByThrowsExceptionIfPageGivenButOrderNotGiven()
     {
         $options = ['page'  => 6];
 
