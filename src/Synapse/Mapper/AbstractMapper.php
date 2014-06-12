@@ -112,6 +112,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
 
     /**
      * @return DbAdapter
+     *
+     * @codeCoverageIgnore
      */
     public function getDbAdapter()
     {
@@ -189,6 +191,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * Rename to getSqlObject, but this method kept for backwards compatibility
      *
      * @return Sql
+     *
+     * @codeCoverageIgnore
      */
     protected function sql()
     {

@@ -19,6 +19,20 @@ class AbstractMapperTest extends MapperTestCase
         return new UserEntity();
     }
 
+    public function createEntity()
+    {
+        return new UserEntity([
+            'id'       => 100,
+            'email'    => 'address@a.com',
+            'password' => 'password',
+        ]);
+    }
+
+    public function capturingSqlStrings()
+    {
+        $this->mapper->setSqlFactory($this->mockSqlFactory);
+    }
+
     public function testGetPrototypeReturnsCloneOfPrototype()
     {
         $prototype = $this->createPrototype();
@@ -50,4 +64,25 @@ class AbstractMapperTest extends MapperTestCase
         $this->assertTrue(true);
     }
 
+    public function testPersistCallsUpdateIfEntityHasId()
+    {
+        $this->capturingSqlStrings();
+
+        $entity = $this->createEntity();
+
+        $this->mapper->persist($entity);
+
+        $this->assertRegExpOnSqlString('/UPDATE/');
+    }
+
+    public function testPersistCallsInsertIfEntityDoesNotHaveId()
+    {
+        $this->capturingSqlStrings();
+
+        $entity = $this->createEntity()->setId(null);
+
+        $this->mapper->persist($entity);
+
+        $this->assertRegExpOnSqlString('/INSERT/');
+    }
 }
