@@ -229,4 +229,11 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
         return Arr::get($sqlStrings, $key);
     }
+
+    protected function assertRegExpOnSqlString($regexp, $sqlStringKey = 0)
+    {
+        $sqlString = $this->getSqlString($sqlStringKey);
+
+        $this->assertRegExp($regexp, $sqlString);
+    }
 }
