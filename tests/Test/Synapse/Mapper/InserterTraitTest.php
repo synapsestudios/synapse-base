@@ -11,15 +11,24 @@ class InserterTraitTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->prototype = $this->createPrototype();
+        $this->prototype          = $this->createPrototype();
+        $this->timestampPrototype = $this->createTimestampPrototype();
 
         $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
         $this->mapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
+        $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
     {
         return new UserEntity();
+    }
+
+    public function createTimestampPrototype()
+    {
+        return new TimestampColumnEntity();
     }
 
     public function createEntityToInsert()
@@ -31,6 +40,16 @@ class InserterTraitTest extends MapperTestCase
             'created'    => time(),
             'enabled'    => '0',
             'verified'   => '0',
+        ]);
+    }
+
+    public function createTimestampEntityToInsert()
+    {
+        return new TimestampColumnEntity([
+            'id'      => null,
+            'foo'     => 'bar',
+            'created' => null,
+            'updated' => null,
         ]);
     }
 
@@ -81,5 +100,15 @@ class InserterTraitTest extends MapperTestCase
         $this->mapper->insert($entity);
 
         $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
+    public function testInsertSetsCreatedTimestampColumnAutomatically()
+    {
+        $entity = $this->createTimestampEntityToInsert()
+            ->setCreated(null);
+
+        $this->timestampMapper->insert($entity);
+
+        $this->assertNotNull($entity->getCreated());
     }
 }
