@@ -51,7 +51,7 @@ class EmailServiceProvider implements ServiceProviderInterface
         });
 
         $app['email.send'] = $app->share(function (Application $app) {
-            $command = new SendEmailCommand('email:send');
+            $command = new SendEmailCommand();
 
             $command->setEmailMapper($app['email.mapper']);
 

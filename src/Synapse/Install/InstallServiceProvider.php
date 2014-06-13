@@ -24,7 +24,7 @@ class InstallServiceProvider implements ServiceProviderInterface
         });
 
         $app['install.generate'] = $app->share(function ($app) {
-            $command = new GenerateInstallCommand('install:generate');
+            $command = new GenerateInstallCommand();
 
             $command->setDbConfig($app['config']->load('db'));
             $command->setInstallConfig($app['config']->load('install'));
