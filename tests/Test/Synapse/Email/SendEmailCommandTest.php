@@ -170,4 +170,34 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(500, $returnValue);
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testProxyThrowsExceptionIfFactoryDoesNotReturnCommand()
+    {
+        $this->sendCommand->setFactory(function () {
+            return null;
+        });
+
+        $this->sendCommand->run(
+            $this->mockInputInterface,
+            $this->mockOutputInterface
+        );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testProxyThrowsExceptionIfFactoryReturnsIncorrectInstance()
+    {
+        $this->sendCommand->setFactory(function () {
+            return new \stdClass;
+        });
+
+        $this->sendCommand->run(
+            $this->mockInputInterface,
+            $this->mockOutputInterface
+        );
+    }
 }
