@@ -3,6 +3,7 @@
 namespace Synapse\Mapper;
 
 use InvalidArgumentException;
+use LogicException;
 use Synapse\Mapper\PaginationData;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
@@ -98,7 +99,7 @@ trait FinderTrait
         $page = Arr::get($options, 'page');
 
         if ($page && !Arr::get($options, 'order')) {
-            throw new Exception('Must provide an ORDER BY if using pagination');
+            throw new LogicException('Must provide an ORDER BY if using pagination');
         }
 
         if (Arr::get($options, 'order')) {
@@ -146,10 +147,6 @@ trait FinderTrait
      */
     protected function setOrder(Select $query, array $order)
     {
-        if (! $order) {
-            return $query;
-        }
-
         // Normalize to [['column', 'direction']] format if only one column
         if (! is_array(Arr::get($order, 0))) {
             $order = [$order];
@@ -161,9 +158,6 @@ trait FinderTrait
                 $query->order(
                     Arr::get($orderValue, 0).' '.Arr::get($orderValue, 1)
                 );
-            } else {
-                // Ascending column
-                $query->order($orderValue);
             }
         }
 

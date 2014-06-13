@@ -51,7 +51,7 @@ class UserMapper extends Mapper\AbstractMapper implements UserProviderInterface
      */
     public function loadUserByUsername($username)
     {
-        $entity = $this->findByEmail($username);
+        return $this->findByEmail($username);
     }
 
     /**
@@ -59,7 +59,7 @@ class UserMapper extends Mapper\AbstractMapper implements UserProviderInterface
      */
     public function refreshUser(UserInterface $user)
     {
-        $entity = $this->findById($user->getId());
+        return $this->findById($user->getId());
     }
 
     /**

@@ -10,6 +10,7 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\SqlInterface;
 use Zend\Db\Sql\Update;
+use Synapse\Stdlib\Arr;
 
 /**
  * Class for testing mappers.  Currently expects that you are using Mysqli.
@@ -34,9 +35,9 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
     {
         $this->sqlStrings = [];
 
-        $this->setUpMockAdapter();
-
+        $this->setUpMockResult();
         $this->setUpMockSqlFactory();
+        $this->setUpMockAdapter();
     }
 
     public function getPlatform()
@@ -59,15 +60,15 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         return $query->getSqlString($this->getPlatform());
     }
 
-    public function getMockResult()
+    public function setUpMockResult()
     {
-        $mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
+        $this->mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
 
-        $mockResult->expects($this->any())
+        $this->mockResult->expects($this->any())
             ->method('getGeneratedValue')
             ->will($this->returnValue(self::GENERATED_ID));
 
-        return $mockResult;
+        $this->mockResult;
     }
 
     public function getMockStatement()
@@ -76,7 +77,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
         $mockStatement->expects($this->any())
             ->method('execute')
-            ->will($this->returnValue($this->getMockResult()));
+            ->will($this->returnValue($this->mockResult));
 
         return $mockStatement;
     }
@@ -95,7 +96,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
                 if ($mode === 'prepare') {
                     return $this->getMockStatement();
                 } else {
-                    return $this->getMockResult();
+                    return $this->mockResult;
                 }
             }));
 
@@ -108,6 +109,10 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $this->mockDriver->expects($this->any())
             ->method('getConnection')
             ->will($this->returnValue($this->mockConnection));
+
+        $this->mockDriver->expects($this->any())
+            ->method('createStatement')
+            ->will($this->returnValue($this->getMockStatement()));
 
         $this->mockConnection->expects($this->any())
             ->method('getResource')
@@ -220,5 +225,19 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         }, $this->queries);
 
         return array_merge($stringifiedQueries, $this->sqlStrings);
+    }
+
+    protected function getSqlString($key = 0)
+    {
+        $sqlStrings = $this->getSqlStrings();
+
+        return Arr::get($sqlStrings, $key);
+    }
+
+    protected function assertRegExpOnSqlString($regexp, $sqlStringKey = 0)
+    {
+        $sqlString = $this->getSqlString($sqlStringKey);
+
+        $this->assertRegExp($regexp, $sqlString);
     }
 }
