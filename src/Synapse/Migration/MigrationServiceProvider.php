@@ -39,7 +39,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
         });
 
         $app['migrations.run-proxy'] = $app->share(function ($app) {
-            $command = new RunMigrationCommandProxy('migrations:run');
+            $command = new RunMigrationsCommandProxy('migrations:run');
             $command->setFactory($app->raw('migrations.run'));
             return $command;
         });
