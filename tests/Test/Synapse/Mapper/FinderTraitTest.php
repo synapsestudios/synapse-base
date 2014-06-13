@@ -52,6 +52,47 @@ class FinderTraitTest extends MapperTestCase
         ];
     }
 
+    public function createWhereClauseRegexp($constraints)
+    {
+        $whereValues = [];
+
+        foreach ($constraints as $field => $value) {
+            if ($value === null) {
+                $whereValue = sprintf('`%s` IS NULL', $field);
+            } else {
+                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
+            }
+
+            $whereValues[] = $whereValue;
+        }
+
+        $whereValueString = implode(' AND ', $whereValues);
+
+        return sprintf('/WHERE %s/', $whereValueString);
+    }
+
+    public function createOrderByClauseRegexp($orderOptions)
+    {
+        $orderQuerySections = [];
+
+        foreach ($orderOptions as $option) {
+            $column    = $option[0];
+            $direction = $option[1];
+
+            // Test that order is set to ascending if none provided
+            if ($direction === null) {
+                $direction = self::ORDER_ASCENDING;
+            }
+
+            $orderQuerySections[] = sprintf('`%s` %s', $column, $direction);
+        }
+
+        return sprintf(
+            '/ORDER BY %s/',
+            implode(', ', $orderQuerySections)
+        );
+    }
+
     public function withUserEntityFound()
     {
         $userEntity = $this->createUserEntity();
@@ -106,21 +147,7 @@ class FinderTraitTest extends MapperTestCase
 
         $this->mapper->findBy($constraints);
 
-        $whereValues = [];
-
-        foreach ($constraints as $field => $value) {
-            if ($value === null) {
-                $whereValue = sprintf('`%s` IS NULL', $field);
-            } else {
-                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
-            }
-
-            $whereValues[] = $whereValue;
-        }
-
-        $whereValueString = implode(' AND ', $whereValues);
-
-        $regexp = sprintf('/WHERE %s/', $whereValueString);
+        $regexp = $this->createWhereClauseRegexp($constraints);
 
         $this->assertRegExp($regexp, $this->getSqlString());
     }
@@ -159,21 +186,7 @@ class FinderTraitTest extends MapperTestCase
 
         $this->mapper->findAllBy($constraints);
 
-        $whereValues = [];
-
-        foreach ($constraints as $field => $value) {
-            if ($value === null) {
-                $whereValue = sprintf('`%s` IS NULL', $field);
-            } else {
-                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
-            }
-
-            $whereValues[] = $whereValue;
-        }
-
-        $whereValueString = implode(' AND ', $whereValues);
-
-        $regexp = sprintf('/WHERE %s/', $whereValueString);
+        $regexp = $this->createWhereClauseRegexp($constraints);
 
         $this->assertRegExp($regexp, $this->getSqlString());
     }
@@ -213,33 +226,17 @@ class FinderTraitTest extends MapperTestCase
 
     public function testFindAllBySetsMultipleOrdersIfProvidedAndSetsDirectionToAscendingIfNoneProvided()
     {
-        $orderColumnsAndDirections = [
-            'ad9fe8c7'  => self::ORDER_ASCENDING,
-            'bd8ca9ef'  => self::ORDER_DESCENDING,
-            'foobarbaz' => null,
+        $orderOptions = [
+            ['ad9fe8c7', self::ORDER_ASCENDING],
+            ['bd8ca9ef', self::ORDER_DESCENDING],
+            ['foobarbaz', null],
         ];
 
-        $orderOptions = [];
-        $orderQuerySections = [];
+        $regexp = $this->createOrderByClauseRegexp($orderOptions);
 
-        foreach ($orderColumnsAndDirections as $column => $direction) {
-            $orderOptions[] = [$column, $direction];
-
-            // Test that order is set to ascending if none provided
-            if ($direction === null) {
-                $direction = self::ORDER_ASCENDING;
-            }
-
-            $orderQuerySections[] = sprintf('`%s` %s', $column, $direction);
-        }
-
-        $options = ['order' => $orderOptions];
-
-        $this->mapper->findAllBy($this->createSearchConstraints(), $options);
-
-        $regexp = sprintf(
-            '/ORDER BY %s/',
-            implode(', ', $orderQuerySections)
+        $this->mapper->findAllBy(
+            $this->createSearchConstraints(),
+            ['order' => $orderOptions]
         );
 
         $this->assertRegExp($regexp, $this->getSqlString());

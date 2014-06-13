@@ -39,6 +39,25 @@ class PivotDeleterTraitTest extends MapperTestCase
         ];
     }
 
+    public function createWhereClauseRegexp($arrayCopy)
+    {
+        $whereValues = [];
+
+        foreach ($arrayCopy as $field => $value) {
+            if ($value === null) {
+                $whereValue = sprintf('`%s` IS NULL', $field);
+            } else {
+                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
+            }
+
+            $whereValues[] = $whereValue;
+        }
+
+        $whereValueString = implode(' AND ', $whereValues);
+
+        return sprintf('/WHERE %s/', $whereValueString);
+    }
+
     public function testDeleteDeletesFromCorrectTable()
     {
         $tableName = $this->mapper->getTableName();
@@ -56,21 +75,7 @@ class PivotDeleterTraitTest extends MapperTestCase
     {
         $entity = $this->createEntityToDelete();
 
-        $whereValues = [];
-
-        foreach ($entity->getArrayCopy() as $field => $value) {
-            if ($value === null) {
-                $whereValue = sprintf('`%s` IS NULL', $field);
-            } else {
-                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
-            }
-
-            $whereValues[] = $whereValue;
-        }
-
-        $whereValueString = implode(' AND ', $whereValues);
-
-        $regexp = sprintf('/WHERE %s/', $whereValueString);
+        $regexp = $this->createWhereClauseRegexp($entity->getArrayCopy());
 
         $this->mapper->delete($entity);
 
