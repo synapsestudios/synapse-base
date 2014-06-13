@@ -45,6 +45,25 @@ class DeleterTraitTest extends MapperTestCase
         ];
     }
 
+    public function createWhereClauseRegexp($constraints)
+    {
+        $whereValues = [];
+
+        foreach ($constraints as $field => $value) {
+            if ($value === null) {
+                $whereValue = sprintf('`%s` IS NULL', $field);
+            } else {
+                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
+            }
+
+            $whereValues[] = $whereValue;
+        }
+
+        $whereValueString = implode(' AND ', $whereValues);
+
+        return sprintf('/WHERE %s/', $whereValueString);
+    }
+
     public function testDeleteDeletesFromCorrectTable()
     {
         $tableName = $this->mapper->getTableName();
@@ -73,21 +92,7 @@ class DeleterTraitTest extends MapperTestCase
     {
         $constraints = $this->createDeletionConstraints();
 
-        $whereValues = [];
-
-        foreach ($constraints as $field => $value) {
-            if ($value === null) {
-                $whereValue = sprintf('`%s` IS NULL', $field);
-            } else {
-                $whereValue = sprintf('`%s` = \'%s\'', $field, $value);
-            }
-
-            $whereValues[] = $whereValue;
-        }
-
-        $whereValueString = implode(' AND ', $whereValues);
-
-        $regexp = sprintf('/WHERE %s/', $whereValueString);
+        $regexp = $this->createWhereClauseRegexp($constraints);
 
         $this->mapper->deleteWhere($constraints);
 

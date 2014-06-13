@@ -54,6 +54,26 @@ class UpdaterTraitTest extends MapperTestCase
         ]);
     }
 
+    public function createUpdateClauseRegexp($arrayCopy)
+    {
+        $updateValues = [];
+
+        foreach ($arrayCopy as $key => $value) {
+            if ($value === null) {
+                $value = 'NULL';
+            } else {
+                $value = "'$value'";
+            }
+
+            $updateValues[] = sprintf('`%s` = %s', $key, $value);
+        }
+
+        return sprintf(
+            '/%s/',
+            implode(', ', $updateValues)
+        );
+    }
+
     public function testUpdateUpdatesIntoCorrectTable()
     {
         $tableName = $this->mapper->getTableName();
@@ -90,22 +110,7 @@ class UpdaterTraitTest extends MapperTestCase
         // Query should not try to update the ID, even to the same ID
         unset($arrayCopy['id']);
 
-        $updateValues = [];
-
-        foreach ($arrayCopy as $key => $value) {
-            if ($value === null) {
-                $value = 'NULL';
-            } else {
-                $value = "'$value'";
-            }
-
-            $updateValues[] = sprintf('`%s` = %s', $key, $value);
-        }
-
-        $regexp = sprintf(
-            '/%s/',
-            implode(', ', $updateValues)
-        );
+        $regexp = $this->createUpdateClauseRegexp($arrayCopy);
 
         $this->mapper->update($entity);
 

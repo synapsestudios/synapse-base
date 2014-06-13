@@ -53,26 +53,8 @@ class InserterTraitTest extends MapperTestCase
         ]);
     }
 
-    public function testInsertInsertsIntoCorrectTable()
+    public function createInsertClauseRegexp($arrayCopy)
     {
-        $tableName = $this->mapper->getTableName();
-
-        $entity = $this->createEntityToInsert();
-
-        $this->mapper->insert($entity);
-
-        $regexp = sprintf('/INSERT INTO `%s`/', $tableName);
-
-        $this->assertRegExp($regexp, $this->getSqlString());
-    }
-
-    public function testInsertInsertsCorrectValues()
-    {
-        $entity = $this->createEntityToInsert();
-
-        // $arrayCopy = $entity->getArrayCopy();
-        $arrayCopy = $entity->getDbValues();
-
         $columns = sprintf(
             '\(`%s`\)',
             implode('`, `', array_keys($arrayCopy))
@@ -95,7 +77,30 @@ class InserterTraitTest extends MapperTestCase
             implode(', ', $insertValues)
         );
 
-        $regexp = sprintf('/%s VALUES %s/', $columns, $values);
+        return sprintf('/%s VALUES %s/', $columns, $values);
+    }
+
+    public function testInsertInsertsIntoCorrectTable()
+    {
+        $tableName = $this->mapper->getTableName();
+
+        $entity = $this->createEntityToInsert();
+
+        $this->mapper->insert($entity);
+
+        $regexp = sprintf('/INSERT INTO `%s`/', $tableName);
+
+        $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
+    public function testInsertInsertsCorrectValues()
+    {
+        $entity = $this->createEntityToInsert();
+
+        // $arrayCopy = $entity->getArrayCopy();
+        $arrayCopy = $entity->getDbValues();
+
+        $regexp = $this->createInsertClauseRegexp($arrayCopy);
 
         $this->mapper->insert($entity);
 
