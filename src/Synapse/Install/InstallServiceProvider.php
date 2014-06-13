@@ -17,6 +17,12 @@ class InstallServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
+        $app['install.generate-proxy'] = $app->share(function ($app) {
+            $command = new GenerateInstallCommandProxy('install:generate');
+            $command->setFactory($app->raw('install.generate'));
+            return $command;
+        });
+
         $app['install.generate'] = $app->share(function ($app) {
             $command = new GenerateInstallCommand('install:generate');
 
@@ -26,8 +32,14 @@ class InstallServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
+        $app['install.run-proxy'] = $app->share(function ($app) {
+            $command = new RunInstallCommandProxy('install:run');
+            $command->setFactory($app->raw('install.run'));
+            return $command;
+        });
+
         $app['install.run'] = $app->share(function ($app) {
-            $command = new RunInstallCommand('install:run');
+            $command = new RunInstallCommand();
 
             $command->setDatabaseAdapter($app['db']);
             $command->setAppVersion($app['version']);
@@ -46,7 +58,7 @@ class InstallServiceProvider implements ServiceProviderInterface
     public function boot(Application $app)
     {
         // Register command routes
-        $app->command('install.run');
+        $app->command('install.run-proxy');
         $app->command('install.generate');
     }
 }

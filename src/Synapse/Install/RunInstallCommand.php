@@ -2,6 +2,7 @@
 
 namespace Synapse\Install;
 
+use Synapse\Command\AbstractDatabaseCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,7 +14,7 @@ use RuntimeException;
 /**
  * Console command to initially install the app.
  */
-class RunInstallCommand extends AbstractInstallCommand
+class RunInstallCommand extends AbstractDatabaseCommand
 {
     /**
      * Root namespace of install classes
@@ -128,20 +129,12 @@ class RunInstallCommand extends AbstractInstallCommand
     }
 
     /**
-     * Configure this console command
-     */
-    protected function configure()
-    {
-        $this->setDescription('Perform fresh install of the app (WARNING: drops tables)');
-    }
-
-    /**
      * Execute this console command
      *
      * @param  InputInterface  $input  Command line input interface
      * @param  OutputInterface $output Command line output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         // Console message heading padded by a newline
         $output->write(['', '  -- APP INSTALL --', ''], true);
