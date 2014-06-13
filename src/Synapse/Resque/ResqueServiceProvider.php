@@ -21,20 +21,14 @@ class ResqueServiceProvider implements ServiceProviderInterface
         });
 
         $app['resque.command-proxy'] = $app->share(function ($app) {
-            $command = new SendEmailCommandProxy('resque');
+            $command = new ResqueCommandProxy('resque');
             $command->setFactory($app->raw('resque.command'));
             return $command;
         });
 
         $app['resque.command'] = $app->share(function ($app) {
-            $command = new SendEmailCommand();
-
-            $command->setEmailMapper($this->app['email.mapper']);
-
-            if ($this->app['email.sender']) {
-                $command->setEmailSender($this->app['email.sender']);
-            }
-
+            $command = new ResqueCommand();
+            $command->setResque($app['resque']);
             return $command;
         });
     }
