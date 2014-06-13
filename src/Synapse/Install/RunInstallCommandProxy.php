@@ -4,7 +4,7 @@ namespace Synapse\Install;
 
 use Synapse\Command\CommandProxy;
 
-class GenerateInstallCommandProxy extends CommandProxy
+class RunInstallCommandProxy extends CommandProxy
 {
     /**
      * Configure this console command

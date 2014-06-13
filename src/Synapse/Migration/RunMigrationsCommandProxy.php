@@ -4,7 +4,7 @@ namespace Synapse\Migration;
 
 use Synapse\Command\CommandProxy;
 
-class CreateMigrationCommandProxy extends CommandProxy
+class RunMigrationsCommandProxy extends CommandProxy
 {
     /**
      * Set the console command's name and description

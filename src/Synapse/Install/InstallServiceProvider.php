@@ -61,6 +61,6 @@ class InstallServiceProvider implements ServiceProviderInterface
     {
         // Register command routes
         $app->command('install.run-proxy');
-        $app->command('install.generate');
+        $app->command('install.generate-proxy');
     }
 }
