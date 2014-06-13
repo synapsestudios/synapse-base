@@ -34,8 +34,8 @@ abstract class CommandProxy extends Command
         $expectedClass = substr(get_class($this), 0, -5);
         if (! $command instanceof $expectedClass) {
             throw new \InvalidArgumentException(sprintf(
-                'Command \'%s\' is not an instance of expected \'%s\'.',
-                $actualClass,
+                'Command with class \'%s\' is not an instance of expected \'%s\'.',
+                get_class($command),
                 $expectedClass
             ));
         }

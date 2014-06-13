@@ -5,7 +5,7 @@ namespace Test\Synapse\Email;
 use PHPUnit_Framework_TestCase;
 use Synapse\Email\SendEmailCommandProxy;
 use Synapse\Email\SendEmailCommand;
-use Synapse\Command\Install\Generate;
+use Synapse\Install\GenerateInstallCommand;
 use Synapse\Email\EmailEntity;
 
 class SendEmailCommandTest extends PHPUnit_Framework_TestCase
@@ -192,7 +192,7 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
     public function testProxyThrowsExceptionIfFactoryReturnsIncorrectInstance()
     {
         $this->sendCommand->setFactory(function () {
-            return new \stdClass;
+            return new GenerateInstallCommand;
         });
 
         $this->sendCommand->run(
