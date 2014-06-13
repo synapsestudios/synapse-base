@@ -2,6 +2,8 @@
 
 namespace Synapse\Command;
 
+use Closure;
+
 use Synapse\Application;
 
 use Symfony\Component\Console\Command\Command;
@@ -18,13 +20,13 @@ abstract class CommandProxy extends Command
      *
      * @param string $key
      */
-    public function setFactory(callable $factory)
+    public function setFactory(Closure $factory)
     {
         $this->factory = $factory;
         return $this;
     }
 
-    public function setApplication(Application $app)
+    public function setApp(Application $app)
     {
         $this->app = $app;
         return $this;

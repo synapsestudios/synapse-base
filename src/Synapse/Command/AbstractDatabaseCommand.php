@@ -7,7 +7,7 @@ use Zend\Db\Adapter\Adapter as DbAdapter;
 /**
  * Abstract class for commands that must access the database
  */
-class AbstractDatabaseCommand implements CommandInterface
+abstract class AbstractDatabaseCommand implements CommandInterface
 {
     /**
      * Database adapter

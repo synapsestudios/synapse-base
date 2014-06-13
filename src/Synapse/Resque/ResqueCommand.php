@@ -2,10 +2,10 @@
 
 namespace Synapse\Resque;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Synapse\Command\CommandInterface;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
 
@@ -15,7 +15,7 @@ use Resque_Worker;
 
 use RuntimeException;
 
-class ResqueCommand extends Command implements LoggerAwareInterface
+class ResqueCommand implements CommandInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
