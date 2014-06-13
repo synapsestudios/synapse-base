@@ -17,8 +17,15 @@ class InstallServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
+        $app['install.generate-proxy'] = $app->share(function ($app) {
+            $command = new GenerateInstallCommandProxy('install:generate');
+            $command->setFactory($app->raw('install.generate'))
+                ->setApp($app);
+            return $command;
+        });
+
         $app['install.generate'] = $app->share(function ($app) {
-            $command = new GenerateInstallCommand('install:generate');
+            $command = new GenerateInstallCommand();
 
             $command->setDbConfig($app['config']->load('db'));
             $command->setInstallConfig($app['config']->load('install'));
@@ -26,13 +33,20 @@ class InstallServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
+        $app['install.run-proxy'] = $app->share(function ($app) {
+            $command = new RunInstallCommandProxy('install:run');
+            $command->setFactory($app->raw('install.run'))
+                ->setApp($app);
+            return $command;
+        });
+
         $app['install.run'] = $app->share(function ($app) {
-            $command = new RunInstallCommand('install:run');
+            $command = new RunInstallCommand();
 
             $command->setDatabaseAdapter($app['db']);
             $command->setAppVersion($app['version']);
-            $command->setRunMigrationsCommand($app['migrations.run']);
-            $command->setGenerateInstallCommand($app['install.generate']);
+            $command->setRunMigrationsCommand($app['migrations.run-proxy']);
+            $command->setGenerateInstallCommand($app['install.generate-proxy']);
 
             return $command;
         });
@@ -46,7 +60,7 @@ class InstallServiceProvider implements ServiceProviderInterface
     public function boot(Application $app)
     {
         // Register command routes
-        $app->command('install.run');
-        $app->command('install.generate');
+        $app->command('install.run-proxy');
+        $app->command('install.generate-proxy');
     }
 }

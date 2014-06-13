@@ -35,20 +35,12 @@ class RunMigrationsCommand extends AbstractDatabaseCommand
     }
 
     /**
-     * Set the console command's name and description
-     */
-    protected function configure()
-    {
-        $this->setDescription('Run all new database migrations');
-    }
-
-    /**
      * Execute this console command
      *
      * @param  InputInterface  $input
      * @param  OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->createAppMigrationsTable();
 

@@ -2,9 +2,8 @@
 
 namespace Synapse\Migration;
 
+use Synapse\Command\CommandInterface;
 use Synapse\View\Migration\Create as CreateMigrationView;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Example usage:
  *     ./console migrations:create 'Add email field to users table'
  */
-class CreateMigrationCommand extends Command
+class CreateMigrationCommand implements CommandInterface
 {
     /**
      * View for new migration files
@@ -32,11 +31,9 @@ class CreateMigrationCommand extends Command
      * @param string              $name             Name of the console command
      * @param CreateMigrationView $newMigrationView
      */
-    public function __construct($name, CreateMigrationView $newMigrationView)
+    public function __construct(CreateMigrationView $newMigrationView)
     {
         $this->newMigrationView = $newMigrationView;
-
-        parent::__construct($name);
     }
 
     /**
@@ -51,25 +48,12 @@ class CreateMigrationCommand extends Command
     }
 
     /**
-     * Set name, description, arguments, and options for this console command
-     */
-    protected function configure()
-    {
-        $this->setDescription('Create a new database migration')
-            ->addArgument(
-                'description',
-                InputArgument::REQUIRED,
-                'Enter a short description of the migration: '
-            );
-    }
-
-    /**
      * Execute this console command, in order to create a new migration
      *
      * @param  InputInterface  $input  Command line input interface
      * @param  OutputInterface $output Command line output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $description = $input->getArgument('description');
         $time        = date('YmdHis');

@@ -3,15 +3,16 @@
 namespace Test\Synapse\Email;
 
 use PHPUnit_Framework_TestCase;
+use Synapse\Email\SendEmailCommandProxy;
 use Synapse\Email\SendEmailCommand;
-use Synapse\Command\Install\Generate;
+use Synapse\Install\GenerateInstallCommand;
 use Synapse\Email\EmailEntity;
 
 class SendEmailCommandTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->sendCommand = new SendEmailCommand('email:send');
+        $this->sendCommand = new SendEmailCommandProxy('email:send');
 
         // Create mocks
         $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')
@@ -24,8 +25,12 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
 
     public function withConfiguredSendObject()
     {
-        $this->sendCommand->setEmailMapper($this->mockEmailMapper);
-        $this->sendCommand->setEmailSender($this->mockEmailSender);
+        $this->sendCommand->setFactory(function () {
+            $command = new SendEmailCommand;
+            $command->setEmailMapper($this->mockEmailMapper);
+            $command->setEmailSender($this->mockEmailSender);
+            return $command;
+        });
     }
 
     public function withEmailThatIsNotFound()
@@ -95,7 +100,11 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfEmailSenderNotSet()
     {
-        $this->sendCommand->setEmailMapper($this->mockEmailMapper);
+        $this->sendCommand->setFactory(function () {
+            $command = new SendEmailCommand;
+            $command->setEmailMapper($this->mockEmailMapper);
+            return $command;
+        });
 
         $this->sendCommand->run(
             $this->mockInputInterface,
@@ -108,7 +117,11 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfEmailMapperNotSet()
     {
-        $this->sendCommand->setEmailSender($this->mockEmailSender);
+        $this->sendCommand->setFactory(function () {
+            $command = new SendEmailCommand;
+            $command->setEmailSender($this->mockEmailSender);
+            return $command;
+        });
 
         $this->sendCommand->run(
             $this->mockInputInterface,
@@ -156,5 +169,35 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(500, $returnValue);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testProxyThrowsExceptionIfFactoryDoesNotReturnCommand()
+    {
+        $this->sendCommand->setFactory(function () {
+            return null;
+        });
+
+        $this->sendCommand->run(
+            $this->mockInputInterface,
+            $this->mockOutputInterface
+        );
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testProxyThrowsExceptionIfFactoryReturnsIncorrectInstance()
+    {
+        $this->sendCommand->setFactory(function () {
+            return new GenerateInstallCommand;
+        });
+
+        $this->sendCommand->run(
+            $this->mockInputInterface,
+            $this->mockOutputInterface
+        );
     }
 }

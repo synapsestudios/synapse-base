@@ -2,15 +2,14 @@
 
 namespace Synapse\Email;
 
-use Symfony\Component\Console\Command\Command;
+use Synapse\Command\CommandInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 
 use LogicException;
 use OutOfBoundsException;
 
-class SendEmailCommand extends Command
+class SendEmailCommand implements CommandInterface
 {
     /**
      * @var EmailMapper
@@ -43,25 +42,12 @@ class SendEmailCommand extends Command
     }
 
     /**
-     * Set name, description, arguments, and options for this console command
-     */
-    protected function configure()
-    {
-        $this->setDescription('Send an email')
-            ->addArgument(
-                'id',
-                InputArgument::REQUIRED,
-                'ID of email to send'
-            );
-    }
-
-    /**
      * Execute this console command to send an email
      *
      * @param  InputInterface  $input  Command line input interface
      * @param  OutputInterface $output Command line output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         if (! $this->emailSender) {
             throw new LogicException('No email sender configured (did you set the Mandrill API key?)');

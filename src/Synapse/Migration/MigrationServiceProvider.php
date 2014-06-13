@@ -18,10 +18,17 @@ class MigrationServiceProvider implements ServiceProviderInterface
      */
     public function register(Application $app)
     {
+        $app['migrations.create-proxy'] = $app->share(function ($app) {
+            $command = new CreateMigrationCommandProxy('migrations:create');
+            $command->setFactory($app->raw('migrations.create'))
+                ->setApp($app);
+            return $command;
+        });
+
         $app['migrations.create'] = $app->share(function ($app) {
             $view = new CreateMigrationView($app['mustache']);
 
-            $command = new CreateMigrationCommand('migrations:create', $view);
+            $command = new CreateMigrationCommand($view);
 
             $config = $app['config']->load('init');
 
@@ -32,8 +39,15 @@ class MigrationServiceProvider implements ServiceProviderInterface
             return $command;
         });
 
+        $app['migrations.run-proxy'] = $app->share(function ($app) {
+            $command = new RunMigrationsCommandProxy('migrations:run');
+            $command->setFactory($app->raw('migrations.run'))
+                ->setApp($app);
+            return $command;
+        });
+
         $app['migrations.run'] = $app->share(function ($app) {
-            $command = new RunMigrationsCommand('migrations:run');
+            $command = new RunMigrationsCommand();
 
             $command->setDatabaseAdapter($app['db']);
 
@@ -55,7 +69,7 @@ class MigrationServiceProvider implements ServiceProviderInterface
     public function boot(Application $app)
     {
         // Register command routes
-        $app->command('migrations.run');
-        $app->command('migrations.create');
+        $app->command('migrations.run-proxy');
+        $app->command('migrations.create-proxy');
     }
 }

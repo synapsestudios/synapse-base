@@ -2,12 +2,10 @@
 
 namespace Synapse\Resque;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Synapse\Command\CommandInterface;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
 
@@ -17,7 +15,7 @@ use Resque_Worker;
 
 use RuntimeException;
 
-class ResqueCommand extends Command implements LoggerAwareInterface
+class ResqueCommand implements CommandInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -43,46 +41,12 @@ class ResqueCommand extends Command implements LoggerAwareInterface
     }
 
     /**
-     * Configure command arguments and options
-     */
-    protected function configure()
-    {
-        $this->setDescription('Control worker processes')
-            ->addArgument(
-                'queue',
-                InputArgument::IS_ARRAY,
-                'Which queues should the worker process(es) watch? (comma-separated)'
-            )
-            ->addOption(
-                'interval',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'How often should the workers check for new jobs? (seconds)',
-                5
-            )
-            ->addOption(
-                'count',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'How many worker processes should run?',
-                1
-            )
-            ->addOption(
-                'shutdown',
-                null,
-                InputOption::VALUE_NONE,
-                'Specify this option to shut down the workers',
-                null
-            );
-    }
-
-    /**
      * Execute the console command
      *
      * @param  InputInterface  $input
      * @param  OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input  = $input;
         $this->output = $output;
