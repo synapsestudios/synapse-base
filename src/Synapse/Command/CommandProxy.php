@@ -28,7 +28,16 @@ abstract class CommandProxy extends Command
         $command = $factory();
 
         if (! $command instanceof CommandInterface) {
-            throw new \LogicException('Illegal command.');
+            throw new \InvalidArgumentException('Illegal command.');
+        }
+
+        $expectedClass = substr(get_class($this), 0, -5);
+        if (! $command instanceof $expectedClass) {
+            throw new \InvalidArgumentException(sprintf(
+                'Command \'%s\' is not an instance of expected \'%s\'.',
+                $actualClass,
+                $expectedClass
+            ));
         }
 
         return $command->execute($input, $output);
