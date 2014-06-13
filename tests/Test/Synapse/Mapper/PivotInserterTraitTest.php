@@ -73,7 +73,6 @@ class PivotInserterTraitTest extends MapperTestCase
     {
         $entity = $this->createEntityToInsert();
 
-        // $arrayCopy = $entity->getArrayCopy();
         $arrayCopy = $entity->getDbValues();
 
         $regexp = $this->createWhereClauseRegexp($arrayCopy);
