@@ -19,7 +19,8 @@ class InstallServiceProvider implements ServiceProviderInterface
     {
         $app['install.generate-proxy'] = $app->share(function ($app) {
             $command = new GenerateInstallCommandProxy('install:generate');
-            $command->setFactory($app->raw('install.generate'));
+            $command->setFactory($app->raw('install.generate'))
+                ->setApplication($app);
             return $command;
         });
 
@@ -34,7 +35,8 @@ class InstallServiceProvider implements ServiceProviderInterface
 
         $app['install.run-proxy'] = $app->share(function ($app) {
             $command = new RunInstallCommandProxy('install:run');
-            $command->setFactory($app->raw('install.run'));
+            $command->setFactory($app->raw('install.run'))
+                ->setApplication($app);
             return $command;
         });
 

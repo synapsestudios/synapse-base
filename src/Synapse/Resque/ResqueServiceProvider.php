@@ -22,7 +22,8 @@ class ResqueServiceProvider implements ServiceProviderInterface
 
         $app['resque.command-proxy'] = $app->share(function ($app) {
             $command = new ResqueCommandProxy('resque');
-            $command->setFactory($app->raw('resque.command'));
+            $command->setFactory($app->raw('resque.command'))
+                ->setApplication($app);
             return $command;
         });
 

@@ -46,7 +46,8 @@ class EmailServiceProvider implements ServiceProviderInterface
 
         $app['email.send-proxy'] = $app->share(function (Application $app) {
             $command = new SendEmailCommandProxy('email:send');
-            $command->setFactory($app->raw('email.send'));
+            $command->setFactory($app->raw('email.send'))
+                ->setFactory($app);
             return $command;
         });
 

@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class CommandProxy extends Command
 {
+    protected $app;
     protected $factory;
 
     /**
@@ -20,12 +21,19 @@ abstract class CommandProxy extends Command
     public function setFactory(callable $factory)
     {
         $this->factory = $factory;
+        return $this;
+    }
+
+    public function setApplication(Application $app)
+    {
+        $this->app = $app;
+        return $this;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $factory = $this->factory;
-        $command = $factory();
+        $command = $factory($this->app);
 
         if (! $command instanceof CommandInterface) {
             throw new \InvalidArgumentException('Illegal command.');
