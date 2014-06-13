@@ -44,6 +44,12 @@ class EmailServiceProvider implements ServiceProviderInterface
             );
         });
 
+        $app['email.send-proxy'] = $app->share(function (Application $app) {
+            $command = new SendEmailCommandProxy('email:send');
+            $command->setFactory($app->raw('email.send'));
+            return $command;
+        });
+
         $app['email.send'] = $app->share(function (Application $app) {
             $command = new SendEmailCommand('email:send');
 
@@ -63,6 +69,6 @@ class EmailServiceProvider implements ServiceProviderInterface
     public function boot(Application $app)
     {
         // Register command routes
-        $app->command('email.send');
+        $app->command('email.send-proxy');
     }
 }
