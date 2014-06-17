@@ -91,7 +91,7 @@ class GenerateInstallCommand implements CommandInterface
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $outputPath = $this->dataPath();
+        $outputPath = DATADIR;
 
         $output->write(['', '  Generating install files...', ''], true);
 
@@ -100,16 +100,6 @@ class GenerateInstallCommand implements CommandInterface
 
         $this->dumpData($outputPath);
         $output->write(['  Exported DB data', ''], true);
-    }
-
-    /**
-     * Return the path to upgrade files based on the upgrade namespace provided
-     *
-     * @return string
-     */
-    public function dataPath()
-    {
-        return APPDIR.'/data/';
     }
 
     /**
