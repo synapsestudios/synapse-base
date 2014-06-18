@@ -36,7 +36,9 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
     {
         $this->sqlStrings = [];
 
-        $this->mockResultCallback = function ($mockResult, $index) {};
+        $this->mockResultCallback = function ($mockResult, $index) {
+            // No-op
+        };
 
         $this->mockResultCount = 0;
 
