@@ -3,6 +3,7 @@
 namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
+use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
 use Zend\Db\Sql\Delete;
 use Zend\Db\Sql\Insert;
