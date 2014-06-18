@@ -3,6 +3,7 @@
 namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
+use stdClass;
 use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
 use Zend\Db\Sql\Delete;
@@ -35,9 +36,26 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
     {
         $this->sqlStrings = [];
 
+        $this->mockResultCallback = function ($mockResult, $index) {};
+
+        $this->mockResultCount = 0;
+
         $this->setUpMockAdapter();
 
         $this->setUpMockSqlFactory();
+    }
+
+    /**
+     * Set up a callback that is called for every mock result generated.
+     * The callback should accept the mock object as its first argument
+     * and an index as its second that is incremented for every mock result
+     * generated.
+     *
+     * @param callable $callback [description]
+     */
+    public function setUpMockResultCallback(callable $callback)
+    {
+        $this->mockResultCallback = $callback;
     }
 
     public function getPlatform()
@@ -67,6 +85,10 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $mockResult->expects($this->any())
             ->method('getGeneratedValue')
             ->will($this->returnValue(self::GENERATED_ID));
+
+        call_user_func($this->mockResultCallback, $mockResult, $this->mockResultCount);
+
+        $this->mockResultCount += 1;
 
         return $mockResult;
     }
