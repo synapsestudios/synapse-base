@@ -51,11 +51,6 @@ class GenerateInstallCommandTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($command, $expected);
     }
 
-    public function testDataPath()
-    {
-        $this->assertEquals(APPDIR.'/data/', $this->command->dataPath());
-    }
-
     public function testGetUpgradeNamespace()
     {
         $this->assertEquals('Application\\Upgrades\\', $this->command->getUpgradeNamespace());

@@ -156,7 +156,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
 
         // Run all migrations
         $output->writeln('  Executing new migrations before upgrading');
-        $this->runMigrationsCommand->execute($input, $output);
+        $this->runMigrationsCommand->run($input, $output);
 
         $output->write([sprintf('  Done!', $this->appVersion), ''], true);
     }
@@ -196,7 +196,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
      */
     protected function install(AbstractInstall $installScript, OutputInterface $output)
     {
-        $dataPath = $this->generateInstallCommand->dataPath();
+        $dataPath = DATADIR;
 
         $output->writeln('  Installing App...');
 
