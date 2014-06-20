@@ -3,6 +3,8 @@
 namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
+use stdClass;
+use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
 use Zend\Db\Sql\Delete;
 use Zend\Db\Sql\Insert;
@@ -10,7 +12,6 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\SqlInterface;
 use Zend\Db\Sql\Update;
-use Synapse\Stdlib\Arr;
 
 /**
  * Class for testing mappers.  Currently expects that you are using Mysqli.
@@ -35,9 +36,28 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
     {
         $this->sqlStrings = [];
 
-        $this->setUpMockResult();
-        $this->setUpMockSqlFactory();
+        $this->mockResultCallback = function ($mockResult, $index) {
+            // No-op
+        };
+
+        $this->mockResultCount = 0;
+
         $this->setUpMockAdapter();
+
+        $this->setUpMockSqlFactory();
+    }
+
+    /**
+     * Set up a callback that is called for every mock result generated.
+     * The callback should accept the mock object as its first argument
+     * and an index as its second that is incremented for every mock result
+     * generated.
+     *
+     * @param callable $callback [description]
+     */
+    public function setUpMockResultCallback(callable $callback)
+    {
+        $this->mockResultCallback = $callback;
     }
 
     public function getPlatform()
@@ -60,15 +80,19 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         return $query->getSqlString($this->getPlatform());
     }
 
-    public function setUpMockResult()
+    public function getMockResult()
     {
-        $this->mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
+        $mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
 
-        $this->mockResult->expects($this->any())
+        $mockResult->expects($this->any())
             ->method('getGeneratedValue')
             ->will($this->returnValue(self::GENERATED_ID));
 
-        $this->mockResult;
+        call_user_func($this->mockResultCallback, $mockResult, $this->mockResultCount);
+
+        $this->mockResultCount += 1;
+
+        return $mockResult;
     }
 
     public function getMockStatement()
@@ -77,7 +101,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
         $mockStatement->expects($this->any())
             ->method('execute')
-            ->will($this->returnValue($this->mockResult));
+            ->will($this->returnValue($this->getMockResult()));
 
         return $mockStatement;
     }
@@ -96,7 +120,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
                 if ($mode === 'prepare') {
                     return $this->getMockStatement();
                 } else {
-                    return $this->mockResult;
+                    return $this->getMockResult();
                 }
             }));
 
@@ -104,15 +128,15 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->mockDriver->expects($this->any())
+            ->method('createStatement')
+            ->will($this->returnValue($this->getMockStatement()));
+
         $this->mockConnection = $this->getMock('Zend\Db\Adapter\Driver\ConnectionInterface');
 
         $this->mockDriver->expects($this->any())
             ->method('getConnection')
             ->will($this->returnValue($this->mockConnection));
-
-        $this->mockDriver->expects($this->any())
-            ->method('createStatement')
-            ->will($this->returnValue($this->getMockStatement()));
 
         $this->mockConnection->expects($this->any())
             ->method('getResource')

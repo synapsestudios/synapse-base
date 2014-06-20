@@ -95,15 +95,17 @@ class FinderTraitTest extends MapperTestCase
 
     public function withUserEntityFound()
     {
-        $userEntity = $this->createUserEntity();
+        $this->setUpMockResultCallback(function ($mockResult, $index) {
+            $userEntity = $this->createUserEntity();
 
-        $this->mockResult->expects($this->any())
-            ->method('current')
-            ->will($this->returnCallback(function () use ($userEntity) {
-                $this->captured->foundUserEntityData = $userEntity->getArrayCopy();
+            $mockResult->expects($this->any())
+                ->method('current')
+                ->will($this->returnCallback(function () use ($userEntity) {
+                    $this->captured->foundUserEntityData = $userEntity->getArrayCopy();
 
-                return $this->captured->foundUserEntityData;
-            }));
+                    return $this->captured->foundUserEntityData;
+                }));
+        });
     }
 
     public function provideOrderDirectionValues()
