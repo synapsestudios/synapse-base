@@ -14,6 +14,11 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
     const LOGGED_IN_USER_ID = 79276419;
 
+    /**
+     * @var mixed  UserEntity or null to simulate the user not being logged in
+     */
+    protected $loggedInUserEntity = false;
+
     public function createJsonRequest($method, array $params = [])
     {
         $this->request = new Request(
@@ -37,37 +42,26 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
             $this->captured = new stdClass();
         }
 
-        $captured = $this->captured;
-
         $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
             ->disableOriginalConstructor()
             ->getMock();
 
         $mockSecurityToken = $this->getMock('Symfony\Component\Security\Core\Authentication\Token\TokenInterface');
 
-        $loggedInUserEntity = $this->getLoggedInUserEntity();
-
         $mockSecurityToken->expects($this->any())
             ->method('getUser')
-            ->will($this->returnCallback(function () use ($loggedInUserEntity, $captured) {
-                $captured->userReturnedFromSecurityContext = $loggedInUserEntity;
+            ->will($this->returnCallback(function () {
+                $this->captured->userReturnedFromSecurityContext = $this->getLoggedInUserEntity();
 
-                return $loggedInUserEntity;
+                return $this->captured->userReturnedFromSecurityContext;
             }));
 
         $this->mockSecurityContext->expects($this->any())
             ->method('getToken')
             ->will($this->returnValue($mockSecurityToken));
-
-        $this->captured = $captured;
     }
 
-    /**
-     * Return a User entity for use with the mock security object
-     *
-     * @return UserEntity
-     */
-    public function getLoggedInUserEntity()
+    public function getDefaultLoggedInUserEntity()
     {
         $user = new UserEntity;
 
@@ -82,6 +76,29 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
         ]);
 
         return $user;
+    }
+
+    /**
+     * Return a User entity for use with the mock security object
+     *
+     * @return UserEntity or null
+     */
+    public function getLoggedInUserEntity()
+    {
+        // If not changed from initial value, return default.
+        if ($this->loggedInUserEntity === false) {
+            return $this->getDefaultLoggedInUserEntity();
+        }
+
+        return $this->loggedInUserEntity;
+    }
+
+    /**
+     * @param mixed $user  UserEntity or null to simulate the user not being logged in
+     */
+    public function setLoggedInUserEntity($user)
+    {
+        $this->loggedInUserEntity = $user;
     }
 
     public function createNonEmptyConstraintViolationList()
