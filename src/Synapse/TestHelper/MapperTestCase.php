@@ -62,9 +62,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 
     public function getPlatform()
     {
-        $mockMysqli = $this->getMockBuilder('mysqli')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockMysqli = $this->getMock('mysqli');
 
         $mockMysqli->expects($this->any())
             ->method('real_escape_string')
