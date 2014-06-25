@@ -37,26 +37,28 @@ class SecurityServiceProvider implements ServiceProviderInterface
             ];
         });
 
-        $app['security.authentication_listener.factory.oauth-optional'] = $app->protect(function ($name, $options) use ($app) {
-            $app['security.authentication_provider.'.$name.'.oauth-optional'] = $app->share(function ($app) {
-                return new OAuth2Provider(
-                    $app['user.mapper'],
-                    $app['role.service'],
-                    $app['oauth_server']
-                );
-            });
+        $app['security.authentication_listener.factory.oauth-optional'] = $app->protect(
+            function ($name, $options) use ($app) {
+                $app['security.authentication_provider.'.$name.'.oauth-optional'] = $app->share(function ($app) {
+                    return new OAuth2Provider(
+                        $app['user.mapper'],
+                        $app['role.service'],
+                        $app['oauth_server']
+                    );
+                });
 
-            $app['security.authentication_listener.'.$name.'.oauth-optional'] = $app->share(function ($app) {
-                return new OAuth2OptionalListener($app['security'], $app['security.authentication_manager']);
-            });
+                $app['security.authentication_listener.'.$name.'.oauth-optional'] = $app->share(function ($app) {
+                    return new OAuth2OptionalListener($app['security'], $app['security.authentication_manager']);
+                });
 
-            return [
-                'security.authentication_provider.'.$name.'.oauth-optional',
-                'security.authentication_listener.'.$name.'.oauth-optional',
-                null,
-                'pre_auth'
-            ];
-        });
+                return [
+                    'security.authentication_provider.'.$name.'.oauth-optional',
+                    'security.authentication_listener.'.$name.'.oauth-optional',
+                    null,
+                    'pre_auth'
+                ];
+            }
+        );
     }
 
     /**
