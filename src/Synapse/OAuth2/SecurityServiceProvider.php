@@ -51,8 +51,8 @@ class SecurityServiceProvider implements ServiceProviderInterface
             });
 
             return [
-                'security.authentication_provider.'.$name.'.oauth',
-                'security.authentication_listener.'.$name.'.oauth',
+                'security.authentication_provider.'.$name.'.oauth-optional',
+                'security.authentication_listener.'.$name.'.oauth-optional',
                 null,
                 'pre_auth'
             ];
