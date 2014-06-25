@@ -141,9 +141,7 @@ abstract class MapperTestCase extends PHPUnit_Framework_TestCase
         $this->mockConnection->expects($this->any())
             ->method('getResource')
             ->will($this->returnValue(
-                $this->getMockBuilder('mysqli')
-                    ->disableOriginalConstructor()
-                    ->getMock()
+                $this->getMock('mysqli')
             ));
 
         $this->mockAdapter->expects($this->any())
