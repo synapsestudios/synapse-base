@@ -109,8 +109,8 @@ class Services implements ServicesInterface
         $app['security.firewalls'] = $app->share(function () {
             return [
                 'base.api' => [
-                    'pattern' => '^/',
-                    'oauth'   => true,
+                    'pattern'        => '^/',
+                    'oauth-optional' => true,
                 ],
             ];
         });
