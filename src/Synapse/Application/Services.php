@@ -80,6 +80,16 @@ class Services implements ServicesInterface
      * Application-specific firewalls should only be needed to allow passthrough
      * for public endpoints, since 'base.api' requires authentication.
      *
+     * Firewalls available include:
+     *     - oauth
+     *         - Requires the user to be logged in
+     *     - oauth-optional
+     *         - Does not require the user to be logged in
+     *         - If the user is logged in, sets their token on the security context so that their info can be accessed
+     *     - anonymous
+     *         - Does not require the user to be logged in
+     *         - Does not attempt to retrieve user's information if Authentication header is sent
+     *
      * The same can be done with security.access_rules, which are used to restrict
      * sections of the application based on a user's role:
      *
@@ -99,15 +109,8 @@ class Services implements ServicesInterface
         $app['security.firewalls'] = $app->share(function () {
             return [
                 'base.api' => [
-                    'pattern'   => '^/',
-                    /**
-                     * Using both oauth and anonymous listeners in this order allows
-                     * the endpoint to be accessible even if the user is not logged in.
-                     * However, if the user is logged in it authenticates the user
-                     * allowing their information to be accessible to the controller.
-                     */
-                    'oauth'     => true,
-                    'anonymous' => true,
+                    'pattern' => '^/',
+                    'oauth'   => true,
                 ],
             ];
         });
