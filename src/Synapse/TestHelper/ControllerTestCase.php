@@ -87,7 +87,7 @@ abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
     {
         // If not changed from initial value, return default.
         if ($this->loggedInUserEntity === false) {
-            return $this->getDefaultLoggedInUserEntity();
+            $this->loggedInUserEntity = $this->getDefaultLoggedInUserEntity();
         }
 
         return $this->loggedInUserEntity;
