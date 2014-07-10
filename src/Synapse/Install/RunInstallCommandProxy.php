@@ -3,6 +3,7 @@
 namespace Synapse\Install;
 
 use Synapse\Command\CommandProxy;
+use Symfony\Component\Console\Input\InputOption;
 
 class RunInstallCommandProxy extends CommandProxy
 {
@@ -11,6 +12,12 @@ class RunInstallCommandProxy extends CommandProxy
      */
     protected function configure()
     {
-        $this->setDescription('Perform fresh install of the app (WARNING: drops tables)');
+        $this->setDescription('Perform fresh install of the app if necessary')
+            ->addOption(
+                'drop-tables',
+                null,
+                InputOption::VALUE_NONE,
+                'Forces a fresh install'
+            );
     }
 }
