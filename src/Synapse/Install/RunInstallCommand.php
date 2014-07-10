@@ -136,29 +136,44 @@ class RunInstallCommand extends AbstractDatabaseCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        // Console message heading padded by a newline
-        $output->write(['', '  -- APP INSTALL --', ''], true);
+        $dropTables = $input->getOption('drop-tables');
 
-        $output->write(['  Dropping tables', ''], true);
-        $this->dropTables();
+        if (! $this->hasTables() || $dropTables) {
+            // Console message heading padded by a newline
+            $output->write(['', '  -- APP INSTALL --', ''], true);
 
-        try {
-            $installScript = $this->getInstallScript();
-        } catch (RuntimeException $e) {
-            $output->writeln($e->getMessage());
-            return;
+            $output->write(['  Dropping tables', ''], true);
+            $this->dropTables();
+
+            try {
+                $installScript = $this->getInstallScript();
+            } catch (RuntimeException $e) {
+                $output->writeln($e->getMessage());
+                return;
+            }
+
+            $this->install(
+                $installScript,
+                $output
+            );
         }
 
-        $this->install(
-            $installScript,
-            $output
-        );
-
         // Run all migrations
-        $output->writeln('  Executing new migrations before upgrading');
-        $this->runMigrationsCommand->run($input, $output);
+        $output->writeln('  Executing new migrations');
 
         $output->write([sprintf('  Done!', $this->appVersion), ''], true);
+    }
+
+    /**
+     * Checks for existing tables in the database
+     *
+     * @return boolean Whether or not there are existing tables
+     */
+    protected function hasTables()
+    {
+        $tables = $this->db->query('SHOW TABLES', DbAdapter::QUERY_MODE_EXECUTE);
+
+        return (bool) count($tables);
     }
 
     /**
