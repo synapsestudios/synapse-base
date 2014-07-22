@@ -8,6 +8,7 @@ use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
 use Synapse\Security\Authentication\OAuth2UserToken;
 
 class OAuth2Listener implements ListenerInterface
@@ -31,6 +32,7 @@ class OAuth2Listener implements ListenerInterface
         $request = $event->getRequest();
 
         if ($request->getMethod() === 'OPTIONS') {
+            $this->securityContext->setToken(new AnonymousToken('', 'anon.', array()));
             return;
         }
 
