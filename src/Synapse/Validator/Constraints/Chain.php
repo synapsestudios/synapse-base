@@ -1,0 +1,50 @@
+<?php
+
+namespace Synapse\Validator\Constraints;
+
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints\Valid;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
+
+/**
+ * Group together constraints that will run in order but will stop when one fails.
+ *
+ * Copied from https://gist.github.com/rybakit/4705749
+ */
+class Chain extends Constraint
+{
+    public $constraints;
+    public $stopOnError = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($options = null)
+    {
+        // no known options set? $options is the constraints array
+        if (is_array($options) && !array_intersect(array_keys($options), array('groups', 'constraints', 'stopOnError'))) {
+            $options = array('constraints' => $options);
+        }
+
+        parent::__construct($options);
+
+        if (!is_array($this->constraints)) {
+            throw new ConstraintDefinitionException('The option "constraints" is expected to be an array in constraint '.__CLASS__.'.');
+        }
+
+        foreach ($this->constraints as $constraint) {
+            if (!$constraint instanceof Constraint) {
+                throw new ConstraintDefinitionException('The value '.$constraint.' is not an instance of Constraint in constraint '.__CLASS__.'.');
+            }
+
+            if ($constraint instanceof Valid) {
+                throw new ConstraintDefinitionException('The constraint Valid cannot be nested inside constraint '.__CLASS__.'.');
+            }
+        }
+    }
+
+    public function getRequiredOptions()
+    {
+        return array('constraints');
+    }
+}
