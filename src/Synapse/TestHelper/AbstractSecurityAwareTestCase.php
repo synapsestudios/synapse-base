@@ -4,13 +4,19 @@ namespace Synapse\TestHelper;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\User\UserEntity;
+use stdClass;
 
 /**
  * Extend this class to create mocks of the security token and context for testing
  */
 abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
 {
-    const USER_ID = 42;
+    const LOGGED_IN_USER_ID = 42;
+
+    /**
+     * @var mixed  UserEntity or null to simulate the user not being logged in
+     */
+    protected $loggedInUserEntity = false;
 
     /**
      * Set up the mock security context
@@ -20,6 +26,10 @@ abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
      */
     public function setUpMockSecurityContext()
     {
+        if (! isset($this->captured)) {
+            $this->captured = new stdClass();
+        }
+
         $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
             ->disableOriginalConstructor()
             ->getMock();
@@ -29,7 +39,8 @@ abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
         $mockSecurityToken->expects($this->any())
             ->method('getUser')
             ->will($this->returnCallback(function () {
-                return $this->getDefaultLoggedInUserEntity();
+                $this->captured->userReturnedFromSecurityContext = $this->getLoggedInUserEntity();
+                return $this->captured->userReturnedFromSecurityContext;
             }));
 
         $this->mockSecurityContext->expects($this->any())
@@ -39,14 +50,16 @@ abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
 
     /**
      * Return a Mocked UserEntity object
+     *
      * @return UserEntity
      */
+
     public function getDefaultLoggedInUserEntity()
     {
         $user = new UserEntity;
 
         $user->exchangeArray([
-            'id'         => self::USER_ID,
+            'id'         => self::LOGGED_IN_USER_ID,
             'email'      => 'test@example.com',
             'password'   => 'password',
             'last_login' => 1397078025,
@@ -56,5 +69,28 @@ abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
         ]);
 
         return $user;
+    }
+
+    /**
+     * Return a User entity for use with the mock security object
+     *
+     * @return UserEntity or null
+     */
+    public function getLoggedInUserEntity()
+    {
+        // If not changed from initial value, return default.
+        if ($this->loggedInUserEntity === false) {
+            $this->loggedInUserEntity = $this->getDefaultLoggedInUserEntity();
+        }
+
+        return $this->loggedInUserEntity;
+    }
+
+    /**
+     * @param mixed $user  UserEntity or null to simulate the user not being logged in
+     */
+    public function setLoggedInUserEntity($user)
+    {
+        $this->loggedInUserEntity = $user;
     }
 }
