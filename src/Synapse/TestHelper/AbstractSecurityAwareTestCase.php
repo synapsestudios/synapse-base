@@ -10,6 +10,7 @@ use Synapse\User\UserEntity;
  */
 abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
 {
+    const USER_ID = 42;
 
     /**
      * Create the mock security context and the mock security token, and sets up
