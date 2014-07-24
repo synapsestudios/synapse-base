@@ -10,10 +10,11 @@ use Synapse\User\UserEntity;
  */
 abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
 {
-
     /**
-     * Create the mock security context and the mock security token, and sets up
-     *  the getUser and getToken mock functions
+     * Set up the mock security context
+     *
+     * `getToken` returns a mocked security token whose getUser method returns a UserEntity.
+     * Customize the user returned by overloading getDefaultLoggedInUserEntity.
      */
     public function setUpMockSecurityContext()
     {
