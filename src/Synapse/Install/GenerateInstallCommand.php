@@ -4,13 +4,14 @@ namespace Synapse\Install;
 
 use Synapse\Command\CommandInterface;
 use Synapse\Stdlib\Arr;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * CLI command for creating database install files. (DbData, DbStructure.) Based on Kohana Minion task-upgrade.
  */
-class GenerateInstallCommand implements CommandInterface
+class GenerateInstallCommand extends Command
 {
     /**
      * Filename of the database structure install file
@@ -81,6 +82,14 @@ class GenerateInstallCommand implements CommandInterface
     public function getUpgradeNamespace()
     {
         return $this->upgradeNamespace;
+    }
+
+    /**
+     * Set name, description, arguments, and options for this console command
+     */
+    protected function configure()
+    {
+        $this->setDescription('Generate database install files to match the current database');
     }
 
     /**
