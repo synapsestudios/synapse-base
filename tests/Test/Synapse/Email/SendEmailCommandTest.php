@@ -13,6 +13,7 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->sendCommand = new SendEmailCommandProxy('email:send');
+        $this->sendCommand->setApp($this->getMockApp());
 
         // Create mocks
         $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')
@@ -21,6 +22,13 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
         $this->mockEmailSender = $this->getMock('Synapse\Email\SenderInterface');
         $this->mockInputInterface = $this->getMock('Symfony\Component\Console\Input\InputInterface');
         $this->mockOutputInterface = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+    }
+
+    public function getMockApp()
+    {
+        return $this->getMockBuilder('Synapse\Application')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     public function withConfiguredSendObject()
