@@ -4,9 +4,7 @@ namespace Synapse\Migration;
 
 use Synapse\Command\CommandInterface;
 use Synapse\View\Migration\Create as CreateMigrationView;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Example usage:
  *     ./console migrations:create 'Add email field to users table'
  */
-class CreateMigrationCommand extends Command
+class CreateMigrationCommand implements CommandInterface
 {
     /**
      * View for new migration files
@@ -36,19 +34,6 @@ class CreateMigrationCommand extends Command
     public function __construct(CreateMigrationView $newMigrationView)
     {
         $this->newMigrationView = $newMigrationView;
-    }
-
-    /**
-     * Set name, description, arguments, and options for this console command
-     */
-    protected function configure()
-    {
-        $this->setDescription('Create a new database migration')
-            ->addArgument(
-                'description',
-                InputArgument::REQUIRED,
-                'Enter a short description of the migration: '
-            );
     }
 
     /**

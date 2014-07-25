@@ -130,20 +130,6 @@ class RunInstallCommand extends AbstractDatabaseCommand
     }
 
     /**
-     * Configure this console command
-     */
-    protected function configure()
-    {
-        $this->setDescription('Perform fresh install of the app if necessary')
-            ->addOption(
-                'drop-tables',
-                null,
-                InputOption::VALUE_NONE,
-                'Forces a fresh install'
-            );
-    }
-
-    /**
      * Execute this console command
      *
      * @param  InputInterface  $input  Command line input interface

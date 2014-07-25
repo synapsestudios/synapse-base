@@ -35,14 +35,6 @@ class RunMigrationsCommand extends AbstractDatabaseCommand
     }
 
     /**
-     * Set the console command's name and description
-     */
-    protected function configure()
-    {
-        $this->setDescription('Run all new database migrations');
-    }
-
-    /**
      * Execute this console command
      *
      * @param  InputInterface  $input

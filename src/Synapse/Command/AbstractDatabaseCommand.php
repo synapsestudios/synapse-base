@@ -2,13 +2,12 @@
 
 namespace Synapse\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 
 /**
  * Abstract class for commands that must access the database
  */
-abstract class AbstractDatabaseCommand extends Command
+abstract class AbstractDatabaseCommand implements CommandInterface
 {
     /**
      * Database adapter
