@@ -32,7 +32,7 @@ abstract class AbstractConsoleWork
 
         // Output error details to the console if available
         try {
-            $command->run($input, $output);
+            $command->execute($input, $output);
         } catch (\Exception $e) {
             $output->writeln('Exception: '.$e->getMessage());
             $output->writeln('Code: '.$e->getCode());
