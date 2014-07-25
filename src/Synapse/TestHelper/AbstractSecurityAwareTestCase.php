@@ -53,7 +53,6 @@ abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
      *
      * @return UserEntity
      */
-
     public function getDefaultLoggedInUserEntity()
     {
         $user = new UserEntity;
