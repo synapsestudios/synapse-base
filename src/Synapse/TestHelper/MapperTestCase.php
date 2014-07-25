@@ -2,7 +2,6 @@
 
 namespace Synapse\TestHelper;
 
-use PHPUnit_Framework_TestCase;
 use stdClass;
 use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
@@ -22,7 +21,7 @@ use Zend\Db\Sql\Update;
  * 3. Call setSqlFactory($this->mockSqlFactory) on the mapper.
  * 4. In your tests, get query strings with $this->getSqlStrings().
  */
-abstract class MapperTestCase extends PHPUnit_Framework_TestCase
+abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 {
     const GENERATED_ID = 123;
 
