@@ -37,6 +37,9 @@ abstract class CommandProxy extends Command
         $factory = $this->factory;
         $command = $factory($this->app);
 
+        // Perform initializers
+        $this->app->initialize($command);
+
         if (! $command instanceof CommandInterface) {
             throw new \InvalidArgumentException('Illegal command.');
         }

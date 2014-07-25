@@ -57,7 +57,7 @@ class Application extends SilexApp
      * @param  mixed $object Object to be initialized
      * @return mixed
      */
-    protected function initialize($object)
+    public function initialize($object)
     {
         foreach ($this->initializers as $initializer) {
             if ($object instanceof $initializer['class']) {
