@@ -5,11 +5,13 @@ namespace Synapse\Email;
 use Synapse\Command\CommandInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 
 use LogicException;
 use OutOfBoundsException;
 
-class SendEmailCommand implements CommandInterface
+class SendEmailCommand extends Command
 {
     /**
      * @var EmailMapper
@@ -39,6 +41,19 @@ class SendEmailCommand implements CommandInterface
     public function setEmailSender(SenderInterface $emailSender)
     {
         $this->emailSender = $emailSender;
+    }
+
+    /**
+     * Set name, description, arguments, and options for this console command
+     */
+    protected function configure()
+    {
+        $this->setDescription('Send an email')
+            ->addArgument(
+                'id',
+                InputArgument::REQUIRED,
+                'ID of email to send'
+            );
     }
 
     /**
