@@ -6,6 +6,8 @@ use Synapse\Application;
 use Synapse\ApplicationInitializer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
@@ -26,8 +28,10 @@ abstract class AbstractConsoleWork
 
         $command = $this->getConsoleCommand($app);
 
+        $inputDefinition = $this->getInputDefinition($this->args);
+
         // Create Input object with $this->args loaded as Input arguments
-        $input  = new ArrayInput($this->args);
+        $input  = new ArrayInput($this->args, $inputDefinition);
         $output = new ConsoleOutput;
 
         // Output error details to the console if available
@@ -69,6 +73,25 @@ abstract class AbstractConsoleWork
         $appServices->register($app);
 
         return $app;
+    }
+
+    /**
+     * Get an InputDefinition formed by the arguments provided
+     *
+     * Effectively provides a passthrough for any input arguments provided
+     *
+     * @param  array  $args Arguments
+     * @return InputDefinition
+     */
+    protected function getInputDefinition(array $args)
+    {
+        $definition = new InputDefinition();
+
+        foreach ($args as $field => $value) {
+            $definition->addArgument(new InputArgument($field));
+        }
+
+        return $definition;
     }
 
     /**
