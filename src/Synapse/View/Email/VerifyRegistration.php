@@ -59,4 +59,14 @@ class VerifyRegistration extends AbstractView
 
         return $url;
     }
+
+    public function token()
+    {
+        return $this->userToken->getToken();
+    }
+
+    public function userId()
+    {
+        return $this->userToken->getUserId();
+    }
 }
