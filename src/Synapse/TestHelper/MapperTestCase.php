@@ -2,6 +2,7 @@
 
 namespace Synapse\TestHelper;
 
+use PHPUnit_Framework_TestCase;
 use stdClass;
 use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
@@ -21,9 +22,13 @@ use Zend\Db\Sql\Update;
  * 3. Call setSqlFactory($this->mockSqlFactory) on the mapper.
  * 4. In your tests, get query strings with $this->getSqlStrings().
  */
-abstract class MapperTestCase extends AbstractSecurityAwareTestCase
+abstract class MapperTestCase extends PHPUnit_Framework_TestCase
 {
-    const GENERATED_ID = 123;
+    use SecurityAwareTestCaseTrait;
+    use DbAdapterTestCaseTrait;
+
+    const LOGGED_IN_USER_ID = 42;
+    const GENERATED_ID      = 123;
 
     protected $sqlStrings = [];
 
@@ -101,53 +106,6 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
             ->will($this->returnValue($this->getMockResult()));
 
         return $mockStatement;
-    }
-
-    public function setUpMockAdapter()
-    {
-        $this->mockAdapter = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mockAdapter->expects($this->any())
-            ->method('query')
-            ->will($this->returnCallback(function ($sql, $mode) {
-                $this->sqlStrings[] = $sql;
-
-                if ($mode === 'prepare') {
-                    return $this->getMockStatement();
-                } else {
-                    return $this->getMockResult();
-                }
-            }));
-
-        $this->mockDriver = $this->getMockBuilder('Zend\Db\Adapter\Driver\Mysqli\Mysqli')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mockDriver->expects($this->any())
-            ->method('createStatement')
-            ->will($this->returnValue($this->getMockStatement()));
-
-        $this->mockConnection = $this->getMock('Zend\Db\Adapter\Driver\ConnectionInterface');
-
-        $this->mockDriver->expects($this->any())
-            ->method('getConnection')
-            ->will($this->returnValue($this->mockConnection));
-
-        $this->mockConnection->expects($this->any())
-            ->method('getResource')
-            ->will($this->returnValue(
-                $this->getMock('mysqli')
-            ));
-
-        $this->mockAdapter->expects($this->any())
-            ->method('getDriver')
-            ->will($this->returnValue($this->mockDriver));
-
-        $this->mockAdapter->expects($this->any())
-            ->method('getPlatform')
-            ->will($this->returnValue($this->getPlatform()));
     }
 
     public function getMockSql()
