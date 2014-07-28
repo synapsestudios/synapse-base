@@ -2,17 +2,16 @@
 
 namespace Synapse\TestHelper;
 
-use PHPUnit_Framework_TestCase;
 use Synapse\User\UserEntity;
 use stdClass;
 
 /**
- * Extend this class to create mocks of the security token and context for testing
+ * Use this trait to test classes that require access to the currently logged in user.
+ *
+ * NOTE - this trait requires that constant LOGGED_IN_USER_ID be set in implementing classes.
  */
-abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
+trait SecurityAwareTestCaseTrait
 {
-    const LOGGED_IN_USER_ID = 42;
-
     /**
      * @var mixed  UserEntity or null to simulate the user not being logged in
      */

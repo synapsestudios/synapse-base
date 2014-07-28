@@ -2,6 +2,7 @@
 
 namespace Synapse\TestHelper;
 
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -9,8 +10,12 @@ use Synapse\Stdlib\Arr;
 use Synapse\User\UserEntity;
 use stdClass;
 
-abstract class ControllerTestCase extends AbstractSecurityAwareTestCase
+abstract class ControllerTestCase extends PHPUnit_Framework_TestCase
 {
+    use SecurityAwareTestCaseTrait;
+
+    const LOGGED_IN_USER_ID = 42;
+
     public function createJsonRequest($method, array $params = [])
     {
         $this->request = new Request(
