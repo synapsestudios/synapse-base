@@ -5,12 +5,16 @@ namespace Synapse\Db;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 
 /**
- * Inject this into a non-mapper class to allow it to control database transactions
+ * Gateway for starting, committing and rolling back database transactions
  */
 class Transaction
 {
     protected $connection;
 
+    /**
+     * Set injected objects as properties
+     * @param DbAdapter $dbAdapter Query builder object
+     */
     public function __construct(DbAdapter $dbAdapter)
     {
         $this->connection = $dbAdapter->getDriver()->getConnection();
