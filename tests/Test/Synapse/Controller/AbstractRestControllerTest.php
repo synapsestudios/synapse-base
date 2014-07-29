@@ -34,9 +34,12 @@ class AbstractRestControllerTest extends ControllerTestCase
         $this->captured->loggedErrors = [];
 
         $this->mockLogger->expects($this->any())
-            ->method('error')
-            ->will($this->returnCallback(function($message) {
-                $this->captured->loggedErrors[] = $message;
+            ->method('addError')
+            ->will($this->returnCallback(function($message, $context) {
+                $this->captured->loggedErrors[] = [
+                    'message' => $message,
+                    'context' => $context
+                ];
             }));
     }
 
@@ -157,8 +160,12 @@ class AbstractRestControllerTest extends ControllerTestCase
 
         $this->controller->execute($this->createJsonRequest('GET'));
 
-        $this->assertContains($exception->getMessage(), $this->captured->loggedErrors);
-        $this->assertContains($exception->getTraceAsString(), $this->captured->loggedErrors);
+        $this->assertEquals(1, count($this->captured->loggedErrors));
+        $this->assertEquals($exception->getMessage(), $this->captured->loggedErrors[0]['message']);
+        $this->assertEquals(
+            ['exception' => $exception],
+            $this->captured->loggedErrors[0]['context']
+        );
     }
 
     public function testRequestThatThrowsExceptionLogsErrorMessageAndStackTraceIfNotDebugging()
@@ -170,7 +177,11 @@ class AbstractRestControllerTest extends ControllerTestCase
 
         $this->controller->execute($this->createJsonRequest('GET'));
 
-        $this->assertContains($exception->getMessage(), $this->captured->loggedErrors);
-        $this->assertContains($exception->getTraceAsString(), $this->captured->loggedErrors);
+        $this->assertEquals(1, count($this->captured->loggedErrors));
+        $this->assertEquals($exception->getMessage(), $this->captured->loggedErrors[0]['message']);
+        $this->assertEquals(
+            ['exception' => $exception],
+            $this->captured->loggedErrors[0]['context']
+        );
     }
 }

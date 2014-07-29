@@ -99,8 +99,10 @@ abstract class AbstractRestController extends AbstractController
     protected function createErrorResponse(Exception $exception)
     {
         if ($this->logger) {
-            $this->logger->error($exception->getMessage());
-            $this->logger->error($exception->getTraceAsString());
+            $this->logger->addError(
+                $exception->getMessage(),
+                ['exception' => $exception]
+            );
         }
 
         $responseData = [
