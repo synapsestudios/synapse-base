@@ -47,12 +47,10 @@ abstract class AbstractRestController extends AbstractController
 
         try {
             $result = $this->{$method}($request);
-        } catch (\Exception $e) {
-            if ($e instanceof BadRequestException) {
-                return $this->createSimpleResponse(400, 'Could not parse json body');
-            } else {
-                return $this->createErrorResponse($e);
-            }
+        } catch (BadRequestException $e) {
+            return $this->createSimpleResponse(400, 'Could not parse json body');
+        } catch (Exception $e) {
+            return $this->createErrorResponse($e);
         }
 
         if ($result instanceof ArraySerializableInterface) {
