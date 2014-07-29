@@ -5,6 +5,7 @@ namespace Synapse\Db;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Db\Adapter\Adapter;
+use Synapse\Db\Transaction;
 use Zend\Db\Sql\Sql;
 
 /**
@@ -21,6 +22,10 @@ class DbServiceProvider implements ServiceProviderInterface
     {
         $app['db'] = $app->share(function ($app) {
             return new Adapter($app['config']->load('db'));
+        });
+
+        $app['db.transaction'] = $app->share(function ($app) {
+            return new Transaction($app['db']);
         });
     }
 
