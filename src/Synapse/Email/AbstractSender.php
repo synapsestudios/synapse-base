@@ -37,7 +37,7 @@ abstract class AbstractSender implements SenderInterface
      */
     protected function filterThroughWhitelist($address)
     {
-        $whitelist   = Arr::path($this->config, 'whitelist.whitelist');
+        $whitelist   = Arr::path($this->config, 'whitelist.list');
         $trapAddress = Arr::path($this->config, 'whitelist.trap');
 
         if (! is_array($whitelist)) {
