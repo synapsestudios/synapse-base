@@ -7,7 +7,7 @@ use Mandrill;
 /**
  * Service to send emails
  */
-class MandrillSender implements SenderInterface
+class MandrillSender extends AbstractSender
 {
     /**
      * @var Mandrill
@@ -63,11 +63,13 @@ class MandrillSender implements SenderInterface
         // Create attachments array
         $attachments = json_decode($email->getAttachments(), true);
 
+        $recipientEmail = $email->getRecipientEmail();
+
         $to = [
             [
-                'email' => $email->getRecipientEmail(),
-                'name' => $email->getRecipientName(),
-                'type' => 'to'
+                'email' => $this->filterThroughWhitelist($recipientEmail),
+                'name'  => $email->getRecipientName(),
+                'type'  => 'to'
             ]
         ];
 

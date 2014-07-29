@@ -38,10 +38,14 @@ class EmailServiceProvider implements ServiceProviderInterface
                 return;
             }
 
-            return new MandrillSender(
+            $sender = new MandrillSender(
                 new Mandrill($apiKey),
                 $app['email.mapper']
             );
+
+            $sender->setConfig($emailConfig);
+
+            return $sender;
         });
 
         $app['email.send-proxy'] = $app->share(function (Application $app) {
