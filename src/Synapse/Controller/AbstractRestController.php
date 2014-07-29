@@ -2,8 +2,8 @@
 
 namespace Synapse\Controller;
 
+use Exception;
 use RuntimeException;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +17,8 @@ use Zend\Stdlib\ArraySerializableInterface;
  */
 abstract class AbstractRestController extends AbstractController
 {
+    const SERVER_ERROR_MESSAGE = 'An unknown error has occurred';
+
     /**
      * Request body content decoded from JSON
      *
@@ -49,7 +51,7 @@ abstract class AbstractRestController extends AbstractController
             if ($e instanceof BadRequestException) {
                 return $this->createSimpleResponse(400, 'Could not parse json body');
             } else {
-                return $this->createErrorResponse();
+                return $this->createErrorResponse($e);
             }
         }
 
@@ -96,17 +98,19 @@ abstract class AbstractRestController extends AbstractController
      *
      * @return Response
      */
-    protected function createErrorResponse()
+    protected function createErrorResponse(Exception $exception)
     {
         if ($this->logger) {
-            $this->logger->error($e->getMessage());
-            $this->logger->error($e->getTraceAsString());
+            $this->logger->error($exception->getMessage());
+            $this->logger->error($exception->getTraceAsString());
         }
 
-        $responseData = ['error' => $this->debug ? $e->getMessage() : 'An unknown error has occurred'];
+        $responseData = [
+            'error' => $this->debug ? $exception->getMessage() : self::SERVER_ERROR_MESSAGE
+        ];
 
         if ($this->debug) {
-            $responseData['trace'] = $e->getTraceAsString();
+            $responseData['trace'] = $exception->getTraceAsString();
         };
 
         return $this->createJsonResponse($responseData, 500);
