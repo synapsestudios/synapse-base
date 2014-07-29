@@ -68,8 +68,8 @@ class MandrillSenderTest extends PHPUnit_Framework_TestCase
     {
         return [
             'whitelist' => [
-                'whitelist' => ['foo@bar.com', 'domain.com', 'test.com'],
-                'trap'      => 'trap@example.com',
+                'list' => ['foo@bar.com', 'domain.com', 'test.com'],
+                'trap' => 'trap@example.com',
             ],
         ];
     }
