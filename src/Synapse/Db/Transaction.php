@@ -12,7 +12,6 @@ class Transaction
     protected $connection;
 
     /**
-     * Set injected objects as properties
      * @param DbAdapter $dbAdapter Query builder object
      */
     public function __construct(DbAdapter $dbAdapter)
