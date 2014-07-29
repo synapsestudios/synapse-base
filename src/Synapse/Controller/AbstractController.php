@@ -4,6 +4,8 @@ namespace Synapse\Controller;
 
 use Synapse\Application\UrlGeneratorAwareInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
+use Synapse\Debug\DebugModeAwareInterface;
+use Synapse\Debug\DebugModeAwareTrait;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
 use Synapse\Response\EntityResponse;
@@ -15,9 +17,9 @@ use Zend\Stdlib\ArraySerializableInterface;
 /**
  * Abstract controller defining universal helper methods
  */
-abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerAwareInterface
+abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerAwareInterface, DebugModeAwareInterface
 {
-    use UrlGeneratorAwareTrait, LoggerAwareTrait;
+    use UrlGeneratorAwareTrait, LoggerAwareTrait, DebugModeAwareTrait;
 
     /**
      * Create and return a 404 response object

@@ -45,8 +45,18 @@ abstract class AbstractRestController extends AbstractController
 
         try {
             $result = $this->{$method}($request);
-        } catch (BadRequestException $e) {
-            return $this->createSimpleResponse(400, 'Could not parse json body');
+        } catch (\Exception $e) {
+            if ($e instanceof BadRequestException) {
+                return $this->createSimpleResponse(400, 'Could not parse json body');
+            } else {
+                $this->logger->error($e->getMessage());
+                $this->logger->error($e->getTraceAsString());
+                $responseData = ['error' => $this->debug ? $e->getMessage() : 'An unknown error has occurred'];
+                if ($this->debug) {
+                    $responseData['trace'] = $e->getTraceAsString();
+                };
+                return $this->createJsonResponse($responseData, 500);
+            }
         }
 
         if ($result instanceof ArraySerializableInterface) {
