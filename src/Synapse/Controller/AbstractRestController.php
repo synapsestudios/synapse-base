@@ -49,12 +49,17 @@ abstract class AbstractRestController extends AbstractController
             if ($e instanceof BadRequestException) {
                 return $this->createSimpleResponse(400, 'Could not parse json body');
             } else {
-                $this->logger->error($e->getMessage());
-                $this->logger->error($e->getTraceAsString());
+                if ($this->logger) {
+                    $this->logger->error($e->getMessage());
+                    $this->logger->error($e->getTraceAsString());
+                }
+
                 $responseData = ['error' => $this->debug ? $e->getMessage() : 'An unknown error has occurred'];
+
                 if ($this->debug) {
                     $responseData['trace'] = $e->getTraceAsString();
                 };
+
                 return $this->createJsonResponse($responseData, 500);
             }
         }
