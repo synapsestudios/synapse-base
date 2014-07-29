@@ -77,17 +77,17 @@ class MandrillSenderTest extends PHPUnit_Framework_TestCase
     public function provideSendersAndRecipientsWithExpectedFilteredEmails()
     {
         return [
-            ['foo@bar.com', 'foo@bar.com', 'joe@domain.com', 'joe@domain.com'],
-            ['foo@bar.com', 'foo@bar.com', 'joe@invalid.com', 'trap+joe+invalid.com@example.com'],
-            ['joe@invalid.com', 'trap+joe+invalid.com@example.com', 'foo@bar.com', 'foo@bar.com'],
-            ['one@two.com', 'trap+one+two.com@example.com', 'three@four.com', 'trap+three+four.com@example.com'],
+            ['foo@bar.com', 'joe@domain.com', 'joe@domain.com'],
+            ['foo@bar.com', 'joe@invalid.com', 'trap+joe+invalid.com@example.com'],
+            ['joe@invalid.com', 'foo@bar.com', 'foo@bar.com'],
+            ['one@two.com', 'three@four.com', 'trap+three+four.com@example.com'],
         ];
     }
 
     /**
      * @dataProvider provideSendersAndRecipientsWithExpectedFilteredEmails
      */
-    public function testSendRunsEmailAddressesThroughWhitelistFilter($sender, $expectedSender, $recipient, $expectedRecipient)
+    public function testSendOnlyRunsSenderEmailAddressThroughWhitelistFilter($sender, $recipient, $expectedRecipient)
     {
         $this->captureEmailAddresses();
 
@@ -99,7 +99,7 @@ class MandrillSenderTest extends PHPUnit_Framework_TestCase
         $this->sender->send($email);
 
         $this->assertEquals(
-            $expectedSender,
+            $sender,
             $this->captured->senderEmail
         );
 
