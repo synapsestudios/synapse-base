@@ -64,20 +64,19 @@ class MandrillSender extends AbstractSender
         $attachments = json_decode($email->getAttachments(), true);
 
         $recipientEmail = $email->getRecipientEmail();
-        $senderEmail    = $email->getSenderEmail();
 
         $to = [
             [
                 'email' => $this->filterThroughWhitelist($recipientEmail),
-                'name' => $email->getRecipientName(),
-                'type' => 'to'
+                'name'  => $email->getRecipientName(),
+                'type'  => 'to'
             ]
         ];
 
         $message = [
             'html'                => $email->getMessage(),
             'subject'             => $email->getSubject(),
-            'from_email'          => $this->filterThroughWhitelist($senderEmail),
+            'from_email'          => $email->getSenderEmail(),
             'from_name'           => $email->getSenderName(),
             'to'                  => $to,
             'attachments'         => $attachments,
