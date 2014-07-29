@@ -25,6 +25,14 @@ class ControllerServiceProvider implements ServiceProviderInterface
                 return $object;
             }
         );
+
+        $app->initializer(
+            'Synapse\\Debug\\DebugModeAwareInterface',
+            function ($object) use ($app) {
+                $object->setDebug($app['debug']);
+                return $object;
+            }
+        );
     }
 
     /**
