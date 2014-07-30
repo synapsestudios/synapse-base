@@ -136,7 +136,7 @@ class AbstractRestControllerTest extends ControllerTestCase
         $content = json_decode($response->getContent(), true);
 
         $this->assertArrayHasKey('trace', $content);
-        $this->assertEquals($exception->getTraceAsString(), $content['trace']);
+        $this->assertTrue(is_array($content['trace']));
     }
 
     public function testRequestThatThrowsExceptionReturnsContentWithNoStackTraceIfNotDebugging()

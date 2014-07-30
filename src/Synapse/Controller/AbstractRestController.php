@@ -110,7 +110,7 @@ abstract class AbstractRestController extends AbstractController
         ];
 
         if ($this->debug) {
-            $responseData['trace'] = $exception->getTraceAsString();
+            $responseData['trace'] = $exception->getTrace();
         };
 
         return $this->createJsonResponse($responseData, 500);
