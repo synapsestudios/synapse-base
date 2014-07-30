@@ -4,9 +4,6 @@ php:
 - 5.5
 - 5.6
 - hhvm
-matrix:
-  allow_failures:
-    - php: hhvm
 git:
   submodules: false
 before_script:
