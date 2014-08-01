@@ -84,7 +84,7 @@ class UpdaterTraitTest extends MapperTestCase
 
         $regexp = sprintf('/UPDATE `%s` SET /', $tableName);
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
     }
 
     public function testUpdateUpdatesWhereIdIsEntityId()
@@ -97,7 +97,7 @@ class UpdaterTraitTest extends MapperTestCase
 
         $this->mapper->update($entity);
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
     }
 
     public function testUpdateUpdatesToCorrectValues()
@@ -114,10 +114,10 @@ class UpdaterTraitTest extends MapperTestCase
 
         $this->mapper->update($entity);
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
     }
 
-    public function testUpdateSetsUpdatedTimestampColumnAutomatically()
+    public function testUpdateSetsUpdatedTimestampColumnAutomaticallyOnEntityAndDbQuery()
     {
         $entity = $this->createTimestampEntityToUpdate()
             ->setUpdated(null);
@@ -126,7 +126,7 @@ class UpdaterTraitTest extends MapperTestCase
 
         $regexp = sprintf('/\SET .+ `updated` = \'[0-9]+\' WHERE/');
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
 
         $this->assertNotNull($entity->getUpdated());
     }

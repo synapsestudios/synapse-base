@@ -17,17 +17,14 @@ trait UpdaterTrait
      */
     public function update(AbstractEntity $entity)
     {
-        if ($this->updatedTimestampColumn) {
-            $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
-        }
-
         $values = $entity->getDbValues();
 
         return $this->updateEntityById($entity, $values);
     }
 
     /**
-     * Update an entity by its ID
+     * Update an entity by its ID.
+     * Set the updated timestamp column if it exists.
      *
      * @param  AbstractEntity $entity
      * @param  array          $values Values to set on the entity
@@ -35,6 +32,14 @@ trait UpdaterTrait
      */
     protected function updateEntityById(AbstractEntity $entity, array $values)
     {
+        if ($this->updatedTimestampColumn) {
+            $timestamp = time();
+
+            $entity->exchangeArray([$this->updatedTimestampColumn => $timestamp]);
+
+            $values[$this->updatedTimestampColumn] = $timestamp;
+        }
+
         unset($values['id']);
 
         $condition = ['id' => $entity->getId()];
