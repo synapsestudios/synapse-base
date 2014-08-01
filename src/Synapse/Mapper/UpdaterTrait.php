@@ -19,18 +19,18 @@ trait UpdaterTrait
     {
         $values = $entity->getDbValues();
 
-        return $this->updateEntityById($entity, $values);
+        return $this->updateRow($entity, $values);
     }
 
     /**
-     * Update an entity by its ID.
+     * Update an entity's DB row by its ID.
      * Set the updated timestamp column if it exists.
      *
      * @param  AbstractEntity $entity
      * @param  array          $values Values to set on the entity
      * @return AbstractEntity
      */
-    protected function updateEntityById(AbstractEntity $entity, array $values)
+    protected function updateRow(AbstractEntity $entity, array $values)
     {
         if ($this->updatedTimestampColumn) {
             $timestamp = time();
