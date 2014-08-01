@@ -90,7 +90,7 @@ class InserterTraitTest extends MapperTestCase
 
         $regexp = sprintf('/INSERT INTO `%s`/', $tableName);
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
     }
 
     public function testInsertInsertsCorrectValues()
@@ -104,10 +104,10 @@ class InserterTraitTest extends MapperTestCase
 
         $this->mapper->insert($entity);
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
     }
 
-    public function testInsertSetsCreatedTimestampColumnAutomatically()
+    public function testInsertSetsCreatedTimestampColumnAutomaticallyOnEntityAndDbQuery()
     {
         $entity = $this->createTimestampEntityToInsert()
             ->setCreated(null);
@@ -116,7 +116,7 @@ class InserterTraitTest extends MapperTestCase
 
         $regexp = sprintf('/\(`id`, `foo`, `created`, `updated`\) VALUES \(NULL, \'bar\', \'[0-9]+\', NULL\)/');
 
-        $this->assertRegExp($regexp, $this->getSqlString());
+        $this->assertRegExpOnSqlString($regexp);
 
         $this->assertNotNull($entity->getCreated());
     }

@@ -17,11 +17,29 @@ trait InserterTrait
      */
     public function insert(AbstractEntity $entity)
     {
-        if ($this->createdTimestampColumn) {
-            $entity->exchangeArray([$this->createdTimestampColumn => time()]);
-        }
-
         $values = $entity->getDbValues();
+
+        return $this->insertRow($entity, $values);
+    }
+
+    /**
+     * Insert an entity's DB row using the given values.
+     * Set the ID on the entity from the query result.
+     * Set the created timestamp column if it exists.
+     *
+     * @param  AbstractEntity $entity
+     * @param  array          $values Values with which to create the entity
+     * @return AbstractEntity
+     */
+    protected function insertRow(AbstractEntity $entity, array $values)
+    {
+        if ($this->createdTimestampColumn) {
+            $timestamp = time();
+
+            $entity->exchangeArray([$this->createdTimestampColumn => $timestamp]);
+
+            $values[$this->createdTimestampColumn] = $timestamp;
+        }
 
         $columns = array_keys($values);
 
