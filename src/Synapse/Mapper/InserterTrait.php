@@ -23,6 +23,20 @@ trait InserterTrait
 
         $values = $entity->getDbValues();
 
+        return $this->insertEntity($entity, $values);
+    }
+
+    /**
+     * Insert an entity using the given values
+     *
+     * Set the ID on the entity from the query result
+     *
+     * @param  AbstractEntity $entity
+     * @param  array          $values Values with which to create the entity
+     * @return AbstractEntity
+     */
+    protected function insertEntity(AbstractEntity $entity, array $values)
+    {
         $columns = array_keys($values);
 
         $query = $this->getSqlObject()

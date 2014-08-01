@@ -21,15 +21,27 @@ trait UpdaterTrait
             $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
         }
 
-        $dbValueArray = $entity->getDbValues();
+        $values = $entity->getDbValues();
 
-        unset($dbValueArray['id']);
+        return $this->updateEntityById($entity, $values);
+    }
+
+    /**
+     * Update an entity by its ID
+     *
+     * @param  AbstractEntity $entity
+     * @param  array          $values Values to set on the entity
+     * @return AbstractEntity
+     */
+    protected function updateEntityById(AbstractEntity $entity, array $values)
+    {
+        unset($values['id']);
 
         $condition = ['id' => $entity->getId()];
 
         $query = $this->getSqlObject()
             ->update()
-            ->set($dbValueArray)
+            ->set($values)
             ->where($condition);
 
         $this->execute($query);
