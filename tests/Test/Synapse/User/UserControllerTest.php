@@ -24,11 +24,13 @@ class UserControllerTest extends ControllerTestCase
 
         $this->setUpMockUserService();
         $this->setUpMockUserValidator();
+        $this->setUpMockUserRegistrationValidator();
         $this->setUpMockUrlGenerator();
         $this->setUpMockSecurityContext();
 
         $this->userController->setUserService($this->mockUserService)
             ->setUserValidator($this->mockUserValidator)
+            ->setUserRegistrationValidator($this->mockUserRegistrationValidator)
             ->setUrlGenerator($this->mockUrlGenerator)
             ->setSecurityContext($this->mockSecurityContext);
     }
@@ -91,6 +93,13 @@ class UserControllerTest extends ControllerTestCase
     public function setUpMockUserValidator()
     {
         $this->mockUserValidator = $this->getMockBuilder('Synapse\User\UserValidator')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    public function setUpMockUserRegistrationValidator()
+    {
+        $this->mockUserRegistrationValidator = $this->getMockBuilder('Synapse\User\UserRegistrationValidator')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -218,6 +227,15 @@ class UserControllerTest extends ControllerTestCase
             ->will($this->returnValue($errors));
     }
 
+    public function withRegistrationValidatorValidateReturningErrors()
+    {
+        $errors = $this->createNonEmptyConstraintViolationList();
+
+        $this->mockUserRegistrationValidator->expects($this->any())
+            ->method('validate')
+            ->will($this->returnValue($errors));
+    }
+
     public function testGetReturnsUserArrayWithoutThePassword()
     {
         $response = $this->makeGetRequestForUser();
@@ -268,7 +286,7 @@ class UserControllerTest extends ControllerTestCase
 
     public function testPostReturns422IfValidationConstraintsAreViolated()
     {
-        $this->withValidatorValidateReturningErrors();
+        $this->withRegistrationValidatorValidateReturningErrors();
         $response = $this->makePostRequest();
 
         $this->assertEquals(422, $response->getStatusCode());

@@ -13,11 +13,21 @@ class UserValidator extends AbstractArrayValidator
      */
     protected function getConstraints(array $contextData, AbstractEntity $contextEntity = null)
     {
-        return [
-            'email' => new Assert\Email([
-                'checkHost' => true
+        $constraints = [
+            'email' => new Assert\Optional([
+                new Assert\Email([
+                    'checkHost' => true
+                ]),
             ]),
-            'password' => new Assert\NotBlank(),
+            'password' => new Assert\Optional([
+                new Assert\NotBlank(),
+            ])
         ];
+
+        if (isset($contextData['email']) or isset($contextData['password'])) {
+            $constraints['current_password'] = new Assert\NotBlank();
+        }
+
+        return $constraints;
     }
 }
