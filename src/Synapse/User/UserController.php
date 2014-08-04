@@ -26,6 +26,11 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     protected $userValidator;
 
     /**
+     * @var UserRegistrationValidator
+     */
+    protected $userRegistrationValidator;
+
+    /**
      * Return a user entity
      *
      * @param  Request $request
@@ -54,7 +59,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     {
         $userData = $this->getContentAsArray($request);
 
-        $errors = $this->userValidator->validate($userData ?: []);
+        $errors = $this->userRegistrationValidator->validate($userData ?: []);
 
         if (count($errors) > 0) {
             return $this->createConstraintViolationResponse($errors);
@@ -130,6 +135,15 @@ class UserController extends AbstractRestController implements SecurityAwareInte
     public function setUserValidator(UserValidator $validator)
     {
         $this->userValidator = $validator;
+        return $this;
+    }
+
+    /**
+     * @param UserRegistrationValidator $validator
+     */
+    public function setUserRegistrationValidator(UserRegistrationValidator $validator)
+    {
+        $this->userRegistrationValidator = $validator;
         return $this;
     }
 
