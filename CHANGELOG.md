@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.2.4 (2014-08-04)
+------------------
+
+* Fixed bug in user endpoint that caused endpoint to return validation errors no matter what
+
 0.2.2 (2014-07-25)
 ------------------
 
