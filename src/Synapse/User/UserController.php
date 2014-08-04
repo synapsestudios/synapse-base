@@ -90,13 +90,15 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         $userValidationCopy = clone $user;
 
         // Validate the modified fields
-        $errors = $this->userValidator->validate(
-            $userValidationCopy->exchangeArray($this->getContentAsArray($request) ?: [])->getArrayCopy()
-        );
+        $content = $this->getContentAsArray($request);
+
+        $errors = $this->userValidator->validate($content);
 
         if (count($errors) > 0) {
             return $this->createConstraintViolationResponse($errors);
         }
+
+        $userValidationCopy->exchangeArray($content ?: [])->getArrayCopy();
 
         try {
             $user = $this->userService->update($user, $this->getContentAsArray($request));
