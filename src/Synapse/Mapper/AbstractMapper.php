@@ -199,7 +199,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
         if (! $data || count($data) === 0) {
             return false;
         }
-        
+
         return $data;
     }
 
@@ -210,7 +210,10 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * @return EntityIterator
      */
     protected function executeAndGetResultsAsEntityIterator(PreparableSqlInterface $query){
+        $entities = $this->execute($query)
+            ->toEntityArray();
 
+        return new EntityIterator($entities);
     }
 
     /**
