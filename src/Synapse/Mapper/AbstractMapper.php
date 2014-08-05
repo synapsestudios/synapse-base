@@ -6,6 +6,7 @@ use ArrayObject;
 
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\AbstractEntity as AbstractEntity;
+use Synapse\Entity\EntityIterator;
 use Synapse\Db\ResultSet\HydratingResultSet;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
