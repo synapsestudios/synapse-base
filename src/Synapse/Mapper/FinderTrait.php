@@ -107,10 +107,7 @@ trait FinderTrait
             $query->offset(($page - 1) * $paginationData->getResultsPerPage());
         }
 
-        $entities = $this->execute($query)
-            ->toEntityArray();
-
-        $entityIterator = new EntityIterator($entities);
+        $entityIterator = $this->executeAndGetResultsAsEntityIterator($query);
 
         if ($page) {
             $entityIterator->setPaginationData($paginationData);
