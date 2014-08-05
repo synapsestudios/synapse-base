@@ -55,13 +55,7 @@ trait FinderTrait
 
         $this->addWheres($query, $wheres, $options);
 
-        $data = $this->execute($query)->current();
-
-        if (! $data || count($data) === 0) {
-            return false;
-        }
-
-        return $data;
+        return $this->executeAndGetResultsAsEntity($query);
     }
 
     /**
