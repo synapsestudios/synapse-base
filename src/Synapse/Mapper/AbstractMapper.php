@@ -194,7 +194,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * @param  PreparableSqlInterface $query Query to be executed
      * @return AbstractEntity
      */
-    protected function executeAndGetResultsAsEntity(PreparableSqlInterface $query){
+    protected function executeAndGetResultsAsEntity(PreparableSqlInterface $query)
+    {
         $data = $this->execute($query)->current();
 
         if (! $data || count($data) === 0) {
@@ -210,7 +211,8 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * @param  PreparableSqlInterface $query Query to be executed
      * @return EntityIterator
      */
-    protected function executeAndGetResultsAsEntityIterator(PreparableSqlInterface $query){
+    protected function executeAndGetResultsAsEntityIterator(PreparableSqlInterface $query)
+    {
         $entities = $this->execute($query)
             ->toEntityArray();
 
