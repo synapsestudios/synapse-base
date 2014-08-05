@@ -194,7 +194,13 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * @return AbstractEntity
      */
     protected function executeAndGetResultsAsEntity(PreparableSqlInterface $query){
+        $data = $this->execute($query)->current();
+
+        if (! $data || count($data) === 0) {
+            return false;
+        }
         
+        return $data;
     }
 
     /**
