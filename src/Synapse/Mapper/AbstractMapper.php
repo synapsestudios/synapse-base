@@ -198,6 +198,16 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
+     * Execute a given query and return the result as a Entity Iterator object
+     *
+     * @param  PreparableSqlInterface $query Query to be executed
+     * @return EntityIterator
+     */
+    protected function executeAndGetResultsAsEntityIterator(PreparableSqlInterface $query){
+
+    }
+
+    /**
      * Rename to getSqlObject, but this method kept for backwards compatibility
      *
      * @return Sql
