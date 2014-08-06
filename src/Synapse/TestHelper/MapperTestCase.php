@@ -107,12 +107,10 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
     public function getMockResult()
     {
         if ( ! isset($this->mockResults[$this->mockResultCount])) {
-            // Return an actual mock
-            $mock = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
-            $mock->expects($this->any())
-                ->method('getGeneratedValue')
-                ->will($this->returnValue(self::GENERATED_ID));
-            return $mock;
+            // return empty results
+            $result = new MockQueryResult([]);
+            $result->setGeneratedValue(self::GENERATED_ID);
+            return $result;
         }
 
         $result = $this->mockResults[$this->mockResultCount];

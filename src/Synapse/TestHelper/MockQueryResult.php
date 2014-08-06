@@ -8,6 +8,13 @@ use Zend\Db\Adapter\Driver\ResultInterface;
 class MockQueryResult extends ArrayIterator implements ResultInterface
 {
     /**
+     * The value returned by getGeneratedValue
+     *
+     * @var int
+     */
+    protected $generatedValue = null;
+
+    /**
      * Force buffering
      *
      * @return void
@@ -54,7 +61,7 @@ class MockQueryResult extends ArrayIterator implements ResultInterface
      */
     public function getGeneratedValue()
     {
-        return null; // No value generated for a query result
+        return $this->generatedValue;
     }
 
     /**
@@ -64,7 +71,7 @@ class MockQueryResult extends ArrayIterator implements ResultInterface
      */
     public function getResource()
     {
-        return $this->getMock('mysqli');
+        return null; // Seems we can get away with returning null
     }
 
     /**
@@ -81,5 +88,15 @@ class MockQueryResult extends ArrayIterator implements ResultInterface
         }
 
         return count($arrayCopy[0]);
+    }
+
+    /**
+     * Set the value returned by getGeneratedValue
+     *
+     * @param  int $value
+     */
+    public function setGeneratedValue($value)
+    {
+        $this->generatedValue = $value;
     }
 }
