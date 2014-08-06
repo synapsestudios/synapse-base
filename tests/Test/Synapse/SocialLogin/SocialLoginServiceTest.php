@@ -53,13 +53,16 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
             'fake_auth',
             1512531896,
             'fake_refresh',
-            'aaron@syn0.com'
+            ['aaron@syn0.com']
         );
+
+        return $loginRequest;
     }
 
     public function testTokenUpdateOnLogin()
     {
         $socialLoginEntity = $this->getSocialLoginEntity();
+        $loginRequest = $this->getLoginRequest();
 
 
         $this->assertTrue(false);
