@@ -207,7 +207,7 @@ class SocialLoginService
      * @param  LoginRequest $request
      */
     protected function updateSocialLoginToken(
-        SocialLoginEntity $socialLogin, 
+        SocialLoginEntity $socialLogin,
         LoginRequest $request
     ) {
         $socialLogin->setAccessToken($request->getAccessToken())
