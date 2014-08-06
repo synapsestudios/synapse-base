@@ -139,7 +139,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
     {
         $dropTables = $input->getOption('drop-tables');
 
-        if (! $this->hasTables() || $dropTables) {
+        if ((! $this->hasTables() || $dropTables) && $app['env'] !== 'production') {
             // Console message heading padded by a newline
             $output->write(['', '  -- APP INSTALL --', ''], true);
 
