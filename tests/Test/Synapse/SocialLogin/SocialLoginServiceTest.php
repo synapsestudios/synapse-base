@@ -30,9 +30,22 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
             }));
     }
 
+    public function getSocialLoginEntity()
+    {
+        $socialLoginEntity = new SocialLoginEntity();
+
+        $socialLoginEntity->exchangeArray([
+            'provider' => 'facebook',
+            'access_token' => 'CAADm7v02lKgBAEvIkmGlpWpvzWVrPo2mnuJHjj4',
+            'access_token_expires' => '1412531896'
+        ]);
+
+        return $socialLoginEntity;
+    }
+
     public function testTokenUpdateOnLogin()
     {
-
+        $socialLoginEntity = $this->getSocialLoginEntity();
 
 
         $this->assertTrue(false);
