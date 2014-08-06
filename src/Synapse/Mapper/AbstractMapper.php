@@ -189,10 +189,11 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
-     * Execute a given query and return the result as a single Entity object
+     * Execute a given query and return the result as a single Entity object or
+     * false if no results are returned from the query.
      *
      * @param  PreparableSqlInterface $query Query to be executed
-     * @return AbstractEntity
+     * @return AbstractEntity|bool
      */
     protected function executeAndGetResultsAsEntity(PreparableSqlInterface $query)
     {
