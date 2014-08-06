@@ -4,6 +4,7 @@ namespace Test\Synapse\SocialLogin;
 
 use Synapse\SocialLogin\SocialLoginService;
 use Synapse\SocialLogin\SocialLoginEntity;
+use Synapse\SocialLogin\LoginRequest;
 use PHPUnit_Framework_TestCase;
 
 class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
@@ -37,10 +38,23 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $socialLoginEntity->exchangeArray([
             'provider' => 'facebook',
             'access_token' => 'CAADm7v02lKgBAEvIkmGlpWpvzWVrPo2mnuJHjj4',
-            'access_token_expires' => '1412531896'
+            'access_token_expires' => 1412531896,
+            'refresh_token' => null
         ]);
 
         return $socialLoginEntity;
+    }
+
+    public function getLoginRequest()
+    {
+        $loginRequest = new LoginRequest(
+            'facebook',
+            1,
+            'fake_auth',
+            1512531896,
+            'fake_refresh',
+            'aaron@syn0.com'
+        );
     }
 
     public function testTokenUpdateOnLogin()

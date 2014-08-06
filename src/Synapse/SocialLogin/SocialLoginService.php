@@ -202,7 +202,7 @@ class SocialLoginService
     /**
      * Update a users OAuth token, token expiration and refresh token information
      * when they log in
-     * 
+     *
      * @param  SocialLoginEntity
      * @param  LoginRequest $request
      */
