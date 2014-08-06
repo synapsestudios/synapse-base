@@ -6,6 +6,7 @@ use ArrayObject;
 
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\AbstractEntity as AbstractEntity;
+use Synapse\Entity\EntityIterator;
 use Synapse\Db\ResultSet\HydratingResultSet;
 use Synapse\Log\LoggerAwareInterface;
 use Synapse\Log\LoggerAwareTrait;
@@ -185,6 +186,38 @@ abstract class AbstractMapper implements LoggerAwareInterface
 
         $resultSet = new HydratingResultSet($this->hydrator, $this->prototype);
         return $resultSet->initialize($statement->execute());
+    }
+
+    /**
+     * Execute a given query and return the result as a single Entity object or
+     * false if no results are returned from the query.
+     *
+     * @param  PreparableSqlInterface $query Query to be executed
+     * @return AbstractEntity|bool
+     */
+    protected function executeAndGetResultsAsEntity(PreparableSqlInterface $query)
+    {
+        $data = $this->execute($query)->current();
+
+        if (! $data || count($data) === 0) {
+            return false;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Execute a given query and return the result as an Entity Iterator object
+     *
+     * @param  PreparableSqlInterface $query Query to be executed
+     * @return EntityIterator
+     */
+    protected function executeAndGetResultsAsEntityIterator(PreparableSqlInterface $query)
+    {
+        $entities = $this->execute($query)
+            ->toEntityArray();
+
+        return new EntityIterator($entities);
     }
 
     /**
