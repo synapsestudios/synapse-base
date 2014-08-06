@@ -29,6 +29,13 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
     protected $queries = [];
 
+    /**
+     * Set using the setMockResults method
+     *
+     * @var array
+     */
+    protected $mockResults = [];
+
     protected $fallbackTableName = 'table';
 
     public function setUp()
@@ -40,6 +47,8 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         };
 
         $this->mockResultCount = 0;
+
+        $this->mockResults = [];
 
         $this->setUpMockAdapter();
 
@@ -57,6 +66,24 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
     public function setUpMockResultCallback(callable $callback)
     {
         $this->mockResultCallback = $callback;
+    }
+
+    /**
+     * Set array of data that a query result will contain
+     *
+     * @param array $results... Array of data for result to contain.  Repeatable
+     *                          if multiple queries will be executed.
+     */
+    public function setMockResults()
+    {
+        $results = [];
+        $resultArrays = func_get_args();
+
+        foreach ($resultArrays as $resultArray) {
+            $results[] = new MockQueryResult($resultArray);
+        }
+
+        $this->mockResults = $results;
     }
 
     public function getPlatform()
@@ -79,17 +106,20 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
     public function getMockResult()
     {
-        $mockResult = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
+        if ( ! isset($this->mockResults[$this->mockResultCount])) {
+            // Return an actual mock
+            $mock = $this->getMock('Zend\Db\Adapter\Driver\ResultInterface');
+            $mock->expects($this->any())
+                ->method('getGeneratedValue')
+                ->will($this->returnValue(self::GENERATED_ID));
+            return $mock;
+        }
 
-        $mockResult->expects($this->any())
-            ->method('getGeneratedValue')
-            ->will($this->returnValue(self::GENERATED_ID));
-
-        call_user_func($this->mockResultCallback, $mockResult, $this->mockResultCount);
+        $result = $this->mockResults[$this->mockResultCount];
 
         $this->mockResultCount += 1;
 
-        return $mockResult;
+        return $result;
     }
 
     public function getMockStatement()
@@ -98,7 +128,9 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
         $mockStatement->expects($this->any())
             ->method('execute')
-            ->will($this->returnValue($this->getMockResult()));
+            ->will($this->returnCallback(function() {
+                return $this->getMockResult();
+            }));
 
         return $mockStatement;
     }
