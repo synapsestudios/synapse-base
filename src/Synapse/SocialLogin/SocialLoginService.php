@@ -63,6 +63,7 @@ class SocialLoginService
             if ($user) {
                 $userFound = true;
                 if ($this->userHasSocialLoginWithProvider($request->getProvider(), $user)) {
+                    $this->updateFromSocialLogin($user, $request);
                     return $this->handleLogin($user, $request);
                 }
             }
@@ -196,5 +197,16 @@ class SocialLoginService
     {
         $this->userService = $service;
         return $this;
+    }
+
+    /**
+     * Update a users OAuth information when they log in
+     * 
+     * @param  UserEntity
+     * @param  LoginRequest $request
+     */
+    protected function updateFromSocialLogin(UserEntity $user, LoginRequest $request)
+    {
+
     }
 }
