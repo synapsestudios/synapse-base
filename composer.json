@@ -1,6 +1,7 @@
 {
     "name": "synapsestudios/synapse-base",
     "description": "Base code for the API template",
+    "license": "MIT",
     "require": {
         "silex/silex": "~1.1",
         "symfony/console": "~2.3.8",

@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+0.2.5 (2014-08-06)
+------------------
+
+* Added MapperTestCase::setMockResults()
+* Removed MapperTestCase::setUpMockResultCallback()
+* Minor refactoring
+
+
 0.2.4 (2014-08-04)
 ------------------
 
