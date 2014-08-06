@@ -52,7 +52,7 @@ class SocialLoginService
             $user = $this->userService->findById(
                 $socialLogin->getUserId()
             );
-
+            $this->updateSocialLoginToken($socialLogin, $request);
             return $this->handleLogin($user, $request);
         }
 
@@ -200,13 +200,20 @@ class SocialLoginService
     }
 
     /**
-     * Update a users OAuth information when they log in
+     * Update a users OAuth token, token expiration and refresh token information
+     * when they log in
      * 
-     * @param  UserEntity
+     * @param  SocialLoginEntity
      * @param  LoginRequest $request
      */
-    protected function updateFromSocialLogin(UserEntity $user, LoginRequest $request)
-    {
+    protected function updateSocialLoginToken(
+        SocialLoginEntity $socialLogin, 
+        LoginRequest $request
+    ) {
+        $socialLogin->setAccessToken($request->getAccessToken())
+            ->setAccessTokenExpires($request->getAccessTokenExpires())
+            ->setRefreshToken($request->getRefreshToken());
 
+        $this->socialLoginMapper->persist($socialLogin);
     }
 }
