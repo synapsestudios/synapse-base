@@ -39,6 +39,13 @@ class RunInstallCommand extends AbstractDatabaseCommand
     protected $appVersion;
 
     /**
+     * Current environment of the application
+     *
+     * @var string
+     */
+    protected $appEnv;
+
+    /**
      * Run migrations console command object
      *
      * @var Symfony\Component\Console\Command\Command
@@ -70,6 +77,16 @@ class RunInstallCommand extends AbstractDatabaseCommand
     public function setAppVersion($version)
     {
         $this->appVersion = $version;
+    }
+
+    /**
+     * Set the current app environment
+     *
+     * @param string $env
+     */
+    public function setAppEnv($env)
+    {
+        $this->appEnv = $env;
     }
 
     /**
@@ -139,7 +156,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
     {
         $dropTables = $input->getOption('drop-tables');
 
-        if ((! $this->hasTables() || $dropTables) && $app['env'] !== 'production') {
+        if ((! $this->hasTables() || $dropTables) && $this->appEnv !== 'production') {
             // Console message heading padded by a newline
             $output->write(['', '  -- APP INSTALL --', ''], true);
 
