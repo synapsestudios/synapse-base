@@ -106,7 +106,7 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
     public function getMockResult()
     {
-        if ( ! isset($this->mockResults[$this->mockResultCount])) {
+        if (! isset($this->mockResults[$this->mockResultCount])) {
             // return empty results
             $result = new MockQueryResult([]);
             $result->setGeneratedValue(self::GENERATED_ID);
@@ -126,7 +126,7 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
         $mockStatement->expects($this->any())
             ->method('execute')
-            ->will($this->returnCallback(function() {
+            ->will($this->returnCallback(function () {
                 return $this->getMockResult();
             }));
 
