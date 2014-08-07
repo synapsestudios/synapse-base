@@ -157,11 +157,11 @@ class RunInstallCommand extends AbstractDatabaseCommand
         $dropTables = $input->getOption('drop-tables');
 
         if (! $this->hasTables() || $dropTables) {
-        	// Throw an error if dropTables is set in production env
-        	if ($dropTables && $this->appEnv === 'production') {
-        		$output->writeln('Cannot drop tables when app environment is production.');
+            // Throw an error if dropTables is set in production env
+            if ($dropTables && $this->appEnv === 'production') {
+                $output->writeln('Cannot drop tables when app environment is production.');
                 return;
-        	}
+            }
 
             // Console message heading padded by a newline
             $output->write(['', '  -- APP INSTALL --', ''], true);
