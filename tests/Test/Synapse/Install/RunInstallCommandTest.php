@@ -4,46 +4,84 @@ namespace Test\Synapse\Install;
 
 use PHPUnit_Framework_TestCase;
 use Synapse\Install\RunInstallCommand;
+use stdClass;
 
 class RunInstallCommandTest extends PHPUnit_Framework_TestCase
 {
 
     public function setUp()
     {
+        $this->captured = new stdClass();
+
         $this->command = new RunInstallCommand('install:run');
+
+        $this->setUpMockInputInterface();
+        $this->setUpMockOutputInterface();
+        $this->setUpMockDbInterface();
+
+        $this->command->setDatabaseAdapter($this->mockDbInterface);
     }
 
-    public function testExecuteDoesNotDropProductionTables()
+    public function setUpMockInputInterface()
     {
-        // Mock input interface
-        $inputStub = $this->getMock('Symfony\Component\Console\Input\InputInterface');
-        $inputStub->expects($this->any())
-            ->method('getOption')
-            ->with($this->equalTo('drop-tables'))
-            ->willReturn(true);
+        $this->mockInputInterface = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+    }
 
-        // Mock output interface
-        $outputStub = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+    public function setUpMockOutputInterface()
+    {
+        $this->mockOutputInterface = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+    }
 
-        // Mock database adapter
-        $dbMock = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
+    public function setUpMockDbInterface()
+    {
+        $this->mockDbInterface = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
             ->disableOriginalConstructor()
             ->getMock();
-        $tableDropped = false;
-        $dbMock->expects($this->any())
+    }
+
+    public function withDropTablesOptionIncluded()
+    {
+        $this->mockInputInterface->expects($this->any())
+            ->method('getOption')
+            ->with($this->equalTo('drop-tables'))
+            ->will($this->returnValue(true));
+    }
+
+    public function capturingTableDrop()
+    {
+        $this->captured->tableWasDropped = false;
+        $this->mockDbInterface->expects($this->any())
             ->method('query')
-            ->will($this->returnCallback(function($query) use ($tableDropped) {
+            ->will($this->returnCallback(function ($query) {
                 if ($query === 'SHOW TABLES') {
                     $tableArray[0][0] = 0;
                     return $tableArray;
                 }
                 if (preg_match('/DROP TABLE/',$query)) {
-                    $tableDropped = true;
+                    $this->captured->tableWasDropped = true;
                 }
             }));
-        $this->command->setDatabaseAdapter($dbMock);
+    }
 
-        $result = $this->command->execute($inputStub, $outputStub);
-        $this->assertEquals(false, $tableDropped);
+    public function testExecuteDoesNotDropProductionTables()
+    {
+        $this->capturingTableDrop();
+        $this->command->setAppEnv('production');
+        $this->withDropTablesOptionIncluded();
+
+        $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
+
+        $this->assertFalse($this->captured->tableWasDropped);
+    }
+
+    public function testExecuteDoesDropDevelopmentTables()
+    {
+        $this->capturingTableDrop();
+        $this->command->setAppEnv('development');
+        $this->withDropTablesOptionIncluded();
+
+        $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
+
+        $this->assertTrue($this->captured->tableWasDropped);
     }
 }
