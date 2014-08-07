@@ -80,7 +80,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         return $socialLoginEntity;
     }
 
-    public function getLoginRequest()
+    public function createLoginRequest()
     {
         $loginRequest = new LoginRequest(
             'facebook',
@@ -99,7 +99,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->withSocialLoginMapperReturningEntity();
         $this->withUserFound();
 
-        $loginRequest = $this->getLoginRequest();
+        $loginRequest = $this->createLoginRequest();
 
 
         $this->assertTrue(false);
