@@ -21,6 +21,20 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->socialLoginService->setUserService($this->mockUserService);
     }
 
+    public function setupMockUserService()
+    {
+        $this->mockUserService = $this->getMockBuilder('Synapse\User\UserService')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    public function setupMockSocialLoginMapper()
+    {
+        $this->mockSocialLoginMapper = $this->getMockBuilder('Synapse\SocialLogin\SocialLoginMapper')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
     public function withSocialLoginMapperReturningEntity()
     {
         $this->mockSocialLoginMapper->expects($this->any())
@@ -37,20 +51,6 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->mockUserService->expects($this->any())
             ->method('findById')
             ->will($this->returnValue($userEntity));
-    }
-
-    public function setupMockUserService()
-    {
-        $this->mockUserService = $this->getMockBuilder('Synapse\User\UserService')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    public function setupMockSocialLoginMapper()
-    {
-        $this->mockSocialLoginMapper = $this->getMockBuilder('Synapse\SocialLogin\SocialLoginMapper')
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     public function createUserEntity()
