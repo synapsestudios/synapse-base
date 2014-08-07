@@ -7,6 +7,7 @@ use Synapse\SocialLogin\SocialLoginService;
 use Synapse\SocialLogin\SocialLoginEntity;
 use Synapse\SocialLogin\LoginRequest;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -21,6 +22,8 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->socialLoginService->setSocialLoginMapper($this->mockSocialLoginMapper);
         $this->socialLoginService->setUserService($this->mockUserService);
         $this->socialLoginService->setOAuthStorage($this->mockOAuth2ZendDb);
+
+        $this->captured = new stdClass();
     }
 
     public function setupMockUserService()
@@ -44,12 +47,12 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    public function withSocialLoginMapperReturningEntity()
+    public function withSocialLoginMapperReturning($entity)
     {
         $this->mockSocialLoginMapper->expects($this->any())
             ->method('findByProviderUserId')
-            ->will($this->returnCallback(function () {
-                return $this->getSocialLoginEntity();
+            ->will($this->returnCallback(function () use ($entity) {
+                return $entity;
             }));
     }
 
@@ -60,6 +63,16 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->mockUserService->expects($this->any())
             ->method('findById')
             ->will($this->returnValue($userEntity));
+    }
+
+    public function capturingPersistedSocialLoginEntity()
+    {
+        $this->mockSocialLoginMapper->expects($this->any())
+            ->method('persist')
+            ->will($this->returnCallback(function ($entity) {
+                $this->captured->persistedSocialLoginEntity = $entity;
+                return $entity;
+            }));
     }
 
     public function createUserEntity()
@@ -105,13 +118,14 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
     public function testTokenUpdateOnLogin()
     {
-        $this->withSocialLoginMapperReturningEntity();
+        $socialLoginEntity = $this->getSocialLoginEntity();
+        $this->withSocialLoginMapperReturning($socialLoginEntity);
+        $this->capturingPersistedSocialLoginEntity();
         $this->withUserFound();
 
         $loginRequest = $this->createLoginRequest();
 
         $this->socialLoginService->handleLoginRequest($loginRequest);
-
-        $this->assertTrue(false);
+        $this->assertSame($socialLoginEntity, $this->captured->persistedSocialLoginEntity);
     }
 }
