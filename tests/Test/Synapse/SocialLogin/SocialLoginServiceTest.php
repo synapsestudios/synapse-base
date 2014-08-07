@@ -2,6 +2,7 @@
 
 namespace Test\Synapse\SocialLogin;
 
+use Synapse\User\UserEntity;
 use Synapse\SocialLogin\SocialLoginService;
 use Synapse\SocialLogin\SocialLoginEntity;
 use Synapse\SocialLogin\LoginRequest;
@@ -13,7 +14,6 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
     {
         $this->socialLoginService = new SocialLoginService();
 
-        $this->createMocks();
         $this->setupMockUserService();
         $this->setupMockSocialLoginMapper();
 
@@ -40,7 +40,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->mockSocialLoginMapper->expects($this->any())
             ->method('findByProviderUserId')
             ->will($this->returnCallback(function () {
-                return $this->getSocailLoginEntity();
+                return $this->getSocialLoginEntity();
             }));
     }
 
@@ -101,6 +101,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
         $loginRequest = $this->createLoginRequest();
 
+        $this->socialLoginService->handleLoginRequest($loginRequest);
 
         $this->assertTrue(false);
     }
