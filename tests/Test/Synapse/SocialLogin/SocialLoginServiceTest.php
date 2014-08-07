@@ -7,6 +7,7 @@ use Synapse\SocialLogin\SocialLoginService;
 use Synapse\SocialLogin\SocialLoginEntity;
 use Synapse\SocialLogin\LoginRequest;
 use PHPUnit_Framework_TestCase;
+use Synapse\Stdlib\Arr;
 use stdClass;
 
 class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
@@ -127,5 +128,16 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
         $this->socialLoginService->handleLoginRequest($loginRequest);
         $this->assertSame($socialLoginEntity, $this->captured->persistedSocialLoginEntity);
+
+        $expectedLoginRequestFields = [
+            'access_token'         => $loginRequest->getAccessToken(),
+            'access_token_expires' => $loginRequest->getAccessTokenExpires(),
+            'refresh_token'        => $loginRequest->getRefreshToken()
+        ];
+
+        $this->assertEmpty(array_diff(
+            $expectedLoginRequestFields,
+            $socialLoginEntity->getArrayCopy()
+        ));
     }
 }
