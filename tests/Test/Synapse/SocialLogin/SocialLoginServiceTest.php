@@ -16,6 +16,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
         $this->setupMockUserService();
         $this->setupMockSocialLoginMapper();
+        $this->setupMockOAuth2ZendDb();
 
         $this->socialLoginService->setSocialLoginMapper($this->mockSocialLoginMapper);
         $this->socialLoginService->setUserService($this->mockUserService);
@@ -31,6 +32,13 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
     public function setupMockSocialLoginMapper()
     {
         $this->mockSocialLoginMapper = $this->getMockBuilder('Synapse\SocialLogin\SocialLoginMapper')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    public function setupMockOAuth2ZendDb()
+    {
+        $this->mockOAuth2ZendDb = $this->getMockBuilder('Synapse\OAuth2\Storage\ZendDb')
             ->disableOriginalConstructor()
             ->getMock();
     }
