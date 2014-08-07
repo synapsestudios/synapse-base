@@ -20,6 +20,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
         $this->socialLoginService->setSocialLoginMapper($this->mockSocialLoginMapper);
         $this->socialLoginService->setUserService($this->mockUserService);
+        $this->socialLoginService->setOAuthStorage($this->mockOAuth2ZendDb);
     }
 
     public function setupMockUserService()
