@@ -28,18 +28,36 @@ class FinderTraitTest extends MapperTestCase
         $this->mapper->setResultsPerPage(self::RESULTS_PER_PAGE);
     }
 
-    public function createPrototype()
+    public function getMockResultDataForSingleResult()
     {
-        return new UserEntity();
+        return [
+            [
+                'foo'    => 'a',
+                'bar'    => 'b',
+                'baz'    => 'c',
+            ]
+        ];
     }
 
-    public function createUserEntity()
+    public function getMockResultDataForMultipleResults()
     {
-        return new UserEntity([
-            'id'       => 100,
-            'email'    => 'address@a.com',
-            'password' => 'password',
-        ]);
+        return [
+            [
+                'foo'    => 1,
+                'bar'    => 2,
+                'baz'    => 3,
+            ],
+            [
+                'foo'    => 4,
+                'bar'    => 5,
+                'baz'    => 6,
+            ]
+        ];
+    }
+
+    public function createPrototype()
+    {
+        return new Entity();
     }
 
     public function createSearchConstraints()
@@ -93,21 +111,6 @@ class FinderTraitTest extends MapperTestCase
         );
     }
 
-    public function withUserEntityFound()
-    {
-        $this->setUpMockResultCallback(function ($mockResult, $index) {
-            $userEntity = $this->createUserEntity();
-
-            $mockResult->expects($this->any())
-                ->method('current')
-                ->will($this->returnCallback(function () use ($userEntity) {
-                    $this->captured->foundUserEntityData = $userEntity->getArrayCopy();
-
-                    return $this->captured->foundUserEntityData;
-                }));
-        });
-    }
-
     public function provideOrderDirectionValues()
     {
         return [
@@ -127,18 +130,6 @@ class FinderTraitTest extends MapperTestCase
         $regexp = sprintf('/SELECT `%s`.* FROM `%s`/', $tableName, $tableName);
 
         $this->assertRegExp($regexp, $this->getSqlString());
-    }
-
-    public function testFindByReturnsEntityWithFoundDataInjected()
-    {
-        $this->withUserEntityFound();
-
-        $result = $this->mapper->findBy([]);
-
-        $this->assertSame(
-            $this->captured->foundUserEntityData,
-            $result->getArrayCopy()
-        );
     }
 
     public function testFindByConstructsWhereClausesWithAnds()
@@ -423,5 +414,55 @@ class FinderTraitTest extends MapperTestCase
         $regexp = sprintf('/^SELECT `%s`.* FROM `%s`$/', $tableName, $tableName);
 
         $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
+    public function testFindByReturnsEntityOfResultData()
+    {
+        $mockResults = $this->getMockResultDataForSingleResult();
+        $this->setMockResults($mockResults);
+
+        $result = $this->mapper->findBy([]);
+
+        $this->assertInstanceOf('Synapse\Entity\AbstractEntity', $result);
+
+        $this->assertEquals(
+            $mockResults,
+            [$result->getArrayCopy()]
+        );
+    }
+
+    public function testFindAllReturnsEntityIteratorOfResults()
+    {
+        $mockResults = $this->getMockResultDataForMultipleResults();
+        $this->setMockResults($mockResults);
+
+        $result = $this->mapper->findAll();
+
+        $this->assertInstanceOf('Synapse\Entity\EntityIterator', $result);
+
+        $this->assertEquals(
+            $mockResults,
+            $result->getArrayCopy()
+        );
+    }
+
+    // This is more of a test of MapperTestCase, but it isn't all that out of place here
+    public function testSetMockResultsCanMockMultipleCalls()
+    {
+        $firstMockResults  = $this->getMockResultDataForSingleResult();
+        $secondMockResults = $this->getMockResultDataForMultipleResults();
+        $this->setMockResults($firstMockResults, $secondMockResults);
+
+        $firstResult = $this->mapper->findBy([]);
+        $secondResult = $this->mapper->findAll();
+
+        $this->assertEquals(
+            $firstMockResults,
+            [$firstResult->getArrayCopy()]
+        );
+        $this->assertEquals(
+            $secondMockResults,
+            $secondResult->getArrayCopy()
+        );
     }
 }
