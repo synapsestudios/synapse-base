@@ -14,21 +14,56 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $this->socialLoginService = new SocialLoginService();
 
         $this->createMocks();
+        $this->setupMockUserService();
+        $this->setupMockSocialLoginMapper();
 
         $this->socialLoginService->setSocialLoginMapper($this->mockSocialLoginMapper);
+        $this->socialLoginService->setUserService($this->mockUserService);
     }
 
-    public function createMocks()
+    public function withSocialLoginMapperReturningEntity()
+    {
+        $this->mockSocialLoginMapper->expects($this->any())
+            ->method('findByProviderUserId')
+            ->will($this->returnCallback(function () {
+                return $this->getSocailLoginEntity();
+            }));
+    }
+
+    public function withUserFound()
+    {
+        $userEntity = $this->createUserEntity();
+
+        $this->mockUserService->expects($this->any())
+            ->method('findById')
+            ->will($this->returnValue($userEntity));
+    }
+
+    public function setupMockUserService()
+    {
+        $this->mockUserService = $this->getMockBuilder('Synapse\User\UserService')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    public function setupMockSocialLoginMapper()
     {
         $this->mockSocialLoginMapper = $this->getMockBuilder('Synapse\SocialLogin\SocialLoginMapper')
             ->disableOriginalConstructor()
             ->getMock();
+    }
 
-        $this->mockSocialLoginMapper->expects($this->any())
-            ->method('persist')
-            ->will($this->returnCallback(function ($entity) {
-                return $entity;
-            }));
+    public function createUserEntity()
+    {
+        return new UserEntity([
+            'id'         => 1,
+            'email'      => 'fake@fake.com',
+            'password'   => 'password',
+            'last_login' => '12345',
+            'created'    => '123',
+            'enabled'    => true,
+            'verified'   => true,
+        ]);
     }
 
     public function getSocialLoginEntity()
@@ -61,7 +96,9 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
 
     public function testTokenUpdateOnLogin()
     {
-        $socialLoginEntity = $this->getSocialLoginEntity();
+        $this->withSocialLoginMapperReturningEntity();
+        $this->withUserFound();
+
         $loginRequest = $this->getLoginRequest();
 
 
