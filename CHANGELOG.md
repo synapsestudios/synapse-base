@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+0.2.6 (2014-08-08)
+-----------------
+
+* Disallowed `--drop-tables` option in `install:run` command
+* Added missing feature to update social login provider tokens upon login
+
 0.2.5 (2014-08-06)
 ------------------
 
