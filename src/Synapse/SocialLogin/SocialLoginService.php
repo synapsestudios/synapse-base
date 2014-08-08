@@ -63,7 +63,6 @@ class SocialLoginService
             if ($user) {
                 $userFound = true;
                 if ($this->userHasSocialLoginWithProvider($request->getProvider(), $user)) {
-                    $this->updateFromSocialLogin($user, $request);
                     return $this->handleLogin($user, $request);
                 }
             }
