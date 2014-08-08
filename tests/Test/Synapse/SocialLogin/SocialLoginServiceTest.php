@@ -127,6 +127,7 @@ class SocialLoginServiceTest extends PHPUnit_Framework_TestCase
         $loginRequest = $this->createLoginRequest();
 
         $this->socialLoginService->handleLoginRequest($loginRequest);
+
         $this->assertSame($socialLoginEntity, $this->captured->persistedSocialLoginEntity);
 
         $expectedLoginRequestFields = [
