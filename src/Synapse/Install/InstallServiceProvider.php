@@ -45,7 +45,7 @@ class InstallServiceProvider implements ServiceProviderInterface
 
             $command->setDatabaseAdapter($app['db']);
             $command->setAppVersion($app['version']);
-            $command->setAppEnv($app['env']);
+            $command->setAppEnv($app['environment']);
             $command->setRunMigrationsCommand($app['migrations.run-proxy']);
             $command->setGenerateInstallCommand($app['install.generate-proxy']);
 
