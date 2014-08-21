@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f6f317003b574d5a0916844cdd96a895",
+    "hash": "734dc4f6253e4376eaffac4b91819e6a",
     "packages": [
         {
             "name": "bshaffer/oauth2-server-httpfoundation-bridge",
@@ -756,32 +756,34 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.18",
+            "version": "v2.5.2",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "d9171137f97e9b14d71f7aa83ba5039b68efb8af"
+                "reference": "386fa63407805959bd2c5fe540294721ad4224c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/d9171137f97e9b14d71f7aa83ba5039b68efb8af",
-                "reference": "d9171137f97e9b14d71f7aa83ba5039b68efb8af",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/386fa63407805959bd2c5fe540294721ad4224c8",
+                "reference": "386fa63407805959bd2c5fe540294721ad4224c8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
             "require-dev": {
+                "psr/log": "~1.0",
                 "symfony/event-dispatcher": "~2.1"
             },
             "suggest": {
+                "psr/log": "For using the console logger",
                 "symfony/event-dispatcher": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.5-dev"
                 }
             },
             "autoload": {
@@ -807,7 +809,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2014-07-07 10:13:42"
+            "time": "2014-07-15 14:15:12"
         },
         {
             "name": "symfony/debug",
@@ -1113,17 +1115,17 @@
         },
         {
             "name": "symfony/security",
-            "version": "v2.5.3",
+            "version": "v2.5.2",
             "target-dir": "Symfony/Component/Security",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Security.git",
-                "reference": "03a7d1911cc02785909798269d7e04dfec95679a"
+                "reference": "531c4a7fda814e9f918673173a9aa0b2666f21ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Security/zipball/03a7d1911cc02785909798269d7e04dfec95679a",
-                "reference": "03a7d1911cc02785909798269d7e04dfec95679a",
+                "url": "https://api.github.com/repos/symfony/Security/zipball/531c4a7fda814e9f918673173a9aa0b2666f21ed",
+                "reference": "531c4a7fda814e9f918673173a9aa0b2666f21ed",
                 "shasum": ""
             },
             "require": {
@@ -1173,17 +1175,19 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Security Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-05 09:00:40"
+            "time": "2014-07-09 09:05:48"
         },
         {
             "name": "symfony/translation",
@@ -1242,17 +1246,17 @@
         },
         {
             "name": "symfony/validator",
-            "version": "v2.5.3",
+            "version": "v2.5.2",
             "target-dir": "Symfony/Component/Validator",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Validator.git",
-                "reference": "29206be1f75ad2a05b476bd9e5c655c936fa0594"
+                "reference": "8205456fe5cae985094a2e2a7b4352d1cef06a25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Validator/zipball/29206be1f75ad2a05b476bd9e5c655c936fa0594",
-                "reference": "29206be1f75ad2a05b476bd9e5c655c936fa0594",
+                "url": "https://api.github.com/repos/symfony/Validator/zipball/8205456fe5cae985094a2e2a7b4352d1cef06a25",
+                "reference": "8205456fe5cae985094a2e2a7b4352d1cef06a25",
                 "shasum": ""
             },
             "require": {
@@ -1298,17 +1302,19 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Validator Component",
             "homepage": "http://symfony.com",
-            "time": "2014-08-05 15:39:31"
+            "time": "2014-07-15 14:15:12"
         },
         {
             "name": "zendframework/zend-db",

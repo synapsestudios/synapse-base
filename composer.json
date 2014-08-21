@@ -4,9 +4,9 @@
     "license": "MIT",
     "require": {
         "silex/silex": "~1.1",
-        "symfony/console": "~2.3.8",
-        "symfony/security": "~2.3",
-        "symfony/validator": "~2.3",
+        "symfony/console": "2.5.2",
+        "symfony/security": "2.5.2",
+        "symfony/validator": "2.5.2",
         "zendframework/zend-db": "~2.2.5",
         "bshaffer/oauth2-server-php": "v1.0",
         "bshaffer/oauth2-server-httpfoundation-bridge": "v1.0",
