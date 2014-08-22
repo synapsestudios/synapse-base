@@ -30,10 +30,10 @@ abstract class AbstractCliCommand
         fclose($pipes[1]);
 
         // Save exit status
-        $response['returnCode']  = (int) trim(proc_close($fd));
-        $response['elapsedTime'] = microtime(true) - $this->startTime;
-        $response['executed']    = true;
-        $response['successful']  = $response['returnCode'] === 0;
+        $response['return_code']  = (int) trim(proc_close($fd));
+        $response['elapsed_time'] = microtime(true) - $this->startTime;
+        $response['executed']     = true;
+        $response['successful']   = $response['returnCode'] === 0;
 
         return new CliCommandResponse($response);
     }
