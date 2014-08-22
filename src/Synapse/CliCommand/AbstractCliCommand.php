@@ -10,7 +10,7 @@ abstract class AbstractCliCommand
     {
         $descriptors = [
             // Stdin
-            0 => ['pipe', 'r']
+            0 => ['pipe', 'r'],
 
             // Stdout
             1 => ['pipe', 'w'],
@@ -35,7 +35,7 @@ abstract class AbstractCliCommand
         $response['executed']    = true;
         $response['successful']  = $response['returnCode'] === 0;
 
-        return new CliCommandReponse($response);
+        return new CliCommandResponse($response);
     }
 
     public function getCommand(CliCommandOptions $options)
