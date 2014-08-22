@@ -50,15 +50,15 @@ abstract class DataObject implements ArraySerializableInterface
     /**
      * Load object data in this entity from array
      *
-     * @param  array  $values Entity data to be set
+     * @param  array  $data Entity data to be set
      * @return AbstractEntity
      */
-    public function exchangeArray(array $values)
+    public function exchangeArray(array $data)
     {
         foreach ($this->object as $key => $value) {
-            if (array_key_exists($key, $values)) {
+            if (array_key_exists($key, $data)) {
                 $setter = $this->getSetter($key);
-                $this->$setter($values[$key]);
+                $this->$setter($data[$key]);
             }
         }
 
