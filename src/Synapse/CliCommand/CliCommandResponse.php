@@ -7,11 +7,11 @@ use Synapse\StdLib\DataObject;
 class CliCommandResponse extends DataObject
 {
     protected $object = [
-        'elapsedTime' => null,
-        'executed'    => false,
-        'output'      => null,
-        'returnCode'  => null,
-        'startTime'   => null,
-        'successfull' => null
+        'elapsed_time' => null,
+        'executed'     => false,
+        'output'       => null,
+        'return_code'  => null,
+        'start_time'   => null,
+        'successfull'  => null
     ];
 }
