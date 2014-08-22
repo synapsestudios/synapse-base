@@ -4,119 +4,47 @@ namespace Synapse\CliCommand;
 
 abstract class AbstractCliCommand
 {
-    protected $executed    = false;
-    protected $output      = null;
-    protected $returnCode  = null;
-
-    protected $environment = null;
-    protected $cwd         = null;
-
-    protected $startTime   = null;
-    protected $elapsedTime = null;
-
     abstract protected function getBaseCommand();
 
-    public function setEnvironment(array $env = array())
+    public function run(CliCommandOptions $options)
     {
-        $this->environment = $env;
-        return $this;
-    }
-
-    public function setCwd($cwd)
-    {
-        $this->cwd = $cwd;
-        return $this;
-    }
-
-    public function run()
-    {
-        $descriptors = array(
+        $descriptors = [
             // Stdin
-            0 => array('pipe', 'r'),
+            0 => ['pipe', 'r']
 
             // Stdout
-            1 => array('pipe', 'w'),
-        );
+            1 => ['pipe', 'w'],
+        ];
+
+        $response = [];
 
         $this->startTime = microtime(true);
 
-        $fd = proc_open($this->getCommand(), $descriptors, $pipes, $this->cwd, $this->environment);
+        $fd = proc_open($this->getCommand($options), $descriptors, $pipes, $options->getCwd(), $options->getEnv());
 
         // Close the proc's stdin right away
         fclose($pipes[0]);
 
         // Read stdout
-        $this->output = $this->parseOutput(stream_get_contents($pipes[1]));
+        $response['output'] = $this->parseOutput(stream_get_contents($pipes[1]));
         fclose($pipes[1]);
 
         // Save exit status
-        $this->returnCode = (int) trim(proc_close($fd));
+        $response['returnCode']  = (int) trim(proc_close($fd));
+        $response['elapsedTime'] = microtime(true) - $this->startTime;
+        $response['executed']    = true;
+        $response['successful']  = $response['returnCode'] === 0;
 
-        $this->elapsedTime = microtime(true) - $this->startTime;
-
-        $this->executed = true;
+        return new CliCommandReponse($response);
     }
 
-    public function executed()
-    {
-        return $this->executed;
-    }
-
-    public function successful()
-    {
-        return $this->returnCode === 0;
-    }
-
-    public function getOutput()
-    {
-        if ($this->executed !== true) {
-            throw new \LogicException('Output is not available before command is executed');
-        }
-
-        return $this->output;
-    }
-
-    public function getExitStatus()
-    {
-        if ($this->executed !== true) {
-            throw new \LogicException('Exit status is not available before command is executed');
-        }
-
-        return $this->returnCode;
-    }
-
-    public function getEnvironment()
-    {
-        return $this->environment;
-    }
-
-    public function getCwd()
-    {
-        return $this->cwd;
-    }
-
-    public function getCommand()
+    public function getCommand(CliCommandOptions $options)
     {
         return trim(sprintf(
             '%s %s',
             $this->getBaseCommand(),
-            $this->getRedirect()
+            $options->getRedirect()
         ));
-    }
-
-    public function getStartTime()
-    {
-        return $this->startTime;
-    }
-
-    public function getElapsedTime()
-    {
-        return $this->elapsedTime;
-    }
-
-    protected function getRedirect()
-    {
-        return '2>&1';
     }
 
     protected function parseOutput($output)
