@@ -20,7 +20,7 @@ abstract class AbstractCliCommand
 
         $this->startTime = microtime(true);
 
-        $fd = proc_open($this->getCommand($options), $descriptors, $pipes, $options->getCwd(), $options->getEnv());
+        $fd = proc_open($this->buildCommand($options), $descriptors, $pipes, $options->getCwd(), $options->getEnv());
 
         // Close the proc's stdin right away
         fclose($pipes[0]);
@@ -38,7 +38,7 @@ abstract class AbstractCliCommand
         return new CliCommandResponse($response);
     }
 
-    public function getCommand(CliCommandOptions $options)
+    protected function buildCommand(CliCommandOptions $options)
     {
         return trim(sprintf(
             '%s %s',
