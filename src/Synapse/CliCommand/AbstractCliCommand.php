@@ -13,21 +13,36 @@ abstract class AbstractCliCommand
 
     abstract protected function getBaseCommand();
 
+    protected function buildCommand()
+    {
+        return trim(sprintf(
+            '%s %s',
+            $this->getBaseCommand(),
+            $this->options->getRedirect()
+        ));
+    }
+
+    protected function getOptions(CliCommandOptions $options = null)
+    {
+        $options = $options ?: new CliCommandOptions;
+
+        $this->options = $options->exchangeArray($this->lockedOptions);
+    }
 
     public function run(CliCommandOptions $options = null)
     {
-        $options = $this->getOptions($options);
+        $this->getOptions($options);
 
         $response = new CliCommandResponse();
-        $command  = $this->buildCommand($options);
+        $command  = $this->buildCommand();
 
         $response->setCommand($command);
         $response->setStartTime(microtime(true));
 
         $output = $this->executor->execute(
             $command,
-            $options->getCwd(),
-            $options->getEnv()
+            $this->options->getCwd(),
+            $this->options->getEnv()
         );
 
         list($output, $returnCode) = $output;
@@ -39,21 +54,5 @@ abstract class AbstractCliCommand
         $response->setSuccessfull($response->getReturnCode() === 0);
 
         return $response;
-    }
-
-    protected function buildCommand(CliCommandOptions $options)
-    {
-        return trim(sprintf(
-            '%s %s',
-            $this->getBaseCommand(),
-            $options->getRedirect()
-        ));
-    }
-
-    protected function getOptions(CliCommandOptions $options = null)
-    {
-        $options = $options ?: new CliCommandOptions;
-
-        return $options->exchangeArray($this->lockedOptions);
     }
 }
