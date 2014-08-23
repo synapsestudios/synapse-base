@@ -17,10 +17,8 @@ class CliCommandArguments
     {
         $output = '';
 
-        foreach ($this->arguments as $argument)
-        {
-            if (Arr::isArray($argument))
-            {
+        foreach ($this->arguments as $argument) {
+            if (Arr::isArray($argument)) {
                 list($name, $value) = $argument;
 
                 $output .= sprintf(
@@ -28,9 +26,7 @@ class CliCommandArguments
                     $name,
                     $value
                 );
-            }
-            else
-            {
+            } else {
                 $output .= sprintf('%s ', $argument);
             }
         }
