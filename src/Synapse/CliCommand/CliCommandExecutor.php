@@ -2,16 +2,11 @@
 
 namespace Synapse\CliCommand;
 
-use Synapse\Stdlib\Arr;
-
-class CliCommandExecutor
+class CliCommandExecutor implements CliCommandExecutorInterface
 {
     protected $descriptors = [
-        // Stdin
-        0 => ['pipe', 'r'],
-
-        // Stdout
-        1 => ['pipe', 'w'],
+        0 => ['pipe', 'r'], // Stdin
+        1 => ['pipe', 'w'], // Stdout
     ];
 
     public function execute($command, $cwd, $env)

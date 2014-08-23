@@ -2,30 +2,22 @@
 
 namespace Synapse\CliCommand;
 
-use Synapse\Stdlib\Arr;
-
 class CliCommand extends AbstractCliCommand
 {
-    protected $arguments;
-    protected $command;
+    protected $arguments = array();
+    protected $command   = '';
 
     protected function getBaseCommand()
     {
-        return trim(sprintf('%s %s', $this->command, $this->renderArguments()));
+        return trim(sprintf('%s %s', $this->command, $this->getArguments()));
     }
 
-    public function setBaseCommand($command, array $arguments = array())
-    {
-        $this->arguments = $arguments;
-        $this->command   = $command;
-    }
-
-    protected function renderArguments()
+    protected function getArguments()
     {
         $output = '';
 
         foreach ($this->arguments as $argument) {
-            if (Arr::isArray($argument) and count($argument) >= 2) {
+            if (is_array($argument) and count($argument) >= 2) {
                 list($name, $value) = $argument;
 
                 if (is_scalar($name) and is_scalar($value)) {
@@ -41,5 +33,11 @@ class CliCommand extends AbstractCliCommand
         }
 
         return trim($output);
+    }
+
+    public function setBaseCommand($command, array $arguments = array())
+    {
+        $this->arguments = $arguments;
+        $this->command   = $command;
     }
 }
