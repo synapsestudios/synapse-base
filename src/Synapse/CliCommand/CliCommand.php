@@ -2,8 +2,6 @@
 
 namespace Synapse\CliCommand;
 
-use Synapse\Arr;
-
 class CliCommand extends AbstractCliCommand
 {
     protected $arguments;
