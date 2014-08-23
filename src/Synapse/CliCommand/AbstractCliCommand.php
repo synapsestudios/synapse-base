@@ -4,10 +4,14 @@ namespace Synapse\CliCommand;
 
 abstract class AbstractCliCommand
 {
+    protected $lockedOptions = [];
+
     abstract protected function getBaseCommand();
 
-    public function run(CliCommandOptions $options)
+    public function run(CliCommandOptions $options = null)
     {
+        $options = $this->getOptions($options);
+
         $descriptors = [
             // Stdin
             0 => ['pipe', 'r'],
@@ -16,26 +20,29 @@ abstract class AbstractCliCommand
             1 => ['pipe', 'w'],
         ];
 
-        $response = [];
+        $response = new CliCommandResponse();
+        $command  = $this->buildCommand($options);
 
-        $this->startTime = microtime(true);
+        $response->setCommand($command);
+        $response->setStartTime(microtime(true));
 
-        $fd = proc_open($this->buildCommand($options), $descriptors, $pipes, $options->getCwd(), $options->getEnv());
+        $fd = proc_open($command, $descriptors, $pipes, $options->getCwd(), $options->getEnv());
 
         // Close the proc's stdin right away
         fclose($pipes[0]);
 
         // Read stdout
-        $response['output'] = $this->parseOutput(stream_get_contents($pipes[1]));
+        $response->setOutput($this->parseOutput(stream_get_contents($pipes[1])));
         fclose($pipes[1]);
 
-        // Save exit status
-        $response['return_code']  = (int) trim(proc_close($fd));
-        $response['elapsed_time'] = microtime(true) - $this->startTime;
-        $response['executed']     = true;
-        $response['successful']   = $response['returnCode'] === 0;
+        $returnCode = (int) trim(proc_close($fd));
 
-        return new CliCommandResponse($response);
+        // Save exit status
+        $response->setReturnCode($returnCode);
+        $response->setElapsedTime(microtime(true) - $response->getStartTime());
+        $response->setSuccessfull($response->getReturnCode() === 0);
+
+        return $response;
     }
 
     protected function buildCommand(CliCommandOptions $options)
@@ -45,6 +52,13 @@ abstract class AbstractCliCommand
             $this->getBaseCommand(),
             $options->getRedirect()
         ));
+    }
+
+    protected function getOptions(CliCommandOptions $options = null)
+    {
+        $options = $options ?: new CliCommandOptions;
+
+        return $options->exchangeArray($this->lockedOptions);
     }
 
     protected function parseOutput($output)

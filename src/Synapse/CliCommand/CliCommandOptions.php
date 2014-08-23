@@ -2,13 +2,13 @@
 
 namespace Synapse\CliCommand;
 
-use Synapse\StdLib\DataObject;
+use Synapse\Stdlib\DataObject;
 
 class CliCommandOptions extends DataObject
 {
     protected $object = [
-        'cwd'      => null,
-        'env'      => [],
-        'redirect' => '2>&1'
+        'cwd'      => null,   // Use current working directory
+        'env'      => null,   // Use current environment vars
+        'redirect' => '2>&1', // Send errors to STDOUT
     ];
 }
