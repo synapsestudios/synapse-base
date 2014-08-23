@@ -9,11 +9,6 @@ class CliCommand extends AbstractCliCommand
     protected $arguments;
     protected $command;
 
-    public function __construct($command = null, array $arguments = array())
-    {
-        $this->setBaseCommand($command, $arguments);
-    }
-
     protected function getBaseCommand()
     {
         return trim(sprintf('%s %s', $this->command, $this->renderArguments()));
@@ -30,7 +25,7 @@ class CliCommand extends AbstractCliCommand
         $output = '';
 
         foreach ($this->arguments as $argument) {
-            if (Arr::isArray($argument)) {
+            if (Arr::isArray($argument) and count($argument) >= 2) {
                 list($name, $value) = $argument;
 
                 if (is_scalar($name) and is_scalar($value)) {
