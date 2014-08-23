@@ -5,16 +5,32 @@ namespace Test\Synapse\CliCommand;
 use PHPUnit_Framework_TestCase;
 
 use Synapse\CliCommand\CliCommand;
-use Synapse\CliCommand\CliCommandArguments;
 use Synapse\CliCommand\CliCommandOptions;
 
 class CliCommandTest extends PHPUnit_Framework_TestCase
 {
-    public function testEchoCommandGivesExpectedResponse()
+    public function testCommandArgumentsRenderCorrectly()
     {
-        $arguments = new CliCommandArguments(['success']);
+        $arguments = ['foo', '--bar', ['--baz', '9999'], 9999];
         $command   = new CliCommand('echo', $arguments);
         $response  = $command->run();
+
+        $this->assertEquals('foo --bar --baz=9999 9999', $response->getOutput());
+    }
+
+    public function testCommandIgnoresBadArguments()
+    {
+        $arguments = [['foo', 'bar', 'baz'], [null, '9999'], new \StdClass];
+        $command   = new CliCommand('echo', $arguments);
+        $response  = $command->run();
+
+        $this->assertEquals('foo=bar', $response->getOutput());
+    }
+
+    public function testEchoCommandGivesExpectedResponse()
+    {
+        $command  = new CliCommand('echo', ['success']);
+        $response = $command->run();
 
         $this->assertEquals('echo success 2>&1', (string) $response->getCommand());
         $this->assertEquals('success', (string) $response->getOutput());
@@ -24,9 +40,8 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testErrorCommandGivesExpectedResponse()
     {
-        $arguments = new CliCommandArguments(['/foo']);
-        $command   = new CliCommand('stat', $arguments);
-        $response  = $command->run();
+        $command  = new CliCommand('stat', ['/foo']);
+        $response = $command->run();
 
         $output = 'stat: cannot stat `/foo\': No such file or directory';
 
@@ -38,11 +53,8 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsInCorrectDirectory()
     {
-        $command = new CliCommand('pwd');
-        $options = new CliCommandOptions([
-            'cwd' => '/tmp',
-        ]);
-
+        $command  = new CliCommand('pwd');
+        $options  = new CliCommandOptions(['cwd' => '/tmp']);
         $response = $command->run($options);
 
         $this->assertEquals('/tmp', (string) $response->getOutput());
@@ -50,12 +62,10 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectEnvironment()
     {
-        $arguments = new CliCommandArguments(['$TEST_ENV']);
-        $command   = new CliCommand('echo', $arguments);
-        $options   = new CliCommandOptions([
+        $command = new CliCommand('echo', ['$TEST_ENV']);
+        $options = new CliCommandOptions([
             'env' => ['TEST_ENV' => 'test_env'],
         ]);
-
         $response = $command->run($options);
 
         $this->assertEquals('test_env', (string) $response->getOutput());
@@ -63,12 +73,10 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectRedirect()
     {
-        $arguments = new CliCommandArguments(['/foo']);
-        $command   = new CliCommand('stat', $arguments);
-        $options   = new CliCommandOptions([
+        $command = new CliCommand('stat', ['/foo']);
+        $options = new CliCommandOptions([
             'redirect' => '',
         ]);
-
         $response = $command->run($options);
 
         $this->assertEquals('', (string) $response->getOutput());
@@ -77,17 +85,15 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandLockedOptions()
     {
-        $arguments = new CliCommandArguments(['$TEST_ENV']);
-        $command   = new CliCommandLockedOptions('pwd');
-        $options   = new CliCommandOptions([
+        $command = new CliCommandLockedOptions('pwd');
+        $options = new CliCommandOptions([
             'cwd'      => null,
             'env'      => ['TEST_EVN' => 'env_broken'],
             'redirect' => '1> /dev/null',
         ]);
-
         $pwdResponse = $command->run($options);
 
-        $command->setCommand('echo', $arguments);
+        $command->setBaseCommand('echo', ['$TEST_ENV']);
         $envResponse = $command->run($options);
 
         $this->assertEquals('/tmp', (string) $pwdResponse->getOutput());
