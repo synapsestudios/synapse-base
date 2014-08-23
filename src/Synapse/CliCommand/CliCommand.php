@@ -9,7 +9,7 @@ class CliCommand extends AbstractCliCommand
 
     protected function getBaseCommand()
     {
-        return trim(sprintf('%s %s', $this->command, $this->getArguments()));
+        return sprintf('%s %s', $this->command, $this->getArguments());
     }
 
     protected function getArguments()
@@ -20,7 +20,19 @@ class CliCommand extends AbstractCliCommand
             if (is_array($argument) and count($argument) >= 2) {
                 list($name, $value) = $argument;
 
-                if (is_scalar($name) and is_scalar($value)) {
+                if ((is_string($name) or is_int($name)) and (is_scalar($value) or is_null($value))) {
+                    if (is_bool($name) or is_null($name)) {
+                        $name = var_export($name, true);
+                    } else {
+                        $name = escapeshellarg($name);
+                    }
+
+                    if (is_bool($value) or is_null($value)) {
+                        $value = var_export($value, true);
+                    }else {
+                        $value = escapeshellarg($value);
+                    }
+
                     $output .= sprintf(
                         '%s=%s ',
                         $name,
@@ -28,6 +40,12 @@ class CliCommand extends AbstractCliCommand
                     );
                 }
             } elseif (is_scalar($argument)) {
+                if (is_bool($argument)) {
+                    $argument = var_export($argument, true);
+                } else {
+                    $argument = escapeshellarg($argument);
+                }
+
                 $output .= sprintf('%s ', $argument);
             }
         }

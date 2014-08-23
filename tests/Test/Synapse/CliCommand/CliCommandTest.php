@@ -24,9 +24,51 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
                              ->getMock();
     }
 
-    public function testCommandBuildsArgumentsAndGivesExpectedResponse()
+    /**
+    * @dataProvider argumentsProvider
+    */
+    public function testArguments($arguments, $expected)
     {
-        $expectedCommand = 'echo foo bar=baz 9999 a=b 2>&1';
+        $this->executor
+            ->expects($this->any())
+            ->method('execute')
+            ->will($this->returnValue(['', 0]));
+
+        $this->command->setBaseCommand('pwd', $arguments);
+        $expected = sprintf('%s %s %s', 'pwd', $expected, '2>&1');
+
+        $response = $this->command->run();
+
+        $this->assertEquals($expected, $response->getCommand());
+    }
+
+    public function argumentsProvider()
+    {
+        return [
+            [[], ''],
+            [[null], ''],
+            [['foo'], '\'foo\''],
+            [[9999], '\'9999\''],
+            [['foo', 'bar'], '\'foo\' \'bar\''],
+            [[['foo', 'bar']], '\'foo\'=\'bar\''],
+            [[['foo', 9999]], '\'foo\'=\'9999\''],
+            [[['foo', true]], '\'foo\'=true'],
+            [[['foo', false]], '\'foo\'=false'],
+            [[['foo', null]], '\'foo\'=NULL'],
+            [[['foo', 'bar', 'baz']], '\'foo\'=\'bar\''],
+            [[['foo', 'bar'], ['bar', 'baz']], '\'foo\'=\'bar\' \'bar\'=\'baz\''],
+            [[['foo']], ''],
+            [[], ''],
+            [[new \StdClass], ''],
+            [['$foo'], '\'$foo\''],
+            [[[null, 'bar']], ''],
+        ];
+    }
+
+    public function testCommandGivesExpectedResponse()
+    {
+        $expectedCommand = 'pwd \'foo\' \'bar\'=\'baz\' \'9999\' 2>&1';
+        $expectedOutput  = '/current/working/directory';
 
         $this->executor
             ->expects($this->any())
@@ -37,7 +79,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
                 $this->equalTo(null)
             )
             ->will($this->returnValue([
-                'foo bar=baz 9999 a=b',
+                $expectedOutput,
                 0,
             ]));
 
@@ -45,21 +87,15 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
             'foo',
             ['bar', 'baz'],
             9999,
-            ['a', 'b', 'c'],
-            [null, 'foo'],
-            ['bar', null],
-            new \StdClass,
-            ['foo'],
-            [],
         ];
 
-        $this->command->setBaseCommand('echo', $arguments);
+        $this->command->setBaseCommand('pwd', $arguments);
 
         $response = $this->command->run();
 
         $this->assertEquals($expectedCommand, (string) $response->getCommand());
+        $this->assertEquals($expectedOutput, (string) $response->getOutput());
         $this->assertEquals(true, $response->getSuccessfull());
-        $this->assertEquals('foo bar=baz 9999 a=b', (string) $response->getOutput());
         $this->assertEquals(0, (int) $response->getReturnCode());
         $this->assertNotEmpty($response->getStartTime());
         $this->assertNotEmpty($response->getElapsedTime());
@@ -67,7 +103,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandErrorGivesExpectedResponse()
     {
-        $expectedCommand = 'stat /foo 2>&1';
+        $expectedCommand = 'stat \'/foo\' 2>&1';
         $expectedOutput  = 'stat: cannot stat `/foo\': No such file or directory';
 
         $this->executor
@@ -89,8 +125,8 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCommand, (string) $response->getCommand());
         $this->assertEquals($expectedOutput, (string) $response->getOutput());
-        $this->assertEquals(1, (int) $response->getReturnCode());
         $this->assertEquals(false, $response->getSuccessfull());
+        $this->assertEquals(1, (int) $response->getReturnCode());
     }
 
     public function testCommandRunsInCorrectDirectory()
@@ -99,7 +135,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('execute')
             ->with(
-                $this->equalTo('pwd 2>&1'),
+                $this->equalTo('pwd  2>&1'),
                 $this->equalTo('/tmp'),
                 $this->equalTo(null)
             )
@@ -122,23 +158,23 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('execute')
             ->with(
-                $this->equalTo('echo $TEST_ENV 2>&1'),
+                $this->equalTo('printenv | grep TEST_ENV  2>&1'),
                 $this->equalTo(null),
                 $this->equalTo(['TEST_ENV' => 'test_env'])
             )
             ->will($this->returnValue([
-                'test_env',
+                'TEST_ENV=test_env',
                 0,
             ]));
 
-        $this->command->setBaseCommand('echo', ['$TEST_ENV']);
+        $this->command->setBaseCommand('printenv | grep TEST_ENV');
         $this->options->exchangeArray([
             'env' => ['TEST_ENV' => 'test_env'],
         ]);
 
         $response = $this->command->run($this->options);
 
-        $this->assertEquals('test_env', (string) $response->getOutput());
+        $this->assertEquals('TEST_ENV=test_env', (string) $response->getOutput());
     }
 
     public function testCommandRunsWithCorrectRedirect()
@@ -147,7 +183,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('execute')
             ->with(
-                $this->equalTo('stat /foo'),
+                $this->equalTo('stat \'/foo\''),
                 $this->equalTo(null),
                 $this->equalTo(null)
             )
@@ -162,34 +198,37 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $response = $this->command->run($this->options);
 
         $this->assertEquals('', (string) $response->getOutput());
-        $this->assertEquals(1, (int) $response->getReturnCode());
     }
 
     public function testCommandLockedOptions()
     {
+        $expectedCommand = 'printenv | grep \'^PWD\|TEST_ENV\' 2>&1';
+        $expectedOutput  = "TEST_ENV=test_env\nPWD=/tmp";
+
         $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
-                $this->equalTo('pwd 2>&1'),
+                $this->equalTo($expectedCommand),
                 $this->equalTo('/tmp'),
                 $this->equalTo(['TEST_ENV' => 'test_env'])
             )
             ->will($this->returnValue([
-                '/tmp',
+                $expectedOutput,
                 0,
             ]));
 
         $this->command = new CliCommandLockedOptions($this->executor);
         $this->options->exchangeArray([
             'cwd'      => null,
-            'env'      => ['TEST_EVN' => 'env_broken'],
+            'env'      => ['TEST_ENV' => 'env_broken'],
             'redirect' => '1> /dev/null',
         ]);
 
         $response = $this->command->run($this->options);
 
-        $this->assertEquals('/tmp', (string) $response->getOutput());
+        $this->assertEquals($expectedCommand, (string) $response->getCommand());
+        $this->assertEquals($expectedOutput, (string) $response->getOutput());
     }
 }
 
@@ -203,6 +242,6 @@ class CliCommandLockedOptions extends AbstractCliCommand
 
     protected function getBaseCommand()
     {
-        return 'pwd';
+        return 'printenv | grep \'^PWD\|TEST_ENV\'';
     }
 }
