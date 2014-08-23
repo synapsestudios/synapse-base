@@ -64,7 +64,6 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, (int) $response->getReturnCode());
         $this->assertNotEmpty($response->getStartTime());
         $this->assertNotEmpty($response->getElapsedTime());
-
     }
 
     public function testCommandErrorGivesExpectedResponse()
