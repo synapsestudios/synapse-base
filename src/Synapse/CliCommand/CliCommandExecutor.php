@@ -28,9 +28,6 @@ class CliCommandExecutor implements CliCommandExecutorInterface
 
         $returnCode = (int) trim(proc_close($fd));
 
-        $response->setOutput($output);
-        $response->setReturnCode($returnCode);
-
         return [$output, $returnCode];
     }
 
