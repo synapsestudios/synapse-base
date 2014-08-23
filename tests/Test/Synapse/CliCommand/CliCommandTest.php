@@ -4,80 +4,164 @@ namespace Test\Synapse\CliCommand;
 
 use PHPUnit_Framework_TestCase;
 
+use Synapse\CliCommand\AbstractCliCommand;
 use Synapse\CliCommand\CliCommand;
+use Synapse\CliCommand\CliCommandExecutor;
 use Synapse\CliCommand\CliCommandOptions;
 
 class CliCommandTest extends PHPUnit_Framework_TestCase
 {
-    public function testCommandArgumentsRenderCorrectly()
+    public function setUp()
     {
-        $arguments = ['foo', '--bar', ['--baz', '9999'], 9999];
-        $command   = new CliCommand('echo', $arguments);
-        $response  = $command->run();
-
-        $this->assertEquals('foo --bar --baz=9999 9999', $response->getOutput());
+        $this->setUpMock();
+        $this->command = new CliCommand($this->mock);
+        $this->options = new CliCommandOptions;
     }
 
-    public function testCommandIgnoresBadArguments()
+    public function setUpMock()
     {
-        $arguments = [['foo', 'bar', 'baz'], [null, '9999'], new \StdClass];
-        $command   = new CliCommand('echo', $arguments);
-        $response  = $command->run();
-
-        $this->assertEquals('foo=bar', $response->getOutput());
+        $this->mock = $this->getMockBuilder('Synapse\CliCommand\CliCommandExecutor')
+                             ->disableOriginalConstructor()
+                             ->getMock();
     }
 
-    public function testEchoCommandGivesExpectedResponse()
+    public function testCommandBuildsArgumentsAndGivesExpectedResponse()
     {
-        $command  = new CliCommand('echo', ['success']);
-        $response = $command->run();
+        $expectedCommand = 'echo foo bar=baz 9999 a=b 2>&1';
 
-        $this->assertEquals('echo success 2>&1', (string) $response->getCommand());
-        $this->assertEquals('success', (string) $response->getOutput());
-        $this->assertEquals(0, (int) $response->getReturnCode());
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo($expectedCommand),
+                $this->equalTo(null),
+                $this->equalTo(null)
+            )
+            ->will($this->returnValue([
+                'foo bar=baz 9999 a=b',
+                0,
+            ]));
+
+        $arguments = [
+            'foo',
+            ['bar', 'baz'],
+            9999,
+            ['a', 'b', 'c'],
+            [null, 'foo'],
+            ['bar', null],
+            new \StdClass,
+            ['foo'],
+            [],
+        ];
+
+        $this->command->setBaseCommand('echo', $arguments);
+
+        $response = $this->command->run();
+
+        $this->assertEquals($expectedCommand, (string) $response->getCommand());
         $this->assertEquals(true, $response->getSuccessfull());
+        $this->assertEquals('foo bar=baz 9999 a=b', (string) $response->getOutput());
+        $this->assertEquals(0, (int) $response->getReturnCode());
+        $this->assertNotEmpty($response->getStartTime());
+        $this->assertNotEmpty($response->getElapsedTime());
+
     }
 
-    public function testErrorCommandGivesExpectedResponse()
+    public function testCommandErrorGivesExpectedResponse()
     {
-        $command  = new CliCommand('stat', ['/foo']);
-        $response = $command->run();
+        $expectedCommand = 'stat /foo 2>&1';
+        $expectedOutput  = 'stat: cannot stat `/foo\': No such file or directory';
 
-        $output = 'stat: cannot stat `/foo\': No such file or directory';
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo($expectedCommand),
+                $this->equalTo(null),
+                $this->equalTo(null)
+            )
+            ->will($this->returnValue([
+                $expectedOutput,
+                1,
+            ]));
 
-        $this->assertEquals('stat /foo 2>&1', (string) $response->getCommand());
-        $this->assertEquals($output, (string) $response->getOutput());
+        $this->command->setBaseCommand('stat', ['/foo']);
+
+        $response = $this->command->run();
+
+        $this->assertEquals($expectedCommand, (string) $response->getCommand());
+        $this->assertEquals($expectedOutput, (string) $response->getOutput());
         $this->assertEquals(1, (int) $response->getReturnCode());
         $this->assertEquals(false, $response->getSuccessfull());
     }
 
     public function testCommandRunsInCorrectDirectory()
     {
-        $command  = new CliCommand('pwd');
-        $options  = new CliCommandOptions(['cwd' => '/tmp']);
-        $response = $command->run($options);
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo('pwd 2>&1'),
+                $this->equalTo('/tmp'),
+                $this->equalTo(null)
+            )
+            ->will($this->returnValue([
+                '/tmp',
+                0,
+            ]));
+
+        $this->command->setBaseCommand('pwd');
+        $this->options->exchangeArray(['cwd' => '/tmp']);
+
+        $response = $this->command->run($this->options);
 
         $this->assertEquals('/tmp', (string) $response->getOutput());
     }
 
     public function testCommandRunsWithCorrectEnvironment()
     {
-        $command = new CliCommand('echo', ['$TEST_ENV']);
-        $options = new CliCommandOptions([
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo('echo $TEST_ENV 2>&1'),
+                $this->equalTo(null),
+                $this->equalTo(['TEST_ENV' => 'test_env'])
+            )
+            ->will($this->returnValue([
+                'test_env',
+                0,
+            ]));
+
+        $this->command->setBaseCommand('echo', ['$TEST_ENV']);
+        $this->options->exchangeArray([
             'env' => ['TEST_ENV' => 'test_env'],
         ]);
-        $response = $command->run($options);
+
+        $response = $this->command->run($this->options);
 
         $this->assertEquals('test_env', (string) $response->getOutput());
     }
 
     public function testCommandRunsWithCorrectRedirect()
     {
-        $command = new CliCommand('stat', ['/foo']);
-        $options = new CliCommandOptions([
-            'redirect' => '',
-        ]);
-        $response = $command->run($options);
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo('stat /foo'),
+                $this->equalTo(null),
+                $this->equalTo(null)
+            )
+            ->will($this->returnValue([
+                '',
+                1,
+            ]));
+
+        $this->command->setBaseCommand('stat', ['/foo']);
+        $this->options->exchangeArray(['redirect' => '']);
+
+        $response = $this->command->run($this->options);
 
         $this->assertEquals('', (string) $response->getOutput());
         $this->assertEquals(1, (int) $response->getReturnCode());
@@ -85,27 +169,42 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandLockedOptions()
     {
-        $command = new CliCommandLockedOptions('pwd');
-        $options = new CliCommandOptions([
+        $this->mock
+            ->expects($this->any())
+            ->method('execute')
+            ->with(
+                $this->equalTo('pwd 2>&1'),
+                $this->equalTo('/tmp'),
+                $this->equalTo(['TEST_ENV' => 'test_env'])
+            )
+            ->will($this->returnValue([
+                '/tmp',
+                0,
+            ]));
+
+        $this->command = new CliCommandLockedOptions($this->mock);
+        $this->options->exchangeArray([
             'cwd'      => null,
             'env'      => ['TEST_EVN' => 'env_broken'],
             'redirect' => '1> /dev/null',
         ]);
-        $pwdResponse = $command->run($options);
 
-        $command->setBaseCommand('echo', ['$TEST_ENV']);
-        $envResponse = $command->run($options);
+        $response = $this->command->run($this->options);
 
-        $this->assertEquals('/tmp', (string) $pwdResponse->getOutput());
-        $this->assertEquals('test_env', (string) $envResponse->getOutput());
+        $this->assertEquals('/tmp', (string) $response->getOutput());
     }
 }
 
-class CliCommandLockedOptions extends CliCommand
+class CliCommandLockedOptions extends AbstractCliCommand
 {
     protected $lockedOptions = [
         'cwd'      => '/tmp',
         'env'      => ['TEST_ENV' => 'test_env'],
         'redirect' => '2>&1',
     ];
+
+    protected function getBaseCommand()
+    {
+        return 'pwd';
+    }
 }
