@@ -6,21 +6,20 @@ use PHPUnit_Framework_TestCase;
 
 use Synapse\CliCommand\AbstractCliCommand;
 use Synapse\CliCommand\CliCommand;
-use Synapse\CliCommand\CliCommandExecutor;
 use Synapse\CliCommand\CliCommandOptions;
 
 class CliCommandTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->setUpMock();
-        $this->command = new CliCommand($this->mock);
+        $this->setUpExecutor();
+        $this->command = new CliCommand($this->executor);
         $this->options = new CliCommandOptions;
     }
 
-    public function setUpMock()
+    public function setUpExecutor()
     {
-        $this->mock = $this->getMockBuilder('Synapse\CliCommand\CliCommandExecutor')
+        $this->executor = $this->getMockBuilder('Synapse\CliCommand\CliCommandExecutor')
                              ->disableOriginalConstructor()
                              ->getMock();
     }
@@ -29,7 +28,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
     {
         $expectedCommand = 'echo foo bar=baz 9999 a=b 2>&1';
 
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -71,7 +70,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $expectedCommand = 'stat /foo 2>&1';
         $expectedOutput  = 'stat: cannot stat `/foo\': No such file or directory';
 
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -96,7 +95,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsInCorrectDirectory()
     {
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -119,7 +118,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectEnvironment()
     {
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -144,7 +143,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectRedirect()
     {
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -168,7 +167,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandLockedOptions()
     {
-        $this->mock
+        $this->executor
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -181,7 +180,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
                 0,
             ]));
 
-        $this->command = new CliCommandLockedOptions($this->mock);
+        $this->command = new CliCommandLockedOptions($this->executor);
         $this->options->exchangeArray([
             'cwd'      => null,
             'env'      => ['TEST_EVN' => 'env_broken'],
