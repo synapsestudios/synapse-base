@@ -35,7 +35,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandGivesExpectedResponse()
     {
-        $command  = 'pwd \'foo\' \'bar\'=\'baz\' \'9999\' 2>&1';
+        $command  = 'pwd foo bar=baz 9999 2>&1';
         $expected = '/current/working/directory';
 
         $this->executor
@@ -50,7 +50,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
                 $this->createResponseObject($expected, 0)
             ));
 
-        $this->command->setBaseCommand('pwd \'foo\' \'bar\'=\'baz\' \'9999\'');
+        $this->command->setBaseCommand('pwd foo bar=baz 9999');
 
         $response = $this->command->run();
 
