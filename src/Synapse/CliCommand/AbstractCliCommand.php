@@ -26,6 +26,11 @@ abstract class AbstractCliCommand
         ));
     }
 
+    protected function getOptions(CliCommandOptions $options = null)
+    {
+        return $options ?: new CliCommandOptions;
+    }
+
     /**
      * Executes a cli command
      *
@@ -34,7 +39,7 @@ abstract class AbstractCliCommand
      */
     public function run(CliCommandOptions $options = null)
     {
-        $options = $options ?: new CliCommandOptions;
+        $options = $this->getOptions($options);
 
         $command   = $this->buildCommand($options);
         $startTime = microtime(true);
