@@ -12,6 +12,6 @@ class CliCommandResponse extends DataObject
         'output'       => null,
         'return_code'  => null,
         'start_time'   => null,
-        'successfull'  => null
+        'successful'   => null
     ];
 }

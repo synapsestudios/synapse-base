@@ -55,7 +55,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $response = $this->command->run();
 
         $this->assertEquals($expected, (string) $response->getOutput());
-        $this->assertEquals(true, $response->getSuccessfull());
+        $this->assertEquals(true, $response->getSuccessful());
         $this->assertEquals(0, (int) $response->getReturnCode());
         $this->assertNotEmpty($response->getStartTime());
         $this->assertNotEmpty($response->getElapsedTime());
@@ -84,7 +84,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($command, (string) $response->getCommand());
         $this->assertEquals($expected, (string) $response->getOutput());
-        $this->assertEquals(false, $response->getSuccessfull());
+        $this->assertEquals(false, $response->getSuccessful());
         $this->assertEquals(1, (int) $response->getReturnCode());
     }
 

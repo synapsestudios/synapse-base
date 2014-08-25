@@ -60,7 +60,7 @@ abstract class AbstractCliCommand
             'output'       => $output,
             'start_time'   => $startTime,
             'return_code'  => $returnCode,
-            'successfull'  => $returnCode === 0,
+            'successful'   => $returnCode === 0,
         ]);
     }
 }
