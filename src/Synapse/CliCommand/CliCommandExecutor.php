@@ -4,11 +4,24 @@ namespace Synapse\CliCommand;
 
 class CliCommandExecutor implements CliCommandExecutorInterface
 {
+    /**
+     * An array of process input/output pipes
+     *
+     * @var array
+     */
     protected $descriptors = [
         0 => ['pipe', 'r'], // Stdin
         1 => ['pipe', 'w'], // Stdout
     ];
 
+    /**
+     * Executes a cli command using proc_open
+     *
+     * @param  string $command the command to be executed
+     * @param  mixed  $cwd     the directory to execute in or null to use current
+     * @param  mixed  $env     an array of environment variables or null to use current
+     * @return CliCommandResponse a DataObject with output and return_code set
+     */
     public function execute($command = '', $cwd = null, array $env = null)
     {
         $fd = proc_open(
@@ -34,6 +47,12 @@ class CliCommandExecutor implements CliCommandExecutorInterface
         ]);
     }
 
+    /**
+     * Parses output from shell into usable string
+     *
+     * @param  string $output the output from a shell commmand
+     * @return string         the actual lines of output
+     */
     protected function parseOutput($output)
     {
         $lines = explode("\n", $output);
