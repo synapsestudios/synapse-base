@@ -9,7 +9,7 @@ class CliCommandExecutor implements CliCommandExecutorInterface
         1 => ['pipe', 'w'], // Stdout
     ];
 
-    public function execute($command, $cwd, $env)
+    public function execute($command = '', $cwd = null, array $env = null)
     {
         $fd = proc_open(
             $command,
@@ -28,7 +28,10 @@ class CliCommandExecutor implements CliCommandExecutorInterface
 
         $returnCode = (int) trim(proc_close($fd));
 
-        return [$output, $returnCode];
+        return new CliCommandResponse([
+            'output'      => $output,
+            'return_code' => $returnCode,
+        ]);
     }
 
     protected function parseOutput($output)

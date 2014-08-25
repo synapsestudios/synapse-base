@@ -7,12 +7,7 @@ class CliCommand extends AbstractCliCommand
     protected $arguments = array();
     protected $command   = '';
 
-    protected function getBaseCommand()
-    {
-        return sprintf('%s %s', $this->command, $this->getArguments());
-    }
-
-    protected function getArguments()
+    protected function buildArguments()
     {
         $output = '';
 
@@ -51,6 +46,11 @@ class CliCommand extends AbstractCliCommand
         }
 
         return trim($output);
+    }
+
+    protected function getBaseCommand()
+    {
+        return sprintf('%s %s', $this->command, $this->buildArguments());
     }
 
     public function setBaseCommand($command, array $arguments = array())

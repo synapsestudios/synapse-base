@@ -4,8 +4,6 @@ namespace Synapse\CliCommand;
 
 abstract class AbstractCliCommand
 {
-    protected $lockedOptions = [];
-
     public function __construct($executor)
     {
         $this->executor = $executor;
@@ -13,46 +11,39 @@ abstract class AbstractCliCommand
 
     abstract protected function getBaseCommand();
 
-    protected function buildCommand()
+    protected function buildCommand(CliCommandOptions $options)
     {
         return trim(sprintf(
             '%s %s',
             $this->getBaseCommand(),
-            $this->options->getRedirect()
+            $options->getRedirect()
         ));
-    }
-
-    protected function getOptions(CliCommandOptions $options = null)
-    {
-        $options = $options ?: new CliCommandOptions;
-
-        $this->options = $options->exchangeArray($this->lockedOptions);
     }
 
     public function run(CliCommandOptions $options = null)
     {
-        $this->getOptions($options);
+        $options = $options ?: new CliCommandOptions;
 
-        $response = new CliCommandResponse();
-        $command  = $this->buildCommand();
+        $command   = $this->buildCommand($options);
+        $startTime = microtime(true);
 
-        $response->setCommand($command);
-        $response->setStartTime(microtime(true));
-
-        $output = $this->executor->execute(
+        $response = $this->executor->execute(
             $command,
-            $this->options->getCwd(),
-            $this->options->getEnv()
+            $options->getCwd(),
+            $options->getEnv()
         );
 
-        list($output, $returnCode) = $output;
+        $elapsedTime = microtime(true) - $startTime;
+        $output      = $response->getOutput();
+        $returnCode  = $response->getReturnCode();
 
-        // Save output
-        $response->setOutput($output);
-        $response->setReturnCode($returnCode);
-        $response->setElapsedTime(microtime(true) - $response->getStartTime());
-        $response->setSuccessfull($response->getReturnCode() === 0);
-
-        return $response;
+        return new CliCommandResponse([
+            'command'      => $command,
+            'elapsed_time' => $elapsedTime,
+            'output'       => $output,
+            'start_time'   => $startTime,
+            'return_code'  => $returnCode,
+            'successfull'  => $returnCode === 0,
+        ]);
     }
 }
