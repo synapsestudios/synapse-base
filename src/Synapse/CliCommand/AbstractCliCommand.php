@@ -26,6 +26,12 @@ abstract class AbstractCliCommand
         ));
     }
 
+    /**
+     * Returns an options object to use during execution.
+     * Override to return preset options of needed.
+     *
+     * @return CliCommandOptions options to use during execution
+     */
     protected function getOptions(CliCommandOptions $options = null)
     {
         return $options ?: new CliCommandOptions;
@@ -39,8 +45,7 @@ abstract class AbstractCliCommand
      */
     public function run(CliCommandOptions $options = null)
     {
-        $options = $this->getOptions($options);
-
+        $options   = $this->getOptions($options);
         $command   = $this->buildCommand($options);
         $startTime = microtime(true);
 
