@@ -44,6 +44,13 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
             ->will($this->returnValue($entity));
     }
 
+    public function withEntityNotFound()
+    {
+        $this->mockMapper->expects($this->any())
+            ->method('findBy')
+            ->will($this->returnValue(false));
+    }
+
     public function validateWithValue($value)
     {
         return $this->validator->validate($value, $this->mockConstraint);
@@ -56,5 +63,25 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         $this->validateWithValue('foo');
 
         $this->assertNoViolationsAdded();
+    }
+
+    public function testValidateAddsViolationIfEntityNotFound()
+    {
+        $value = 'foo';
+
+        $this->withEntityNotFound();
+
+        $this->validateWithValue($value);
+
+        $params = [
+            '{{ field }}' => 'id',
+            '{{ value }}' => $value,
+        ];
+
+        $this->assertViolationAdded(
+            'Entity must exist with {{ field }} field equal to {{ value }}.',
+            $params,
+            $value
+        );
     }
 }
