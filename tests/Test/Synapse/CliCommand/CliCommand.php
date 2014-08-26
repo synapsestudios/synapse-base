@@ -1,6 +1,8 @@
 <?php
 
-namespace Synapse\CliCommand;
+namespace Test\Synapse\CliCommand;
+
+use Synapse\CliCommand\AbstractCliCommand;
 
 class CliCommand extends AbstractCliCommand
 {

@@ -5,9 +5,10 @@ namespace Test\Synapse\CliCommand;
 use PHPUnit_Framework_TestCase;
 
 use Synapse\CliCommand\AbstractCliCommand;
-use Synapse\CliCommand\CliCommand;
 use Synapse\CliCommand\CliCommandOptions;
 use Synapse\CliCommand\CliCommandResponse;
+
+use Test\Synapse\CliCommand\CliCommand;
 
 class CliCommandTest extends PHPUnit_Framework_TestCase
 {
