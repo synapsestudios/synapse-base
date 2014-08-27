@@ -1,0 +1,20 @@
+<phpunit colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         strict="true"
+         verbose="true"
+         bootstrap="tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="Synapse">
+            <directory>tests/Test/Synapse</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory>src/</directory>
+        </whitelist>
+    </filter>
+</phpunit>

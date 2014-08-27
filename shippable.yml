@@ -1,0 +1,18 @@
+language: php
+php:
+  - 5.4
+git:
+  submodules: false
+env:
+  global:
+    - SLACK_ORG=synapse PROJECT=internal-projects
+    - secure: FZUjHdz/nYfoSGnUoWzCYlNpllOqjsC8Y1kfSwqmSlgPrI6Xis7ovAmIJG29OcsIWoHLKCmyS6X5AEgDxDrFUukxnIxvJpn/t/2nucPUE157Ga+EUZyNjy++O63bcML9U3uw+u4Thb0isx0xSltsB3Wybj9GJ9gaf7niqpUaK1viRr+EO2DVK166yZQDDpJtQTIAUkLcp0boHreXmxacdf5ajBZsSDZYi2CyxqZiFeGZghii9IiAGZVdDQ1gDAM8lrGy07B+f2ldP/LJV9ANn4farasxXA302xtrDEwPHe/1NdwXQzwSAcwlUepiBjbw9TWtHCbKyaDJIlD6660qjg==
+before_script:
+  - composer install --prefer-source
+script:
+  - vendor/bin/phpunit --configuration phpunit.shippable.xml
+  - vendor/bin/phpcs --standard=PSR2 src/*
+notifications:
+  email: false
+after_failure:
+  - python slack_notifier.py --project $PROJECT --org $SLACK_ORG --token $SLACK_TOKEN
