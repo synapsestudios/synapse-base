@@ -16,7 +16,7 @@
         "monolog/monolog": "~1.7",
         "rollbar/rollbar": "0.6.3",
         "zendframework/zend-stdlib": "~2.2.5",
-        "ircmaxell/password-compat": "dev-master",
+        "ircmaxell/password-compat": "~1.0",
         "guzzle/guzzle": "~3.7",
         "jdesrosiers/silex-cors-provider": "~0.1",
         "lusitanian/oauth": "~0.2",
