@@ -7,16 +7,20 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Synapse\Entity\AbstractEntity;
 
 /**
- * Validator constraint meant to ensure that a row exists with the given ID
+ * Validator constraint meant to ensure that a row exists with the given value set in the given field.
+ *
+ * If no field specified, defaults to `id`.
  */
 class RowExistsValidator extends ConstraintValidator
 {
     /**
      * {@inheritDoc}
      */
-    public function validate($id, Constraint $constraint)
+    public function validate($value, Constraint $constraint)
     {
-        $entity = $constraint->getMapper()->findById($id);
+        $entity = $constraint->getMapper()->findBy([
+            $constraint->field => $value
+        ]);
 
         if ($entity instanceof AbstractEntity) {
             return;
@@ -24,8 +28,11 @@ class RowExistsValidator extends ConstraintValidator
 
         $this->context->addViolation(
             $constraint->message,
-            [],
-            $id
+            [
+                '{{ field }}' => $constraint->field,
+                '{{ value }}' => $value,
+            ],
+            $value
         );
     }
 }

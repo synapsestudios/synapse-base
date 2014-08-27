@@ -11,7 +11,8 @@ use LogicException;
  */
 class RowExists extends Constraint
 {
-    public $message = 'Entity must exist.';
+    public $message = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+    public $field   = 'id';
 
     /**
      * Mapper to use to search for entity
@@ -26,7 +27,7 @@ class RowExists extends Constraint
      */
     public function __construct(AbstractMapper $mapper, $options = null)
     {
-        if (! method_exists($mapper, 'findById')) {
+        if (! method_exists($mapper, 'findBy')) {
             $message = sprintf(
                 'Mapper injected into %s must use FinderTrait',
                 get_class($this)
