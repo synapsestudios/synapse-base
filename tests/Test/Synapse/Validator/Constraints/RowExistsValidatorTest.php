@@ -51,6 +51,15 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
             ->will($this->returnValue(false));
     }
 
+    public function expectingEntitySearchedForWithFieldAndValue($field, $value)
+    {
+        $wheres = [$field => $value];
+
+        $this->mockMapper->expects($this->once())
+            ->method('findBy')
+            ->with($this->equalTo($wheres));
+    }
+
     public function validateWithValue($value)
     {
         return $this->validator->validate($value, $this->mockConstraint);
@@ -83,5 +92,17 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
             $params,
             $value
         );
+    }
+
+    public function testValidateSearchesForEntityByFieldSetInConstraint()
+    {
+        $field = 'foo';
+        $value = 'bar';
+
+        $this->mockConstraint->field = $field;
+
+        $this->expectingEntitySearchedForWithFieldAndValue($field, $value);
+
+        $this->validateWithValue($value);
     }
 }
