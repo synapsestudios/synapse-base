@@ -1,6 +1,6 @@
 # Synapse Base
 
-[![Build Status](https://travis-ci.org/synapsestudios/synapse-base.svg?branch=master)](https://travis-ci.org/synapsestudios/synapse-base)
+[![Build Status](https://api.shippable.com/projects/53dc12af538c78ed0011d1aa/badge/master)](https://www.shippable.com/projects/53dc12af538c78ed0011d1aa)
 
 
 Base project template code for the [API Template](https://github.com/synapsestudios/api-template).

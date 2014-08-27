@@ -4,7 +4,6 @@
          convertWarningsToExceptions="true"
          stopOnFailure="false"
          syntaxCheck="false"
-         coverageHtml="./report"
          strict="true"
          verbose="true"
          bootstrap="tests/bootstrap.php">
@@ -18,8 +17,4 @@
             <directory>src/</directory>
         </whitelist>
     </filter>
-    <logging>
-        <log type="coverage-html" target="./phpunit-coverage" highlight="true"
-            lowUpperBound="33" highLowerBound="66" />
-    </logging>
 </phpunit>
