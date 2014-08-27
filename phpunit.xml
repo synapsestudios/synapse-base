@@ -19,7 +19,7 @@
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-html" target="./phpunit" highlight="true"
+        <log type="coverage-html" target="./phpunit-coverage" highlight="true"
             lowUpperBound="33" highLowerBound="66" />
     </logging>
 </phpunit>
