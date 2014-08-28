@@ -5,8 +5,8 @@ git:
   submodules: false
 env:
   global:
-    - SLACK_ORG=synapse PROJECT=internal-projects
-    - secure: FZUjHdz/nYfoSGnUoWzCYlNpllOqjsC8Y1kfSwqmSlgPrI6Xis7ovAmIJG29OcsIWoHLKCmyS6X5AEgDxDrFUukxnIxvJpn/t/2nucPUE157Ga+EUZyNjy++O63bcML9U3uw+u4Thb0isx0xSltsB3Wybj9GJ9gaf7niqpUaK1viRr+EO2DVK166yZQDDpJtQTIAUkLcp0boHreXmxacdf5ajBZsSDZYi2CyxqZiFeGZghii9IiAGZVdDQ1gDAM8lrGy07B+f2ldP/LJV9ANn4farasxXA302xtrDEwPHe/1NdwXQzwSAcwlUepiBjbw9TWtHCbKyaDJIlD6660qjg==
+    - SLACK_ORG=synapse PROJECT=public-projects
+    - secure: idkcNXnZvkUzwCy8XAH2rw4QnWSW/twjkZ5LBdfwprP7PCNKa88NM08MHcyflD7nD/WHJ2DflnxN+HidNbVNPXexhvStAPfkQ68kk2+j8VL7t5f/lx2vAC56YFVoUW4Z32aXSt26QkUvPRMEvWL6O78sL6W+ERM7GHLkq/tbeLhOYFCEjoaEU4rbtIw6yZEdL+Rifdexjgi5IxkF7n6T8BF1dsqOicY2LxunswCZyDBS8E7GRr7rJuWiaAAPnNG04OUhkDX2NQmN7VT0nx7NNzfIMl2TJdZc5TwxpRy351R1fZiNPwTIdyu4b7U8xRhNgaNZmF9lskbTV/bsp2ln3A==
 before_script:
   - composer install --prefer-source
 script:
