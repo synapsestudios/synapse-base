@@ -6,7 +6,7 @@ git:
 env:
   global:
     - SLACK_ORG=synapse PROJECT=public-projects
-    - secure: idkcNXnZvkUzwCy8XAH2rw4QnWSW/twjkZ5LBdfwprP7PCNKa88NM08MHcyflD7nD/WHJ2DflnxN+HidNbVNPXexhvStAPfkQ68kk2+j8VL7t5f/lx2vAC56YFVoUW4Z32aXSt26QkUvPRMEvWL6O78sL6W+ERM7GHLkq/tbeLhOYFCEjoaEU4rbtIw6yZEdL+Rifdexjgi5IxkF7n6T8BF1dsqOicY2LxunswCZyDBS8E7GRr7rJuWiaAAPnNG04OUhkDX2NQmN7VT0nx7NNzfIMl2TJdZc5TwxpRy351R1fZiNPwTIdyu4b7U8xRhNgaNZmF9lskbTV/bsp2ln3A==
+    - secure: 2AZyPbC1I1Tp94w5fUvv9UXdCuzmpW4b0s8phVEzcxsCeney5oclGsXPQ5IPFV99NROLg8+dN7y0iQC5mGkgz78zSExL+JHgthbUHC5MGpCwRc8P6qI50SMFkt0oMsJfEL2hZJakRX6qC5kWvafiF7YoMz32HAcBQBKeZUManaGjdHqb21sKGmujFagmpHNFY2YgHr942nBhn+cppmsEvKSZeHqI3R2W1RLD2QPGBeyWEtEhU9tQWO7ll8oghA/Kc7gxNFBd76SCcAk5o5SSxJpyoXp8BpDe6p2quj7qpfkhYao3gdQm+SfPJJP2XdZb738gyVJFnwgaEBj+O6/kAw==
 before_script:
   - composer install --prefer-source
 script:
