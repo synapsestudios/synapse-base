@@ -2,24 +2,24 @@
 
 namespace Synapse\User;
 
-use Synapse\User\UserRolePivotMapper;
+use Synapse\User\RoleFinderInterface;
 
 /**
  * Service to perform tasks related to user roles
  */
-class RoleService
+class RoleService implements RoleFinderInterface
 {
     /**
-     * @var UserRolePivotMapper
+     * @var RoleFinderInterface
      */
-    protected $userRolePivotMapper;
+    protected $roleFinder;
 
     /**
-     * @param UserRolePivotMapper $userRolePivotMapper
+     * @param RoleFinderInterface $roleFinder
      */
-    public function __construct(UserRolePivotMapper $userRolePivotMapper)
+    public function __construct(RoleFinderInterface $roleFinder)
     {
-        $this->userRolePivotMapper = $userRolePivotMapper;
+        $this->roleFinder = $roleFinder;
     }
 
     /**
@@ -32,6 +32,6 @@ class RoleService
      */
     public function findRoleNamesByUserId($userId)
     {
-        return $this->userRolePivotMapper->findRoleNamesByUserId($userId);
+        return $this->roleFinder->findRoleNamesByUserId($userId);
     }
 }
