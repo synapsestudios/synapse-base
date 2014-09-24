@@ -8,7 +8,7 @@ use Synapse\Stdlib\Arr;
 /**
  * Mapper for user roles pivot table
  */
-class UserRolePivotMapper extends Mapper\AbstractMapper
+class UserRolePivotMapper extends Mapper\AbstractMapper implements RoleFinderInterface
 {
     use Mapper\PivotInserterTrait;
     use Mapper\PivotDeleterTrait;
