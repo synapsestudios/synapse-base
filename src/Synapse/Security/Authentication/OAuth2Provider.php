@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use Synapse\Security\Authentication\OAuth2UserToken;
-use Synapse\User\RoleService;
+use Synapse\User\RoleFinderInterface;
 
 class OAuth2Provider implements AuthenticationProviderInterface
 {
@@ -23,9 +23,9 @@ class OAuth2Provider implements AuthenticationProviderInterface
     private $userProvider;
 
     /**
-     * @var RoleService
+     * @var RoleFinderInterface
      */
-    private $roleService;
+    private $roleFinder;
 
     /**
      * @var OAuth2Server
@@ -34,16 +34,16 @@ class OAuth2Provider implements AuthenticationProviderInterface
 
     /**
      * @param UserProviderInterface $userProvider
-     * @param RoleService           $roleService
+     * @param RoleFinderInterface   $roleFinder
      * @param OAuth2Server          $server
      */
     public function __construct(
         UserProviderInterface $userProvider,
-        RoleService $roleService,
+        RoleFinderInterface $roleFinder,
         OAuth2Server $server
     ) {
         $this->userProvider = $userProvider;
-        $this->roleService  = $roleService;
+        $this->roleFinder   = $roleFinder;
         $this->server       = $server;
     }
 
@@ -62,7 +62,7 @@ class OAuth2Provider implements AuthenticationProviderInterface
         $userData = $this->server->getAccessTokenData($oauthRequest);
 
         $user  = $this->userProvider->findById($userData['user_id']);
-        $roles = $this->roleService->findRoleNamesByUserId($user->getId());
+        $roles = $this->roleFinder->findRoleNamesByUserId($user->getId());
 
         $user->setRoles($roles);
 

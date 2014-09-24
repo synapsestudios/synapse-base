@@ -20,7 +20,7 @@ class SecurityServiceProvider implements ServiceProviderInterface
             $app['security.authentication_provider.'.$name.'.oauth'] = $app->share(function ($app) {
                 return new OAuth2Provider(
                     $app['user.mapper'],
-                    $app['role.service'],
+                    $app['user-role-pivot.mapper'],
                     $app['oauth_server']
                 );
             });
@@ -42,7 +42,7 @@ class SecurityServiceProvider implements ServiceProviderInterface
                 $app['security.authentication_provider.'.$name.'.oauth-optional'] = $app->share(function ($app) {
                     return new OAuth2Provider(
                         $app['user.mapper'],
-                        $app['role.service'],
+                        $app['user-role-pivot.mapper'],
                         $app['oauth_server']
                     );
                 });
