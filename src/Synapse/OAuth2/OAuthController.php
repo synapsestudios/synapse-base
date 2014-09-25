@@ -27,13 +27,45 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 
     const AUTHORIZE_FORM_SUBMIT_ROUTE_NAME = 'oauth-authorize-form-submit';
 
+    /**
+     * @var OAuth2Server
+     */
+
     protected $server;
+
+    /**
+     * @var UserService
+     */
     protected $userService;
+
+    /**
+     * @var AccessTokenMapper
+     */
     protected $accessTokenMapper;
+
+    /**
+     * @var RefreshTokenMapper
+     */
     protected $refreshTokenMapper;
+
+    /**
+     * @var Mustache_Engine
+     */
     protected $mustache;
+
+    /**
+     * @var Session
+     */
     protected $session;
 
+    /**
+     * @param OAuth2Server       $server
+     * @param UserService        $userService
+     * @param AccessTokenMapper  $accessTokenMapper
+     * @param RefreshTokenMapper $refreshTokenMapper
+     * @param Mustache_Engine    $mustache
+     * @param Session            $session
+     */
     public function __construct(
         OAuth2Server $server,
         UserService $userService,
@@ -54,6 +86,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      * The user is directed here to log in
      *
      * @param Request $request
+     * @return Response
      */
     public function authorize(Request $request)
     {
@@ -73,6 +106,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         ));
     }
 
+    /**
+     * Handle submission from login form
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function authorizeFormSubmit(Request $request)
     {
         $username = $request->query->get('username');
@@ -85,7 +124,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $attemptedPassword = $request->query->get('password');
         $hashedPassword    = $user->getPassword();
 
-        $correctPassword = password_verify($attemptedPassword, $hashedPassword);
+        $correctPassword = $this->verifyPassword($attemptedPassword, $hashedPassword);
 
         if (! $correctPassword) {
             return $this->createInvalidCredentialResponse();
@@ -106,6 +145,14 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         return $response;
     }
 
+    /**
+     * Handle an OAuth token request
+     *
+     * Note: Expects input as POST variables, not JSON request body
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function token(Request $request)
     {
         $bridgeResponse = new BridgeResponse;
@@ -124,6 +171,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         return $response;
     }
 
+    /**
+     * Set the last_login timestamp in the database
+     *
+     * @param string $userId
+     */
     protected function setLastLogin($userId)
     {
         $user = $this->userService->findById($userId);
@@ -133,6 +185,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         ]);
     }
 
+    /**
+     * Handle logout request
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function logout(Request $request)
     {
         $content = json_decode($request->getContent(), true);
@@ -158,11 +216,21 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         return new Response('', 200);
     }
 
+    /**
+     * Create a unified response for invalid login credentials
+     *
+     * @return Response
+     */
     protected function createInvalidCredentialResponse()
     {
         return $this->createSimpleResponse(422, 'Invalid credentials');
     }
 
+    /**
+     * Expire an access token
+     *
+     * @param  string $accessToken
+     */
     protected function expireAccessToken($accessToken)
     {
         // Expire access token
@@ -179,6 +247,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $this->accessTokenMapper->update($token);
     }
 
+    /**
+     * Expire a refresh token
+     *
+     * @param  string     $refreshToken
+     * @param  UserEntity $user
+     */
     protected function expireRefreshToken($refreshToken, $user)
     {
         $token = $this->refreshTokenMapper->findBy([
@@ -193,5 +267,17 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $token->setExpires(date("Y-m-d H:i:s", time()));
 
         $this->refreshTokenMapper->update($token);
+    }
+
+    /**
+     * Verify that the password is correct
+     *
+     * @param  string $attemptedPassword Password being verified
+     * @param  string $hashedPassword    Correct hashed password
+     * @return boolean
+     */
+    protected function verifyPassword($attemptedPassword, $hashedPassword)
+    {
+        return password_verify($attemptedPassword, $hashedPassword);
     }
 }
