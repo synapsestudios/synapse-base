@@ -25,6 +25,8 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 {
     use SecurityAwareTrait;
 
+    const AUTHORIZE_FORM_SUBMIT_ROUTE_NAME = 'oauth-authorize-form-submit';
+
     protected $server;
     protected $userService;
     protected $accessTokenMapper;
@@ -55,7 +57,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      */
     public function authorize(Request $request)
     {
-        $submitUrl = $this->url('oauth-authorize-form-submit');
+        $submitUrl = $this->url(self::AUTHORIZE_FORM_SUBMIT_ROUTE_NAME);
 
         $vars = array();
         foreach ($request->query->all() as $param => $value) {
@@ -73,31 +75,35 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 
     public function authorizeFormSubmit(Request $request)
     {
-        $response     = new BridgeResponse;
-        $oauthRequest = OAuthRequest::createFromRequest($request);
-
-        $user = $this->userService->findByEmail($request->query->get('username'));
-
-        if ($user && password_verify($request->query->get('password'), $user->getPassword())) {
-            $correctPassword = true;
-        } else {
-            $correctPassword = false;
-        }
+        $username = $request->query->get('username');
+        $user     = $this->userService->findByEmail($username);
 
         if (! $user) {
-            return $this->createNotFoundResponse();
+            return $this->createInvalidCredentialResponse();
         }
 
+        $attemptedPassword = $request->query->get('password');
+        $hashedPassword    = $user->getPassword();
+
+        $correctPassword = password_verify($attemptedPassword, $hashedPassword);
+
         if (! $correctPassword) {
-            return $this->createSimpleResponse(422, 'Invalid credentials');
+            return $this->createInvalidCredentialResponse();
         }
 
         // Automatically authorize the user
-        $authorized = true;
+        $authorized    = true;
+        $oauthRequest  = OAuthRequest::createFromRequest($request);
+        $oauthResponse = new BridgeResponse();
 
-        $res = $this->server->handleAuthorizeRequest($oauthRequest, $response, $authorized, $user->getId());
+        $response = $this->server->handleAuthorizeRequest(
+            $oauthRequest,
+            $oauthResponse,
+            $authorized,
+            $user->getId()
+        );
 
-        return $res;
+        return $response;
     }
 
     public function token(Request $request)
@@ -150,6 +156,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         }
 
         return new Response('', 200);
+    }
+
+    protected function createInvalidCredentialResponse()
+    {
+        return $this->createSimpleResponse(422, 'Invalid credentials');
     }
 
     protected function expireAccessToken($accessToken)
