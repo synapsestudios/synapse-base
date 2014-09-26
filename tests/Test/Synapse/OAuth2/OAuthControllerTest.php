@@ -148,11 +148,9 @@ class OAuthControllerTest extends ControllerTestCase
             }));
     }
 
-    public function performGetRequestToAuthorizeFormSubmit($queryParams = [])
+    public function performPostRequestToAuthorizeFormSubmit($postParams = [])
     {
-        $request = $this->createJsonRequest('GET', [
-            'getParams' => $queryParams
-        ]);
+        $request = new Request([], $postParams);
 
         return $this->controller->authorizeFormSubmit($request);
     }
@@ -225,7 +223,7 @@ class OAuthControllerTest extends ControllerTestCase
     {
         $this->withUserNotFound();
 
-        $response = $this->performGetRequestToAuthorizeFormSubmit();
+        $response = $this->performPostRequestToAuthorizeFormSubmit();
 
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -237,7 +235,7 @@ class OAuthControllerTest extends ControllerTestCase
         // Will return 422 if user not found regardless of password, so ensure that doesn't happen
         $this->withUserFoundHavingPassword($password);
 
-        $response = $this->performGetRequestToAuthorizeFormSubmit();
+        $response = $this->performPostRequestToAuthorizeFormSubmit();
 
         $this->assertEquals(422, $response->getStatusCode());
     }
@@ -249,7 +247,7 @@ class OAuthControllerTest extends ControllerTestCase
         $this->withUserFoundHavingPassword($password);
         $this->withHandleAuthorizeRequestReturningResponse();
 
-        $response = $this->performGetRequestToAuthorizeFormSubmit([
+        $response = $this->performPostRequestToAuthorizeFormSubmit([
             'password' => $password,
         ]);
 
@@ -272,7 +270,7 @@ class OAuthControllerTest extends ControllerTestCase
 
         $this->withUserFoundHavingPassword($password, ['id' => $userId]);
 
-        $this->performGetRequestToAuthorizeFormSubmit([
+        $this->performPostRequestToAuthorizeFormSubmit([
             'password' => $password,
         ]);
     }

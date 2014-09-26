@@ -126,14 +126,14 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      */
     public function authorizeFormSubmit(Request $request)
     {
-        $username = $request->query->get('username');
+        $username = $request->request->get('username');
         $user     = $this->userService->findByEmail($username);
 
         if (! $user) {
             return $this->createInvalidCredentialResponse();
         }
 
-        $attemptedPassword = $request->query->get('password');
+        $attemptedPassword = $request->request->get('password');
         $hashedPassword    = $user->getPassword();
 
         $correctPassword = $this->verifyPassword($attemptedPassword, $hashedPassword);
