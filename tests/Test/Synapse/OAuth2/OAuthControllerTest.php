@@ -97,7 +97,7 @@ class OAuthControllerTest extends ControllerTestCase
             ->will($this->returnCallback(function ($templateName, $parameters) {
                 $this->captured->renderedTemplateName       = $templateName;
                 $this->captured->parametersPassedToTemplate = $parameters;
-                $this->captured->renderedTemplate           = new stdClass();
+                $this->captured->renderedTemplate           = '<html>Foo!</html>';
 
                 return $this->captured->renderedTemplate;
             }));
@@ -109,7 +109,8 @@ class OAuthControllerTest extends ControllerTestCase
             ->method('generate')
             ->will($this->returnCallback(function ($routeName) {
                 $this->captured->routeNameFromWhichUrlWasGenerated = $routeName;
-                $this->captured->generatedUrl                      = new stdClass();
+
+                $this->captured->generatedUrl = 'http://www.synapsestudios.com';
 
                 return $this->captured->generatedUrl;
             }));
@@ -163,7 +164,7 @@ class OAuthControllerTest extends ControllerTestCase
 
         $response = $this->controller->authorize(new Request);
 
-        $this->assertSame(
+        $this->assertEquals(
             $this->captured->renderedTemplate,
             $response
         );
@@ -213,7 +214,7 @@ class OAuthControllerTest extends ControllerTestCase
             $this->captured->routeNameFromWhichUrlWasGenerated
         );
 
-        $this->assertSame(
+        $this->assertEquals(
             $this->captured->generatedUrl,
             $this->captured->parametersPassedToTemplate['submitUrl']
         );
