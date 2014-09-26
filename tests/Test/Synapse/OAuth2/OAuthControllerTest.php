@@ -230,12 +230,15 @@ class OAuthControllerTest extends ControllerTestCase
 
     public function testAuthorizeFormSubmitReturns422IfPasswordIncorrect()
     {
-        $password = 'password';
+        $correctPassword = 'password';
+        $wrongPassword   = 'PASSWORD';
 
         // Will return 422 if user not found regardless of password, so ensure that doesn't happen
-        $this->withUserFoundHavingPassword($password);
+        $this->withUserFoundHavingPassword($correctPassword);
 
-        $response = $this->performPostRequestToAuthorizeFormSubmit();
+        $response = $this->performPostRequestToAuthorizeFormSubmit([
+            'password' => $wrongPassword,
+        ]);
 
         $this->assertEquals(422, $response->getStatusCode());
     }
