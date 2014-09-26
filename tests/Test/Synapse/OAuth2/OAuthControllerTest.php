@@ -12,6 +12,8 @@ class OAuthControllerTest extends ControllerTestCase
 {
     public function setUp()
     {
+        $this->captured = new stdClass();
+
         $this->setUpMockOAuth2Server();
         $this->setUpMockUserService();
         $this->setUpMockAccessTokenMapper();
@@ -131,11 +133,17 @@ class OAuthControllerTest extends ControllerTestCase
             ->will($this->returnValue($user));
     }
 
-    public function withHandleAuthorizeRequestReturningResponse($response)
+    public function withHandleAuthorizeRequestReturningResponse()
     {
         $this->mockOAuth2Server->expects($this->any())
             ->method('handleAuthorizeRequest')
-            ->will($this->returnValue($response));
+            ->will($this->returnCallback(function() {
+                $response = new stdClass();
+
+                $this->captured->responseReturnedByOAuthServer = $response;
+
+                return $response;
+            }));
     }
 
     public function performGetRequestToAuthorizeFormSubmit($queryParams = [])
@@ -222,17 +230,16 @@ class OAuthControllerTest extends ControllerTestCase
 
     public function testAuthorizeFormSubmitReturnsResponseFromOAuthServerIfCredentialsValid()
     {
-        $password         = 'foo';
-        $expectedResponse = new stdClass();
+        $password = 'foo';
 
         $this->withUserFoundHavingPassword($password);
-        $this->withHandleAuthorizeRequestReturningResponse($expectedResponse);
+        $this->withHandleAuthorizeRequestReturningResponse();
 
         $response = $this->performGetRequestToAuthorizeFormSubmit([
             'password' => $password,
         ]);
 
-        $this->assertSame($expectedResponse, $response);
+        $this->assertSame($this->captured->responseReturnedByOAuthServer, $response);
     }
 
     public function testAuthorizeFormSubmitSendsExpectedParametersToHandleAuthorizeRequest()
