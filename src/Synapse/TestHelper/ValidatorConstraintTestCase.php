@@ -20,7 +20,7 @@ class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
      */
     protected $violations = [];
 
-    public function setUp(ConstraintValidator $validator)
+    public function setUpMocksOnValidator(ConstraintValidator $validator)
     {
         $this->setUpMockExecutionContext();
         $this->setUpMockConstraint();

@@ -12,7 +12,8 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
     {
         $this->validator = new RowExistsValidator;
 
-        parent::setUp($this->validator);
+        $this->setUpMocksOnValidator($this->validator);
+        $this->setUpMockConstraint();
 
         $this->setUpMapperInMockConstraint();
     }
