@@ -83,14 +83,6 @@ class OAuthControllerTest extends ControllerTestCase
             ->getMock();
     }
 
-    public function expectingMustacheTemplateRenderedAndReturning($template, $returnValue)
-    {
-        $this->mockMustacheEngine->expects($this->once())
-            ->method('render')
-            ->with($this->equalTo($template))
-            ->will($this->returnValue($returnValue));
-    }
-
     public function expectingTemplateVarsSet($vars)
     {
         $this->mockMustacheEngine->expects($this->once())
@@ -98,19 +90,29 @@ class OAuthControllerTest extends ControllerTestCase
             ->with($this->anything(), $this->contains($vars));
     }
 
-    public function expectingTemplateSubmitUrlSetTo($value)
+    public function capturingMustacheRenderArguments()
     {
         $this->mockMustacheEngine->expects($this->once())
             ->method('render')
-            ->with($this->anything(), $this->contains($value));
+            ->will($this->returnCallback(function ($templateName, $parameters) {
+                $this->captured->renderedTemplateName       = $templateName;
+                $this->captured->parametersPassedToTemplate = $parameters;
+                $this->captured->renderedTemplate           = new stdClass();
+
+                return $this->captured->renderedTemplate;
+            }));
     }
 
-    public function expectingUrlGeneratedFromRouteAndReturning($routeName, $returnValue)
+    public function capturingRouteNameFromWhichUrlWasGenerated()
     {
         $this->mockUrlGenerator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo($routeName))
-            ->will($this->returnValue($returnValue));
+            ->will($this->returnCallback(function ($routeName) {
+                $this->captured->routeNameFromWhichUrlWasGenerated = $routeName;
+                $this->captured->generatedUrl                      = new stdClass();
+
+                return $this->captured->generatedUrl;
+            }));
     }
 
     public function withUserNotFound()
@@ -157,16 +159,21 @@ class OAuthControllerTest extends ControllerTestCase
 
     public function testAuthorizeReturnsRenderedOAuthAuthorizeMustacheTemplate()
     {
-        $expectedTemplate = 'OAuth/Authorize';
+        $expectedTemplateName = OAuthController::AUTHORIZE_FORM_TEMPLATE;
 
-        // Use a class so identity-level equality assertion can be made
-        $renderedTemplate = new stdClass();
-
-        $this->expectingMustacheTemplateRenderedAndReturning($expectedTemplate, $renderedTemplate);
+        $this->capturingMustacheRenderArguments();
 
         $response = $this->controller->authorize(new Request);
 
-        $this->assertSame($renderedTemplate, $response);
+        $this->assertSame(
+            $this->captured->renderedTemplate,
+            $response
+        );
+
+        $this->assertEquals(
+            $expectedTemplateName,
+            $this->captured->renderedTemplateName
+        );
     }
 
     public function testAuthorizeSetsHttpQueryParamsAsTemplateVars()
@@ -196,15 +203,22 @@ class OAuthControllerTest extends ControllerTestCase
 
     public function testAuthorizeSetsSubmitUrlToGeneratedAuthorizeFormSubmitUrl()
     {
-        // Use a class so identity-level equality assertion can be made
-        $generatedUrl = new stdClass();
+        $expectedRouteName = OAuthController::AUTHORIZE_FORM_SUBMIT_ROUTE_NAME;
 
-        $expectedRoute = OAuthController::AUTHORIZE_FORM_SUBMIT_ROUTE_NAME;
-
-        $this->expectingUrlGeneratedFromRouteAndReturning($expectedRoute, $generatedUrl);
-        $this->expectingTemplateSubmitUrlSetTo($generatedUrl);
+        $this->capturingRouteNameFromWhichUrlWasGenerated();
+        $this->capturingMustacheRenderArguments();
 
         $this->controller->authorize(new Request);
+
+        $this->assertEquals(
+            $expectedRouteName,
+            $this->captured->routeNameFromWhichUrlWasGenerated
+        );
+
+        $this->assertSame(
+            $this->captured->generatedUrl,
+            $this->captured->parametersPassedToTemplate['submitUrl']
+        );
     }
 
     public function testAuthorizeFormSubmitReturns422IfUserNotFound()

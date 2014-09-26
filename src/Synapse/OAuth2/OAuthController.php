@@ -25,7 +25,19 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 {
     use SecurityAwareTrait;
 
+    /**
+     * Name of the route to which login form submissions should post
+     *
+     * @var string
+     */
     const AUTHORIZE_FORM_SUBMIT_ROUTE_NAME = 'oauth-authorize-form-submit';
+
+    /**
+     * Name of the template for the login form
+     *
+     * @var string
+     */
+    const AUTHORIZE_FORM_TEMPLATE = 'OAuth/Authorize';
 
     /**
      * @var OAuth2Server
@@ -100,7 +112,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
             );
         }
 
-        return $this->mustache->render('OAuth/Authorize', array(
+        return $this->mustache->render(self::AUTHORIZE_FORM_TEMPLATE, array(
             'submitUrl' => $submitUrl,
             'vars'      => $vars,
         ));
