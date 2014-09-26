@@ -240,14 +240,14 @@ class OAuthControllerTest extends ControllerTestCase
         $userId   = 123;
         $password = 'foo';
 
-        $one   = $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request');
-        $two   = $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response');
-        $three = $this->equalTo(true);
-        $four  = $this->equalTo($userId);
-
         $this->mockOAuth2Server->expects($this->once())
             ->method('handleAuthorizeRequest')
-            ->with($one, $two, $three, $four);
+            ->with(
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request'),
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response'),
+                $this->equalTo(true),
+                $this->equalTo($userId)
+            );
 
         $this->withUserFoundHavingPassword($password, ['id' => $userId]);
 
