@@ -25,13 +25,59 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 {
     use SecurityAwareTrait;
 
+    /**
+     * Name of the route to which login form submissions should post
+     *
+     * @var string
+     */
+    const AUTHORIZE_FORM_SUBMIT_ROUTE_NAME = 'oauth-authorize-form-submit';
+
+    /**
+     * Name of the template for the login form
+     *
+     * @var string
+     */
+    const AUTHORIZE_FORM_TEMPLATE = 'OAuth/Authorize';
+
+    /**
+     * @var OAuth2Server
+     */
+
     protected $server;
+
+    /**
+     * @var UserService
+     */
     protected $userService;
+
+    /**
+     * @var AccessTokenMapper
+     */
     protected $accessTokenMapper;
+
+    /**
+     * @var RefreshTokenMapper
+     */
     protected $refreshTokenMapper;
+
+    /**
+     * @var Mustache_Engine
+     */
     protected $mustache;
+
+    /**
+     * @var Session
+     */
     protected $session;
 
+    /**
+     * @param OAuth2Server       $server
+     * @param UserService        $userService
+     * @param AccessTokenMapper  $accessTokenMapper
+     * @param RefreshTokenMapper $refreshTokenMapper
+     * @param Mustache_Engine    $mustache
+     * @param Session            $session
+     */
     public function __construct(
         OAuth2Server $server,
         UserService $userService,
@@ -52,10 +98,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      * The user is directed here to log in
      *
      * @param Request $request
+     * @return Response
      */
     public function authorize(Request $request)
     {
-        $submitUrl = $this->url('oauth-authorize-form-submit');
+        $submitUrl = $this->url(self::AUTHORIZE_FORM_SUBMIT_ROUTE_NAME);
 
         $vars = array();
         foreach ($request->query->all() as $param => $value) {
@@ -65,41 +112,59 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
             );
         }
 
-        return $this->mustache->render('OAuth/Authorize', array(
+        return $this->mustache->render(self::AUTHORIZE_FORM_TEMPLATE, array(
             'submitUrl' => $submitUrl,
             'vars'      => $vars,
         ));
     }
 
+    /**
+     * Handle submission from login form
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function authorizeFormSubmit(Request $request)
     {
-        $response     = new BridgeResponse;
-        $oauthRequest = OAuthRequest::createFromRequest($request);
-
-        $user = $this->userService->findByEmail($request->query->get('username'));
-
-        if ($user && password_verify($request->query->get('password'), $user->getPassword())) {
-            $correctPassword = true;
-        } else {
-            $correctPassword = false;
-        }
+        $username = $request->request->get('username');
+        $user     = $this->userService->findByEmail($username);
 
         if (! $user) {
-            return $this->createNotFoundResponse();
+            return $this->createInvalidCredentialResponse();
         }
 
+        $attemptedPassword = $request->request->get('password');
+        $hashedPassword    = $user->getPassword();
+
+        $correctPassword = $this->verifyPassword($attemptedPassword, $hashedPassword);
+
         if (! $correctPassword) {
-            return $this->createSimpleResponse(422, 'Invalid credentials');
+            return $this->createInvalidCredentialResponse();
         }
 
         // Automatically authorize the user
-        $authorized = true;
+        $authorized    = true;
+        $oauthRequest  = OAuthRequest::createFromRequest($request);
+        $oauthResponse = new BridgeResponse();
 
-        $res = $this->server->handleAuthorizeRequest($oauthRequest, $response, $authorized, $user->getId());
+        $response = $this->server->handleAuthorizeRequest(
+            $oauthRequest,
+            $oauthResponse,
+            $authorized,
+            $user->getId()
+        );
 
-        return $res;
+        return $response;
     }
 
+    /**
+     * Handle an OAuth token request
+     *
+     * Note: Expects input as POST variables, not JSON request body
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function token(Request $request)
     {
         $bridgeResponse = new BridgeResponse;
@@ -118,6 +183,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         return $response;
     }
 
+    /**
+     * Set the last_login timestamp in the database
+     *
+     * @param string $userId
+     */
     protected function setLastLogin($userId)
     {
         $user = $this->userService->findById($userId);
@@ -127,6 +197,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         ]);
     }
 
+    /**
+     * Handle logout request
+     *
+     * @param  Request $request
+     * @return Response
+     */
     public function logout(Request $request)
     {
         $content = json_decode($request->getContent(), true);
@@ -152,6 +228,21 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         return new Response('', 200);
     }
 
+    /**
+     * Create a unified response for invalid login credentials
+     *
+     * @return Response
+     */
+    protected function createInvalidCredentialResponse()
+    {
+        return $this->createSimpleResponse(422, 'Invalid credentials');
+    }
+
+    /**
+     * Expire an access token
+     *
+     * @param  string $accessToken
+     */
     protected function expireAccessToken($accessToken)
     {
         // Expire access token
@@ -168,6 +259,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $this->accessTokenMapper->update($token);
     }
 
+    /**
+     * Expire a refresh token
+     *
+     * @param  string     $refreshToken
+     * @param  UserEntity $user
+     */
     protected function expireRefreshToken($refreshToken, $user)
     {
         $token = $this->refreshTokenMapper->findBy([
@@ -182,5 +279,17 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $token->setExpires(date("Y-m-d H:i:s", time()));
 
         $this->refreshTokenMapper->update($token);
+    }
+
+    /**
+     * Verify that the password is correct
+     *
+     * @param  string $attemptedPassword Password being verified
+     * @param  string $hashedPassword    Correct hashed password
+     * @return boolean
+     */
+    protected function verifyPassword($attemptedPassword, $hashedPassword)
+    {
+        return password_verify($attemptedPassword, $hashedPassword);
     }
 }
