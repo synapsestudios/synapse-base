@@ -149,6 +149,15 @@ class OAuthControllerTest extends ControllerTestCase
             }));
     }
 
+    public function capturingHandleAuthorizeRequestRequest()
+    {
+        $this->mockOAuth2Server->expects($this->any())
+            ->method('handleAuthorizeRequest')
+            ->will($this->returnCallback(function($request) {
+                $this->captured->requestSentToOAuthServer = $request;
+            }));
+    }
+
     public function performPostRequestToAuthorizeFormSubmit($postParams = [])
     {
         $request = new Request([], $postParams);
@@ -277,5 +286,21 @@ class OAuthControllerTest extends ControllerTestCase
         $this->performPostRequestToAuthorizeFormSubmit([
             'password' => $password,
         ]);
+    }
+
+    public function testAuthorizeFormSubmitConvertsPostParamsToGetParamsInRequestSentToOauthServer()
+    {
+        $this->withUserFoundHavingPassword('pa55');
+        $this->capturingHandleAuthorizeRequestRequest();
+
+        $this->performPostRequestToAuthorizeFormSubmit([
+            'password'  => 'pa55',
+            'client_id' => '1234567',
+        ]);
+
+        $this->assertEquals(
+            '1234567',
+            $this->captured->requestSentToOAuthServer->query->get('client_id')
+        );
     }
 }
