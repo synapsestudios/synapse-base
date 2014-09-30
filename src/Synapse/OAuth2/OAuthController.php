@@ -21,6 +21,16 @@ use Synapse\Stdlib\Arr;
 
 use OutOfBoundsException;
 
+/**
+ * Controller implementing OAuth2
+ *
+ * Implements "Authorization Code" grant type:
+ *     OAuthController::authorize
+ *     OAuthController::authorizeFormSubmit
+ *
+ * Implements "Resource Owner Password Credentials" grant type:
+ *     OAuthController::token
+ */
 class OAuthController extends AbstractController implements SecurityAwareInterface
 {
     use SecurityAwareTrait;
@@ -95,8 +105,9 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     }
 
     /**
-     * The user is directed here to log in
+     * The user is directed here to log in (Part 1 of the "Authorization Code" grant type)
      *
+     * @link http://tools.ietf.org/html/rfc6749#section-4.1.1 Authorization Request
      * @param Request $request
      * @return Response
      */
@@ -119,8 +130,9 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     }
 
     /**
-     * Handle submission from login form
+     * Handle submission from login form (Part 2 of the "Authorization Code" grant type)
      *
+     * @link http://tools.ietf.org/html/rfc6749#section-4.1.1 Authorization Request
      * @param  Request $request
      * @return Response
      */
@@ -144,7 +156,9 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
 
         // Automatically authorize the user
         $authorized    = true;
-        $oauthRequest  = OAuthRequest::createFromRequest($request);
+
+        // The OAuth2 library assumes variables as GET params, but for security purposes they are POST. Convert here.
+        $oauthRequest  = new OAuthRequest($request->request->all());
         $oauthResponse = new BridgeResponse();
 
         $response = $this->server->handleAuthorizeRequest(
@@ -158,10 +172,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     }
 
     /**
-     * Handle an OAuth token request
+     * Handle an OAuth token request (Implements the "Resource Owner Password Credentials" grant type)
      *
      * Note: Expects input as POST variables, not JSON request body
      *
+     * @link http://tools.ietf.org/html/rfc6749#section-4.3.2 Access Token Request
      * @param  Request $request
      * @return Response
      */
