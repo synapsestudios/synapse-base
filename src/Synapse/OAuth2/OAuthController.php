@@ -157,7 +157,6 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         // Automatically authorize the user
         $authorized    = true;
 
-
         // The OAuth2 library assumes variables as GET params, but for security purposes they are POST. Convert here.
         $oauthRequest  = new OAuthRequest($request->request->all());
         $oauthResponse = new BridgeResponse();
