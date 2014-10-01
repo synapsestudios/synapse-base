@@ -42,10 +42,6 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
     {
         $this->sqlStrings = [];
 
-        $this->mockResultCallback = function ($mockResult, $index) {
-            // No-op
-        };
-
         $this->mockResultCount = 0;
 
         $this->mockResults = [];
@@ -53,19 +49,6 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         $this->setUpMockAdapter();
 
         $this->setUpMockSqlFactory();
-    }
-
-    /**
-     * Set up a callback that is called for every mock result generated.
-     * The callback should accept the mock object as its first argument
-     * and an index as its second that is incremented for every mock result
-     * generated.
-     *
-     * @param callable $callback [description]
-     */
-    public function setUpMockResultCallback(callable $callback)
-    {
-        $this->mockResultCallback = $callback;
     }
 
     /**
