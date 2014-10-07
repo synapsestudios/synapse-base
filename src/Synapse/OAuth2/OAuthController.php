@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use OAuth2\HttpFoundationBridge\Response as BridgeResponse;
 use OAuth2\HttpFoundationBridge\Request as OAuthRequest;
 use OAuth2\Server as OAuth2Server;
+use OAuth2\Storage\UserCredentialsInterface;
 
 use Synapse\Security\SecurityAwareInterface;
 use Synapse\Security\SecurityAwareTrait;
@@ -144,7 +145,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
             return $this->createInvalidCredentialResponse();
         }
 
-        $attemptedPassword = $request->request->get('password');
+        $attemptedPassword = $request->get('password');
         $hashedPassword    = $user->getPassword();
 
         $correctPassword = $this->verifyPassword($attemptedPassword, $hashedPassword);
@@ -154,10 +155,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         }
 
         // Automatically authorize the user
-        $authorized    = true;
+        $authorized = true;
 
         // The OAuth2 library assumes variables as GET params, but for security purposes they are POST. Convert here.
-        $oauthRequest  = new OAuthRequest($request->request->all());
+        $requestData = ($request->getMethod() === 'GET') ? $request->query : $request->request;
+
+        $oauthRequest  = new OAuthRequest($requestData->all());
         $oauthResponse = new BridgeResponse();
 
         $response = $this->server->handleAuthorizeRequest(
@@ -171,7 +174,10 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     }
 
     /**
-     * Handle an OAuth token request (Implements the "Resource Owner Password Credentials" grant type)
+     * Handle an OAuth token request
+     *
+     * (Implements the "Resource Owner Password Credentials" grant type
+     * or Part 3 of the "Authorization Code" grant type)
      *
      * Note: Expects input as POST variables, not JSON request body
      *
@@ -315,7 +321,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      */
     protected function getUserFromRequest(Request $request)
     {
-        $username = $request->request->get('username');
+        $username = $request->get('username');
 
         return $this->userService->findByEmail($username);
     }
