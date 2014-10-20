@@ -5,7 +5,7 @@ namespace Synapse\TestHelper;
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
+abstract class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
 {
     /**
      * Captured constraint violations added by the validator
