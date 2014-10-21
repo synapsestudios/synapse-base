@@ -9,6 +9,7 @@ use Synapse\User\UserEntity;
 class UserRolePivotMapperTest extends MapperTestCase
 {
     const USER_ID = 24398;
+    const ROLE_NAME = 'ROLE_ADMIN';
 
     public function setUp()
     {
@@ -47,7 +48,31 @@ class UserRolePivotMapperTest extends MapperTestCase
 
         $this->mapper->findRoleNamesByUserId($userId);
 
-        $regexp = sprintf('/JOIN `user_roles` ON `user_roles`.`id` = `pvt_roles_users`.`role_id`/', $userId);
+        $regexp = sprintf('/JOIN `user_roles` ON `user_roles`.`id` = `pvt_roles_users`.`role_id`/');
+
+        $this->assertRegExpOnSqlString($regexp);
+    }
+
+    public function testAddRoleForUserFindsRoleId()
+    {
+        $userId   = self::USER_ID;
+        $roleName = self::ROLE_NAME;
+
+        $this->mapper->addRoleForUser($userId, $roleName);
+
+        $regexp = sprintf('/\(SELECT `id` from `user_roles` WHERE `name` = \'%s\'\)/', $roleName);
+
+        $this->assertRegExpOnSqlString($regexp);
+    }
+
+    public function testAddRoleForUserAssignsRoleToGivenUser()
+    {
+        $userId   = self::USER_ID;
+        $roleName = self::ROLE_NAME;
+
+        $this->mapper->addRoleForUser($userId, $roleName);
+
+        $regexp = sprintf('/VALUES \(\'%s\'/', $userId);
 
         $this->assertRegExpOnSqlString($regexp);
     }
