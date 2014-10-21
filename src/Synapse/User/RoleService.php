@@ -5,8 +5,8 @@ namespace Synapse\User;
 /**
  * Service for tasks relating to user roles
  */
-class RoleService {
-
+class RoleService
+{
     /**
      * @var UserRolePivotMapper
      */
