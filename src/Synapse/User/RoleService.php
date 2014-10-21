@@ -15,9 +15,8 @@ class RoleService
     /**
      * @param UserRolePivotMapper $userRolePivotMapper
      */
-    public function __construct(
-        UserRolePivotMapper $userRolePivotMapper
-    ) {
+    public function __construct(UserRolePivotMapper $userRolePivotMapper)
+    {
         $this->userRolePivotMapper = $userRolePivotMapper;
     }
 
