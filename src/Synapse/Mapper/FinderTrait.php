@@ -51,7 +51,7 @@ trait FinderTrait
 
         $this->setColumns($query, $options);
 
-        $wheres = $this->addJoins($query, $wheres);
+        $wheres = $this->addJoins($query, $wheres, $options);
 
         $this->addWheres($query, $wheres, $options);
 
