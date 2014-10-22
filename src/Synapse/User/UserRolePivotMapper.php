@@ -57,6 +57,6 @@ class UserRolePivotMapper extends Mapper\AbstractMapper implements RoleFinderInt
                 'role_id' => $roleIdExpression,
             ]);
 
-            $this->execute($query);
+        $this->execute($query);
     }
 }
