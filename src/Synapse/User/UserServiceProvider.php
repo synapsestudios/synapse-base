@@ -48,6 +48,12 @@ class UserServiceProvider implements ServiceProviderInterface
             return $service;
         });
 
+        $app['role.service'] = $app->share(function ($app) {
+            return new RoleService(
+                $app['user-role-pivot.mapper']
+            );
+        });
+
         $app['user.validator'] = $app->share(function ($app) {
             return new UserValidator($app['validator']);
         });
