@@ -22,15 +22,13 @@ class RoleService
     }
 
     /**
-     * Add a list of roles to a given user
+     * Add a role to a given user
      *
      * @param UserEntity $user
-     * @param array      $roles an array of strings
+     * @param string     $role name of the role to add
      */
-    public function addRolesForUser(UserEntity $user, array $roles)
+    public function addRoleForUser(UserEntity $user, $role)
     {
-        foreach ($roles as $role) {
-            $this->userRolePivotMapper->addRoleForUser($user->getId(), $role);
-        }
+        $this->userRolePivotMapper->addRoleForUser($user->getId(), $role);
     }
 }
