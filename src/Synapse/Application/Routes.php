@@ -3,6 +3,7 @@
 namespace Synapse\Application;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Synapse\Application;
 
 /**
@@ -16,6 +17,11 @@ class Routes implements RoutesInterface
      */
     public function define(Application $app)
     {
+        $app->error(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $code) {
+            $body = ['error' => 'Access denied'];
+            return new JsonResponse($body, 403);
+        });
+
         $app->error(function (\Synapse\Rest\Exception\MethodNotImplementedException $e, $code) {
             $response = new Response('Method not implemented');
             $response->setStatusCode(501);
