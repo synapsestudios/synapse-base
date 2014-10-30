@@ -3,7 +3,12 @@
 namespace Synapse\Application;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Synapse\Application;
+use Synapse\Rest\Exception\MethodNotImplementedException;
+use Exception;
 
 /**
  * Define routes
@@ -21,23 +26,23 @@ class Routes implements RoutesInterface
     {
         $routes = $this;
 
-        $app->error(function (\Synapse\Rest\Exception\MethodNotImplementedException $e, $code) use ($routes) {
+        $app->error(function (MethodNotImplementedException $e, $code) use ($routes) {
             return $routes->getMethodNotImplementedResponse();
         });
 
-        $app->error(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, $code) use ($routes) {
+        $app->error(function (MethodNotAllowedHttpException $e, $code) use ($routes) {
             return $routes->getMethodNotImplementedResponse();
         });
 
-        $app->error(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $code) {
+        $app->error(function (NotFoundHttpException $e, $code) {
             return new JsonResponse(['message' => 'Not found'], 404);
         });
 
-        $app->error(function (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException $e, $code) {
+        $app->error(function (AccessDeniedHttpException $e, $code) {
             return new JsonResponse(['message' => 'Access denied'], 403);
         });
 
-        $app->error(function (\Exception $e, $code) use ($app) {
+        $app->error(function (Exception $e, $code) use ($app) {
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
             if ($app['debug'] === true) {
