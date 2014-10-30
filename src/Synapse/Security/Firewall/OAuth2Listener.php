@@ -2,7 +2,7 @@
 
 namespace Synapse\Security\Firewall;
 
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -68,8 +68,6 @@ class OAuth2Listener implements ListenerInterface
      */
     protected function getForbiddenReponse()
     {
-        $response = new Response();
-        $response->setStatusCode(401);
-        return $response;
+        return new JsonResponse(['message' => 'Unauthorized'], 401);
     }
 }
