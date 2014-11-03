@@ -29,7 +29,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
     public function createNotFoundResponse()
     {
         $data = [
-            'message' => 'Not Found'
+            'message' => 'Not found'
         ];
 
         $response = new JsonResponse($data, 404);
