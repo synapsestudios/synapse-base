@@ -16,6 +16,11 @@ use Exception;
 class Routes implements RoutesInterface
 {
     /**
+     * Message for 501 responses
+     */
+    const METHOD_NOT_IMPLEMENTED_MESSAGE = 'Method not implemented';
+
+    /**
      * {@inheritDoc}
      *
      * Has entries for both Synapse's and Symfony's 501 exceptions so that both return the same response
@@ -26,40 +31,38 @@ class Routes implements RoutesInterface
     {
         $routes = $this;
 
-        $app->error(function (MethodNotImplementedException $e, $code) use ($routes) {
-            return $routes->getMethodNotImplementedResponse();
+        $getCorsResponse = function ($message, $statusCode) use ($app, $routes) {
+            $response = new JsonResponse(['message' => $message], $statusCode);
+
+            $app['cors']($app['request'], $response);
+
+            return $response;
+        };
+
+        $app->error(function (MethodNotImplementedException $e, $code) use ($getCorsResponse) {
+            return $getCorsResponse(self::METHOD_NOT_IMPLEMENTED_MESSAGE, 501);
         });
 
-        $app->error(function (MethodNotAllowedHttpException $e, $code) use ($routes) {
-            return $routes->getMethodNotImplementedResponse();
+        $app->error(function (MethodNotAllowedHttpException $e, $code) use ($getCorsResponse) {
+            return $getCorsResponse(self::METHOD_NOT_IMPLEMENTED_MESSAGE, 501);
         });
 
-        $app->error(function (NotFoundHttpException $e, $code) {
-            return new JsonResponse(['message' => 'Not found'], 404);
+        $app->error(function (NotFoundHttpException $e, $code) use ($getCorsResponse) {
+            return $getCorsResponse('Not found', 404);
         });
 
-        $app->error(function (AccessDeniedHttpException $e, $code) {
-            return new JsonResponse(['message' => 'Access denied'], 403);
+        $app->error(function (AccessDeniedHttpException $e, $code) use ($getCorsResponse) {
+            return $getCorsResponse('Access denied', 403);
         });
 
-        $app->error(function (Exception $e, $code) use ($app) {
+        $app->error(function (Exception $e, $code) use ($getCorsResponse) {
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
             if ($app['debug'] === true) {
                 throw $e;
             }
 
-            return new JsonResponse(['message' => 'Something went wrong with your request'], 500);
+            return $getCorsResponse('Something went wrong with your request', 500);
         });
-    }
-
-    /**
-     * Return a JSON 501 response
-     *
-     * @return JsonResponse
-     */
-    protected function getMethodNotImplementedResponse()
-    {
-        return new JsonResponse(['message' => 'Method not implemented'], 501);
     }
 }
