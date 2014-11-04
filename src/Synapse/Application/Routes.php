@@ -55,7 +55,7 @@ class Routes implements RoutesInterface
             return $getCorsResponse('Access denied', 403);
         });
 
-        $app->error(function (Exception $e, $code) use ($getCorsResponse) {
+        $app->error(function (Exception $e, $code) use ($getCorsResponse, $app) {
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
             if ($app['debug'] === true) {
