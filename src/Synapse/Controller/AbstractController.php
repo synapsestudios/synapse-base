@@ -30,7 +30,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
     {
         $content = 'Not found';
 
-        $response = $this->createJsonErrorResponse($content, 404);
+        $response = $this->createErrorResponse($content, 404);
         return $response;
     }
 
@@ -46,7 +46,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      * @param  integer $code    HTTP response code
      * @return Response
      */
-    protected function createJsonErrorResponse($content = 'Unknown Error', $code = 500)
+    protected function createErrorResponse($content = 'Unknown Error', $code = 500)
     {
         $data = [
             'message' => $content
