@@ -28,10 +28,7 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      */
     public function createNotFoundResponse()
     {
-        $content = 'Not found';
-
-        $response = $this->createErrorResponse($content, 404);
-        return $response;
+        return $this->createErrorResponse('Not found', 404);
     }
 
     /**
