@@ -52,7 +52,9 @@ trait InserterTrait
 
         $result = $statement->execute();
 
-        $entity->setId($result->getGeneratedValue());
+        if (! $entity->getId()) {
+            $entity->setId($result->getGeneratedValue());
+        }
 
         return $entity;
     }
