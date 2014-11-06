@@ -28,11 +28,28 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
      */
     public function createNotFoundResponse()
     {
+        return $this->createErrorResponse('Not found', 404);
+    }
+
+    /**
+     * Create and return an error response with a standard format
+     *
+     * Response will be formatted as a JSON object with the format:
+     * {
+     *     "message" : "text"
+     * }
+     *
+     * @param  string  $content Response content
+     * @param  integer $code    HTTP response code
+     * @return Response
+     */
+    protected function createErrorResponse($content = 'Unknown Error', $code = 500)
+    {
         $data = [
-            'message' => 'Not found'
+            'message' => $content
         ];
 
-        $response = new JsonResponse($data, 404);
+        $response = $this->createJsonResponse($data, $code);
         return $response;
     }
 

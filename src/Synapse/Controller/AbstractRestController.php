@@ -50,7 +50,7 @@ abstract class AbstractRestController extends AbstractController
         } catch (BadRequestException $e) {
             return $this->createSimpleResponse(400, 'Could not parse json body');
         } catch (Exception $e) {
-            return $this->createErrorResponse($e);
+            return $this->createExceptionResponse($e);
         }
 
         if ($result instanceof ArraySerializableInterface) {
@@ -96,7 +96,7 @@ abstract class AbstractRestController extends AbstractController
      *
      * @return Response
      */
-    protected function createErrorResponse(Exception $exception)
+    protected function createExceptionResponse(Exception $exception)
     {
         if ($this->logger) {
             $this->logger->addError(
