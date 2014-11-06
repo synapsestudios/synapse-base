@@ -120,4 +120,25 @@ class InserterTraitTest extends MapperTestCase
 
         $this->assertNotNull($entity->getCreated());
     }
+
+    public function testInsertSetsGeneratedAutoIncrementIdOnEntityIfEntityDoesNotAlreadyHaveAnId()
+    {
+        $entity     = $this->createEntityToInsert();
+        $expectedId = self::GENERATED_ID;
+
+        $this->mapper->insert($entity);
+
+        $this->assertEquals($expectedId, $entity->getId());
+    }
+
+    public function testInsertDoesNotSetIdOnEntityIfEntityAlreadyHasAnId()
+    {
+        $entity     = $this->createEntityToInsert();
+        $expectedId = self::GENERATED_ID + 1;
+
+        $entity->setId($expectedId);
+        $this->mapper->insert($entity);
+
+        $this->assertEquals($expectedId, $entity->getId());
+    }
 }
