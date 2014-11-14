@@ -142,4 +142,37 @@ abstract class DataObject implements ArraySerializableInterface
 
         return $property;
     }
+
+    /**
+     * Set the given field with the given value typecasted as an integer
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     */
+    protected function setAsInteger($field, $value)
+    {
+        $this->object[$field] = (int) $value;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a boolean
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     */
+    protected function setAsBoolean($field, $value)
+    {
+        $this->object[$field] = (bool) $value;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a string
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     */
+    protected function setAsString($field, $value)
+    {
+        $this->object[$field] = (string) $value;
+    }
 }
