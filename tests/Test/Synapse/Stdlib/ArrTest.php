@@ -424,7 +424,9 @@ class ArrTest extends PHPUnit_Framework_TestCase
                 2 => ['name' => 'john', 'interests' => ['hocky' => ['length' => 2], 'football' => []]],
                 3 => 'frank', // Issue #3194
             ],
-            'object' => new ArrayObject(['iterator' => true]), // Iterable object should work exactly the same
+            'object'  => new ArrayObject(['iterator' => true]), // Iterable object should work exactly the same
+            'foo'     => ['0123' => 'bar'],
+            'numbers' => [123 => [456 => '1']],
         ];
 
         return [
@@ -454,6 +456,11 @@ class ArrTest extends PHPUnit_Framework_TestCase
             // Path as array, issue #3260
             [$array['users'][2]['name'], $array, ['users', 2, 'name']],
             [$array['object']['iterator'], $array, 'object.iterator'],
+            // Path accepts numerical string indexes with leading zeroes #140
+            ['bar', $array, 'foo.0123'],
+            ['1', $array, 'numbers.0123.0456'],
+            [null, $array, 'numbers.0122'],
+            [null, $array, 'numbers.0123.0456.notfound'],
         ];
     }
 

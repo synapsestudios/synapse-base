@@ -116,11 +116,6 @@ class Arr
         do {
             $key = array_shift($keys);
 
-            if (ctype_digit($key)) {
-                // Make the key an integer
-                $key = (int) $key;
-            }
-
             if (isset($array[$key])) {
                 if ($keys) {
                     if (Arr::isArray($array[$key])) {
@@ -133,6 +128,26 @@ class Arr
                 } else {
                     // Found the path requested
                     return $array[$key];
+                }
+            } elseif (ctype_digit($key)) {
+                $key = (int) $key;
+
+                if (isset($array[$key])) {
+                    if ($keys) {
+                        if (Arr::isArray($array[$key])) {
+                            // Dig down into the next part of the path
+                            $array = $array[$key];
+                        } else {
+                            // Unable to dig deeper
+                            break;
+                        }
+                    } else {
+                        // Found the path requested
+                        return $array[$key];
+                    }
+                } else {
+                    // Unable to dig deeper
+                    break;
                 }
             } elseif ($key === '*') {
                 // Handle wildcards
