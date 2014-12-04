@@ -5,6 +5,7 @@ namespace Synapse\TestHelper;
 use stdClass;
 use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Sql\Delete;
 use Zend\Db\Sql\Insert;
 use Zend\Db\Sql\Select;
@@ -25,8 +26,27 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 {
     const GENERATED_ID = 123;
 
+    /**
+     * SQL strings of queries that have been run
+     *
+     * @var array
+     */
     protected $sqlStrings = [];
 
+    /**
+     * List of query parameters passed in with queries
+     *
+     * Keys correspond to $this->sqlStrings
+     *
+     * @var array
+     */
+    protected $queryParameters = [];
+
+    /**
+     * Query objects run
+     *
+     * @var array(Zend\Db\Sql\AbstractSql)
+     */
     protected $queries = [];
 
     /**
@@ -124,15 +144,7 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
         $this->mockAdapter->expects($this->any())
             ->method('query')
-            ->will($this->returnCallback(function ($sql, $mode) {
-                $this->sqlStrings[] = $sql;
-
-                if ($mode === 'prepare') {
-                    return $this->getMockStatement();
-                } else {
-                    return $this->getMockResult();
-                }
-            }));
+            ->will($this->returnCallback([$this, 'handleAdapterQuery']));
 
         $this->mockDriver = $this->getMockBuilder('Zend\Db\Adapter\Driver\Mysqli\Mysqli')
             ->disableOriginalConstructor()
@@ -161,6 +173,27 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         $this->mockAdapter->expects($this->any())
             ->method('getPlatform')
             ->will($this->returnValue($this->getPlatform()));
+    }
+
+    /**
+     * Mock a call to Zend\Db\Adapter\Adapter::query
+     *
+     * Captures the SQL string and parameters (if any were passed)
+     *
+     * @param  string       $sqlString             The SQL query in string format
+     * @param  array|string $parametersOrQueryMode Just like the method being mocked, this can be either
+     * @return mixed        If query mode is execute, mock results are returned; otherwise a mock statement
+     */
+    public function handleAdapterQuery($sqlString, $parametersOrQueryMode)
+    {
+        $parameters              = is_array($parametersOrQueryMode) ? $parametersOrQueryMode : [];
+        $executeMode             = $parametersOrQueryMode === Adapter::QUERY_MODE_EXECUTE;
+        $this->sqlStrings[]      = $sqlString;
+        $this->queryParameters[] = $parameters;
+
+        $response = $executeMode ? $this->getMockResult() : $this->getMockStatement();
+
+        return $response;
     }
 
     public function getMockSql()
@@ -250,6 +283,11 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
             }));
     }
 
+    /**
+     * Get SQL strings for all queries run
+     *
+     * @return array(string)
+     */
     protected function getSqlStrings()
     {
         $stringifiedQueries = array_map(function ($query) {
@@ -259,6 +297,13 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         return array_merge($stringifiedQueries, $this->sqlStrings);
     }
 
+    /**
+     * Get the SQL string at the given zero-based index
+     * (0 = the first query run, 1 = the second, etc)
+     *
+     * @param  integer $key Key of the SQL query
+     * @return string|null  Null if none found
+     */
     protected function getSqlString($key = 0)
     {
         $sqlStrings = $this->getSqlStrings();
@@ -266,6 +311,23 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         return Arr::get($sqlStrings, $key);
     }
 
+    /**
+     * Get the query parameters given for the SQL query provided
+     *
+     * @param  integer $key Key of the SQL query run (0 = the first query run, 1 = the second, etc)
+     * @return array|null   List of parameters or null if none found
+     */
+    protected function getQueryParams($key = 0)
+    {
+        return Arr::get($this->queryParameters, $key);
+    }
+
+    /**
+     * Assert that the SQL string at the given key matches the provided regular expression
+     *
+     * @param  string  $regexp       The regular expression to match against
+     * @param  integer $sqlStringKey Key of the SQL query for which to make the assertion
+     */
     protected function assertRegExpOnSqlString($regexp, $sqlStringKey = 0)
     {
         $sqlString = $this->getSqlString($sqlStringKey);
