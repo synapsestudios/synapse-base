@@ -13,6 +13,8 @@ class AbstractMapperTest extends MapperTestCase
         parent::setUp();
 
         $this->mapper = new Mapper($this->mockAdapter);
+
+        $this->mapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
@@ -27,11 +29,6 @@ class AbstractMapperTest extends MapperTestCase
             'email'    => 'address@a.com',
             'password' => 'password',
         ]);
-    }
-
-    public function capturingSqlStrings()
-    {
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function testGetPrototypeReturnsCloneOfPrototype()
@@ -67,8 +64,6 @@ class AbstractMapperTest extends MapperTestCase
 
     public function testPersistCallsUpdateIfEntityHasId()
     {
-        $this->capturingSqlStrings();
-
         $entity = $this->createEntity();
 
         $this->mapper->persist($entity);
@@ -78,8 +73,6 @@ class AbstractMapperTest extends MapperTestCase
 
     public function testPersistCallsInsertIfEntityDoesNotHaveId()
     {
-        $this->capturingSqlStrings();
-
         $entity = $this->createEntity()->setId(null);
 
         $this->mapper->persist($entity);
