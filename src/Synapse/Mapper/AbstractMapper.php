@@ -221,29 +221,12 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
-     * Rename to getSqlObject, but this method kept for backwards compatibility
-     *
-     * @return Sql
-     *
-     * @codeCoverageIgnore
-     */
-    protected function sql()
-    {
-        return $this->getSqlObject();
-    }
-
-    /**
      * Return a new Sql object with Zend Db Adapter and table name injected
      *
      * @return Sql
      */
     protected function getSqlObject()
     {
-        // For backwards compatibility, support the old unmockable way
-        if (! $this->sqlFactory) {
-            return new Sql($this->dbAdapter, $this->tableName);
-        }
-
         return $this->sqlFactory->getSqlObject(
             $this->dbAdapter,
             $this->tableName
