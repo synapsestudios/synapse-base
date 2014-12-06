@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Db\Adapter\Adapter;
 use Synapse\Db\Transaction;
+use Synapse\Mapper\SqlFactory;
 use Zend\Db\Sql\Sql;
 
 /**
