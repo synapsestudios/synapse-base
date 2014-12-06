@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Db\Adapter\Adapter;
 use Synapse\Db\Transaction;
+use Synapse\Mapper\SqlFactory;
 use Zend\Db\Sql\Sql;
 
 /**
@@ -27,6 +28,8 @@ class DbServiceProvider implements ServiceProviderInterface
         $app['db.transaction'] = $app->share(function ($app) {
             return new Transaction($app['db']);
         });
+
+        $this->registerMapperInitializer($app);
     }
 
     /**
@@ -37,5 +40,19 @@ class DbServiceProvider implements ServiceProviderInterface
     public function boot(Application $app)
     {
         // noop
+    }
+
+    /**
+     * Register an initializer that injects a SQL Factory into all AbstractMappers
+     *
+     * @param  Application $app
+     */
+    protected function registerMapperInitializer(Application $app)
+    {
+        $initializer = function ($mapper) {
+            $mapper->setSqlFactory(new SqlFactory);
+        };
+
+        $app->initializer('Synapse\Mapper\AbstractMapper', $initializer);
     }
 }
