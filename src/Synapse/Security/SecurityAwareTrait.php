@@ -31,7 +31,7 @@ trait SecurityAwareTrait
      *
      * @see TokenInterface::getUser()
      */
-    public function user()
+    public function getUser()
     {
         if (null === $token = $this->security->getToken()) {
             return null;
@@ -42,5 +42,16 @@ trait SecurityAwareTrait
         }
 
         return $user;
+    }
+
+    /**
+     * Alias for the getUser() function
+     * To be deprecated in v2.0
+     *
+     * @return mixed
+     */
+    public function user()
+    {
+        return $this->getUser();
     }
 }
