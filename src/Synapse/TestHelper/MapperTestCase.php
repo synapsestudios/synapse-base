@@ -6,12 +6,8 @@ use stdClass;
 use Synapse\Stdlib\Arr;
 use Zend\Db\Adapter\Platform\Mysql as MysqlPlatform;
 use Zend\Db\Adapter\Adapter;
-use Zend\Db\Sql\Delete;
-use Zend\Db\Sql\Insert;
-use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\SqlInterface;
-use Zend\Db\Sql\Update;
 
 /**
  * Class for testing mappers.  Currently expects that you are using Mysqli.
@@ -196,7 +192,7 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
         return $response;
     }
 
-    public function getMockSql()
+    public function getMockSql($table = null)
     {
         $mockSql = $this->getMockBuilder('Zend\Db\Sql\Sql')
             ->setMethods(['select', 'insert', 'update', 'delete', 'prepareStatementForSqlObject'])
@@ -207,65 +203,21 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
             ->method('prepareStatementForSqlObject')
             ->will($this->returnValue($this->getMockStatement()));
 
-        $mockSql->expects($this->any())
-            ->method('select')
-            ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: (
-                    $this->mapper ?
-                    $this->mapper->getTableName() :
-                    $this->fallbackTableName
-                );
-                $select = new Select($table);
+        $defaultTable = $this->mapper ? $this->mapper->getTableName() : $this->fallbackTableName;
+        $table        = $table ?: $defaultTable;
 
-                $this->queries[] = $select;
+        foreach (['select', 'insert', 'update', 'delete'] as $method) {
+            $mockSql->expects($this->any())
+                ->method($method)
+                ->will($this->returnCallback(function () use ($mockSql, $table, $method) {
+                    $class = '\Zend\Db\Sql\\'.ucfirst($method);
+                    $query = new $class($table);
 
-                return $select;
-            }));
+                    $this->queries[] = $query;
 
-        $mockSql->expects($this->any())
-            ->method('insert')
-            ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: (
-                    $this->mapper ?
-                    $this->mapper->getTableName() :
-                    $this->fallbackTableName
-                );
-                $insert = new Insert($table);
-
-                $this->queries[] = $insert;
-
-                return $insert;
-            }));
-
-        $mockSql->expects($this->any())
-            ->method('update')
-            ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: (
-                    $this->mapper ?
-                    $this->mapper->getTableName() :
-                    $this->fallbackTableName
-                );
-                $update = new Update($table);
-
-                $this->queries[] = $update;
-
-                return $update;
-            }));
-
-        $mockSql->expects($this->any())
-            ->method('delete')
-            ->will($this->returnCallback(function () use ($mockSql) {
-                $table = $mockSql->getTable() ?: (
-                    $this->mapper ?
-                    $this->mapper->getTableName() :
-                    $this->fallbackTableName
-                );
-                $delete = new Delete($table);
-
-                $this->queries[] = $delete;
-
-                return $delete;
-            }));
+                    return $query;
+                }));
+        }
 
         return $mockSql;
     }
@@ -278,8 +230,8 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
             ->method('getSqlObject')
             // Using returnCallback, because otherwise a reference to the same object will
             // be returned every time.
-            ->will($this->returnCallback(function () {
-                return $this->getMockSql();
+            ->will($this->returnCallback(function ($adapter, $table = null) {
+                return $this->getMockSql($table);
             }));
     }
 

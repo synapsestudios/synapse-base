@@ -103,4 +103,11 @@ class AbstractMapperTest extends MapperTestCase
             $hydrator2->getValue($hydrator2)
         );
     }
+
+    public function testQueryingAlternateTableIsMockedCorrectlyAsInZendDb()
+    {
+        $this->mapper->queryAlternateTable();
+
+        $this->assertRegExpOnSqlString('/SELECT `other_table`.* FROM `other_table` WHERE `foo` = \'bar\'/');
+    }
 }
