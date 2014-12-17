@@ -37,10 +37,10 @@ class OAuth2OptionalListener extends OAuth2Listener
 
             return;
         } catch (AuthenticationException $failed) {
-            $event->setResponse($this->getForbiddenReponse());
+            $event->setResponse($this->getInvalidTokenReponse());
             return;
         }
 
-        $event->setResponse($this->getForbiddenReponse());
+        $event->setResponse($this->getInvalidTokenReponse());
     }
 }
