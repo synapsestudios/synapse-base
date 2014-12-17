@@ -13,6 +13,7 @@ use Synapse\Log\LoggerAwareTrait;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\PreparableSqlInterface;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Zend\Stdlib\Hydrator\ArraySerializable;
 
@@ -218,6 +219,16 @@ abstract class AbstractMapper implements LoggerAwareInterface
             ->toEntityArray();
 
         return new EntityIterator($entities);
+    }
+
+    protected function executeAndGetResultsAsArray(PreparableSqlInterface $query)
+    {
+        $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
+        $resultSet = new ResultSet();
+
+        $resultSet->initialize($statement->execute());
+
+        return $resultSet->toArray();
     }
 
     /**
