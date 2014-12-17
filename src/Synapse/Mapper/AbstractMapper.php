@@ -158,17 +158,20 @@ abstract class AbstractMapper implements LoggerAwareInterface
         return $this;
     }
 
+    /**
+     * Set up the hydrator and prototype of this mapper if not yet set
+     */
     protected function initialize()
     {
         if ($this->initialized) {
             return;
         }
 
-        if (!is_object($this->prototype)) {
+        if (! is_object($this->prototype)) {
             $this->prototype = new ArrayObject;
         }
 
-        if (!$this->hydrator instanceof HydratorInterface) {
+        if (! $this->hydrator instanceof HydratorInterface) {
             $this->hydrator = new ArraySerializable;
         }
 
@@ -221,6 +224,12 @@ abstract class AbstractMapper implements LoggerAwareInterface
         return new EntityIterator($entities);
     }
 
+    /**
+     * Execute the given query and return the result as an array of arrays
+     *
+     * @param  PreparableSqlInterface $query Query to be executed
+     * @return array
+     */
     protected function executeAndGetResultsAsArray(PreparableSqlInterface $query)
     {
         $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
