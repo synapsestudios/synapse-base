@@ -134,4 +134,14 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
             422
         );
     }
+
+    /**
+     * Create and return a 204 response with an empty string as the body
+     *
+     * @return Response
+     */
+    protected function create204Response()
+    {
+        return $this->createSimpleResponse(204, '');
+    }
 }
