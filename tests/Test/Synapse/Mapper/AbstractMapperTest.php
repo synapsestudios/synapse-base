@@ -110,4 +110,19 @@ class AbstractMapperTest extends MapperTestCase
 
         $this->assertRegExpOnSqlString('/SELECT `other_table`.* FROM `other_table` WHERE `foo` = \'bar\'/');
     }
+
+    public function testExecuteAndGetResultsAsArrayReturnsResultsAsArray()
+    {
+        $mockResults = [
+            ['foo' => 'bar'],
+            ['foo' => 'baz'],
+        ];
+
+        $this->setMockResults($mockResults);
+
+        $result = $this->mapper->performQueryAndGetResultsAsArray();
+
+        $this->assertInternalType('array', $result);
+        $this->assertEquals($mockResults, $result);
+    }
 }

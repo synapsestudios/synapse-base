@@ -28,4 +28,13 @@ class Mapper extends MapperNamespace\AbstractMapper
         $sql->select()
             ->where(['foo' => 'bar']);
     }
+
+    public function performQueryAndGetResultsAsArray()
+    {
+        $query = $this->getSqlObject()
+            ->select()
+            ->where(['foo' => 'bar']);
+
+        return $this->executeAndGetResultsAsArray($query);
+    }
 }
