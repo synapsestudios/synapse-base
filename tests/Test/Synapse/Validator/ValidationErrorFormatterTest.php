@@ -42,6 +42,16 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
         return new ConstraintViolationList($violations);
     }
 
+    public function assertInputYieldsOutput(array $violations, array $expectedResponse)
+    {
+        $violationList = $this->createConstraintViolationList($violations);
+
+        $this->assertEquals(
+            $expectedResponse,
+            $this->formatter->groupViolationsByField($violationList)
+        );
+    }
+
     public function testGroupViolationsByFieldFormatsErrorsCorrectly()
     {
         $violations = [
@@ -49,17 +59,12 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
             ['[baz]', 'qux'],
         ];
 
-        $violationList = $this->createConstraintViolationList($violations);
-
         $expectedResponse = [
             'foo' => ['bar'],
             'baz' => ['qux'],
         ];
 
-        $this->assertEquals(
-            $expectedResponse,
-            $this->formatter->groupViolationsByField($violationList)
-        );
+        $this->assertInputYieldsOutput($violations, $expectedResponse);
     }
 
     public function testGroupViolationsByFieldFormatsNestedErrorsCorrectly()
@@ -72,8 +77,6 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
             ['[foo][2][account_name]', 'DONE'],
             ['[foo][2][account_name]', 'DONE2'],
         ];
-
-        $violationList = $this->createConstraintViolationList($violations);
 
         $expectedResponse = [
             'foo' => [
@@ -90,13 +93,10 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->assertEquals(
-            $expectedResponse,
-            $this->formatter->groupViolationsByField($violationList)
-        );
+        $this->assertInputYieldsOutput($violations, $expectedResponse);
     }
 
-    public function testValidationErrorFormatterFormatsMultipleErrorsForSameFieldCorrectly()
+    public function testGroupViolationsByFieldFormatsMultipleErrorsForSameFieldCorrectly()
     {
         $violations = [
             ['[foo]', 'baz'],
@@ -105,8 +105,6 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
             ['[one][two]', 'other'],
         ];
 
-        $violationList = $this->createConstraintViolationList($violations);
-
         $expectedResponse = [
             'foo' => ['baz', 'bar'],
             'one' => [
@@ -114,9 +112,58 @@ class ValidationErrorFormatterTest extends PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->assertEquals(
-            $expectedResponse,
-            $this->formatter->groupViolationsByField($violationList)
-        );
+        $this->assertInputYieldsOutput($violations, $expectedResponse);
+    }
+
+    public function testGroupViolationsByFieldFormatsArraysCorrectly()
+    {
+        $violations = [
+            ['[1][foo]', 'baz'],
+            ['[1][foo]', 'bar'],
+            ['[1][one][two]', 'qux'],
+            ['[2][one][two]', 'other'],
+        ];
+
+        $expectedResponse = [
+            null,
+            [
+                'foo' => ['baz', 'bar'],
+                'one' => ['two' => ['qux']],
+            ],
+            [
+                'one' => ['two' => ['other']]
+            ]
+        ];
+
+        $this->assertInputYieldsOutput($violations, $expectedResponse);
+    }
+
+    public function testGroupViolationsDoesNotBlowUpWhenNonsensicalViolationPathsExist()
+    {
+        $violations = [
+            ['[foo]', 'root-level'],
+            ['[foo][bar]', 'nested'],
+            ['[foo][bar]', 'also-nested'],
+            ['[foo][baz]', 'lone'],
+            ['[foo][1]', 'numerical'],
+            ['[foo][1][baz]', 'inside-numerical'],
+        ];
+
+        $expectedResponse = [
+            'foo' => [
+                'bar' => [
+                    'nested',
+                    'also-nested',
+                ],
+                'baz' => ['lone'],
+                '0'   => 'root-level',
+                '1'   => [
+                    'numerical',
+                    'baz' => ['inside-numerical']
+                ]
+            ]
+        ];
+
+        $this->assertInputYieldsOutput($violations, $expectedResponse);
     }
 }
