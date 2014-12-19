@@ -72,7 +72,7 @@ class ValidationErrorFormatter
         while (count($path) > 0) {
             $currentField = array_shift($path);
 
-            if (! array_key_exists($currentField, $currentPointer)) {
+            if (! array_key_exists($currentField, $currentPointer) or ! is_array($currentPointer[$currentField])) {
                 $currentPointer[$currentField] = [];
             }
 
@@ -88,11 +88,6 @@ class ValidationErrorFormatter
             }
 
             $currentPointer = &$currentPointer[$currentField];
-        }
-
-        // Container for current violation has been found; ensure it contains an array so multiple messages can be held
-        if (! is_array($currentPointer)) {
-            $currentPointer = [];
         }
 
         $currentPointer[] = $violation->getMessage();
