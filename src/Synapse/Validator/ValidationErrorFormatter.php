@@ -2,6 +2,9 @@
 
 namespace Synapse\Validator;
 
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+
 class ValidationErrorFormatter
 {
     /**
