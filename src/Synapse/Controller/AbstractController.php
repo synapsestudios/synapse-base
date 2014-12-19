@@ -2,11 +2,13 @@
 
 namespace Synapse\Controller;
 
-use Synapse\Application\UrlGeneratorAwareInterface;
+use Synapse\Application\UrlGeneratorAwareInterface as UrlGenInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
-use Synapse\Debug\DebugModeAwareInterface;
+use Synapse\Debug\DebugModeAwareInterface as DebugInterface;
 use Synapse\Debug\DebugModeAwareTrait;
-use Synapse\Log\LoggerAwareInterface;
+use Synapse\Validator\ValidationErrorFormatterAwareInterface as ValidationInterface;
+use Synapse\Validator\ValidationErrorFormatterAwareTrait;
+use Synapse\Log\LoggerAwareInterface as LoggerInterface;
 use Synapse\Log\LoggerAwareTrait;
 use Synapse\Response\EntityResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,9 +19,9 @@ use Zend\Stdlib\ArraySerializableInterface;
 /**
  * Abstract controller defining universal helper methods
  */
-abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerAwareInterface, DebugModeAwareInterface
+abstract class AbstractController implements UrlGenInterface, LoggerInterface, DebugInterface, ValidationInterface
 {
-    use UrlGeneratorAwareTrait, LoggerAwareTrait, DebugModeAwareTrait;
+    use UrlGeneratorAwareTrait, LoggerAwareTrait, DebugModeAwareTrait, ValidationErrorFormatterAwareTrait;
 
     /**
      * Create and return a 404 response object
@@ -98,36 +100,12 @@ abstract class AbstractController implements UrlGeneratorAwareInterface, LoggerA
     /**
      * Create a response for constraint violations
      *
-     * Response has a list of errors that looks like this:
-     * {
-     *     "errors" : {
-     *         "current_password" : [
-     *             "This field is expected"
-     *         ],
-     *         "field_2" : [
-     *             "This field cannot be the same as current_password",
-     *             "This field must be less than 5 characters long"
-     *         ]
-     *     }
-     * }
-     *
      * @param  ConstraintViolationListInterface $violationList
      * @return JsonResponse
      */
     protected function createConstraintViolationResponse(ConstraintViolationListInterface $violationList)
     {
-        $errors = [];
-
-        foreach ($violationList as $violation) {
-            $field = $violation->getPropertyPath();
-            $field = str_replace(
-                ['[', ']'],
-                '',
-                $field
-            );
-
-            $errors[$field][] = $violation->getMessage();
-        }
+        $errors = $this->validationErrorFormatter->groupViolationsByField($violationList);
 
         return $this->createJsonResponse(
             ['errors' => $errors],
