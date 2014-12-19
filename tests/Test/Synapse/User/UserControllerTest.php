@@ -33,6 +33,8 @@ class UserControllerTest extends ControllerTestCase
             ->setUserRegistrationValidator($this->mockUserRegistrationValidator)
             ->setUrlGenerator($this->mockUrlGenerator)
             ->setSecurityContext($this->mockSecurityContext);
+
+        $this->injectMockValidationErrorFormatter($this->userController);
     }
 
     public function setUpExistingUser()
