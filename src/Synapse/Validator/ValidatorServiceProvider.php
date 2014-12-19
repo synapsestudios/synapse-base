@@ -5,7 +5,7 @@ namespace Synapse\Validator;
 use Silex\ServiceProviderInterface;
 use Silex\Application;
 
-class ValidatorServiceProvider extends ServiceProviderInterface
+class ValidatorServiceProvider implements ServiceProviderInterface
 {
     /**
      * {@inheritdoc}
