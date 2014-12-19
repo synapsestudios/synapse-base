@@ -67,7 +67,7 @@ class LogServiceProvider implements ServiceProviderInterface
             return new Logger('main', $handlers);
         });
 
-        $app->initializer('Synapse\\Log\\LoggerAwareInterface', function ($object) use ($app) {
+        $app->initializer('Synapse\\Log\\LoggerAwareInterface', function ($object, $app) {
             $object->setLogger($app['log']);
             return $object;
         });

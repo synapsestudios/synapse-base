@@ -61,7 +61,7 @@ class Application extends SilexApp
     {
         foreach ($this->initializers as $initializer) {
             if ($object instanceof $initializer['class']) {
-                $initializer['callable']($object);
+                $initializer['callable']($object, $this);
             }
         }
 
@@ -70,8 +70,10 @@ class Application extends SilexApp
 
     /**
      * Add an initializer
-     * @param  string   $class    the initializer will apply to objects of this class
-     * @param  callable $callable the callable to run on objects
+     *
+     * @param  string   $class    The initializer will apply to objects of this class or interface
+     * @param  callable $callable The callable to run on objects;
+     *                            It is passed (1) the object to initialize and (2) the app
      * @return object
      */
     public function initializer($class, callable $callable)

@@ -49,7 +49,7 @@ class DbServiceProvider implements ServiceProviderInterface
      */
     protected function registerMapperInitializer(Application $app)
     {
-        $initializer = function ($mapper) {
+        $initializer = function ($mapper, $app) {
             $mapper->setSqlFactory(new SqlFactory);
         };
 
