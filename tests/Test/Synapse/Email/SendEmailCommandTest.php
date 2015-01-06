@@ -3,7 +3,6 @@
 namespace Test\Synapse\Email;
 
 use Synapse\TestHelper\CommandTestCase;
-use Synapse\Email\SendEmailCommandProxy;
 use Synapse\Email\SendEmailCommand;
 use Synapse\Install\GenerateInstallCommand;
 use Synapse\Email\EmailEntity;
@@ -14,8 +13,7 @@ class SendEmailCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->command = new SendEmailCommandProxy('email:send');
-        $this->command->setApp($this->getMockApp());
+        $this->command = new SendEmailCommand('email:send');
 
         // Create mocks
         $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')
@@ -28,21 +26,10 @@ class SendEmailCommandTest extends CommandTestCase
         $this->mockOutputInterface = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
     }
 
-    public function getMockApp()
-    {
-        return $this->getMockBuilder('Synapse\Application')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
     public function withConfiguredSendObject()
     {
-        $this->command->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailMapper($this->mockEmailMapper);
-            $command->setEmailSender($this->mockEmailSender);
-            return $command;
-        });
+        $this->command->setEmailMapper($this->mockEmailMapper);
+        $this->command->setEmailSender($this->mockEmailSender);
     }
 
     public function withEmailNotFound()
@@ -101,11 +88,8 @@ class SendEmailCommandTest extends CommandTestCase
      */
     public function testThrowsExceptionIfEmailSenderNotSet()
     {
-        $this->command->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailMapper($this->mockEmailMapper);
-            return $command;
-        });
+        $command = new SendEmailCommand;
+        $command->setEmailMapper($this->mockEmailMapper);
 
         $this->executeCommand();
     }
@@ -115,11 +99,8 @@ class SendEmailCommandTest extends CommandTestCase
      */
     public function testThrowsExceptionIfEmailMapperNotSet()
     {
-        $this->command->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailSender($this->mockEmailSender);
-            return $command;
-        });
+        $command = new SendEmailCommand;
+        $command->setEmailSender($this->mockEmailSender);
 
         $this->executeCommand();
     }
@@ -155,29 +136,5 @@ class SendEmailCommandTest extends CommandTestCase
         $returnValue = $this->executeCommand(['id' => 'emailId']);
 
         $this->assertEquals(500, $returnValue);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testProxyThrowsExceptionIfFactoryDoesNotReturnCommand()
-    {
-        $this->command->setFactory(function () {
-            return null;
-        });
-
-        $this->executeCommand();
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testProxyThrowsExceptionIfFactoryReturnsIncorrectInstance()
-    {
-        $this->command->setFactory(function () {
-            return new GenerateInstallCommand;
-        });
-
-        $this->executeCommand();
     }
 }
