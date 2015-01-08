@@ -8,10 +8,14 @@ use stdClass;
 
 class RunInstallCommandTest extends PHPUnit_Framework_TestCase
 {
+    const TABLE = 'table';
+    const VIEW  = 'view';
 
     public function setUp()
     {
         $this->captured = new stdClass();
+        $this->captured->droppedTables = [];
+        $this->captured->droppedViews = [];
 
         $this->command = new RunInstallCommand('install:run');
 
@@ -47,41 +51,89 @@ class RunInstallCommandTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
     }
 
-    public function capturingTableDrop()
+    public function captureDrops($query)
     {
-        $this->captured->tableWasDropped = false;
+        if (preg_match('/DROP TABLE (.+)/', $query, $matches)) {
+            $this->captured->droppedTables[] = $matches[1];
+        } else if (preg_match('/DROP VIEW (.+)/', $query, $matches)) {
+            $this->captured->droppedViews[] = $matches[1];
+        }
+    }
+
+    public function withTablesExistingButNotViews()
+    {
         $this->mockDbInterface->expects($this->any())
             ->method('query')
             ->will($this->returnCallback(function ($query) {
-                if ($query === 'SHOW TABLES') {
-                    $tableArray[0][0] = 0;
-                    return $tableArray;
+                $this->captureDrops($query);
+
+                if ($query === 'SHOW TABLES' || $query === 'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "BASE_TABLE"') {
+                    return [[self::TABLE]];
                 }
-                if (preg_match('/DROP TABLE/',$query)) {
-                    $this->captured->tableWasDropped = true;
+                if ($query === 'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "VIEW"') {
+                    return [[]];
+                }
+            }));
+    }
+
+    public function withViewsExistingInAdditionToTables()
+    {
+        $this->mockDbInterface->expects($this->any())
+            ->method('query')
+            ->will($this->returnCallback(function ($query) {
+                $this->captureDrops($query);
+
+                if ($query === 'SHOW TABLES') {
+                    return [[self::VIEW, self::TABLE]];
+                } else if ($query === 'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "BASE_TABLE"') {
+                    return [[self::TABLE]];
+                } else if ($query === 'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "VIEW"') {
+                    return [[self::VIEW]];
                 }
             }));
     }
 
     public function testExecuteDoesNotDropProductionTables()
     {
-        $this->capturingTableDrop();
         $this->command->setAppEnv('production');
         $this->withDropTablesOptionIncluded();
+        $this->withTablesExistingButNotViews();
 
         $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
 
-        $this->assertFalse($this->captured->tableWasDropped);
+        $this->assertEquals([], $this->captured->droppedTables);
+    }
+
+    public function testExecuteDoesNotDropProductionViews()
+    {
+        $this->command->setAppEnv('production');
+        $this->withDropTablesOptionIncluded();
+        $this->withViewsExistingInAdditionToTables();
+
+        $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
+
+        $this->assertEquals([], $this->captured->droppedViews);
     }
 
     public function testExecuteDoesDropDevelopmentTables()
     {
-        $this->capturingTableDrop();
         $this->command->setAppEnv('development');
         $this->withDropTablesOptionIncluded();
+        $this->withTablesExistingButNotViews();
 
         $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
 
-        $this->assertTrue($this->captured->tableWasDropped);
+        $this->assertEquals([self::TABLE], $this->captured->droppedTables);
+    }
+
+    public function testExecuteDoesDropDevelopmentViews()
+    {
+        $this->command->setAppEnv('development');
+        $this->withDropTablesOptionIncluded();
+        $this->withViewsExistingInAdditionToTables();
+
+        $result = $this->command->execute($this->mockInputInterface, $this->mockOutputInterface);
+
+        $this->assertEquals([self::VIEW], $this->captured->droppedViews);
     }
 }
