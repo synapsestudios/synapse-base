@@ -4,6 +4,7 @@ namespace Synapse\Email;
 
 use Synapse\Resque\Resque;
 use Synapse\Stdlib\Arr;
+use Synapse\Mapper\AbstractMapper;
 
 /**
  * General purpose service for handling email entities
@@ -28,7 +29,7 @@ class EmailService
     /**
      * @param EmailMapper $mapper
      */
-    public function setEmailMapper(EmailMapper $mapper)
+    public function setEmailMapper(AbstractMapper $mapper)
     {
         $this->emailMapper = $mapper;
         return $this;
@@ -69,7 +70,7 @@ class EmailService
             'sender_name'  => Arr::path($this->emailConfig, 'defaults.sender.name'),
         ];
 
-        $email = new EmailEntity;
+        $email = $this->emailMapper->getPrototype();
 
         $email = $email->exchangeArray(
             array_merge($defaults, $data)

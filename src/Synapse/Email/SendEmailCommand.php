@@ -6,6 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Synapse\Mapper\AbstractMapper;
 
 use LogicException;
 use OutOfBoundsException;
@@ -27,7 +28,7 @@ class SendEmailCommand extends Command
      *
      * @param EmailMapper $emailMapper
      */
-    public function setEmailMapper(EmailMapper $emailMapper)
+    public function setEmailMapper(AbstractMapper $emailMapper)
     {
         $this->emailMapper = $emailMapper;
     }
