@@ -5,6 +5,7 @@ namespace Synapse\Email;
 use Synapse\Resque\Resque;
 use Synapse\Stdlib\Arr;
 use Synapse\Mapper\AbstractMapper;
+use Synapse\Entity\AbstractEntity;
 
 /**
  * General purpose service for handling email entities
@@ -70,7 +71,7 @@ class EmailService
             'sender_name'  => Arr::path($this->emailConfig, 'defaults.sender.name'),
         ];
 
-        $email = new EmailEntity;
+        $email = $this->emailMapper->getPrototype();
 
         $email = $email->exchangeArray(
             array_merge($defaults, $data)
@@ -87,7 +88,7 @@ class EmailService
      * @param  EmailEntity $email
      * @return string
      */
-    public function enqueueSendEmailJob(EmailEntity $email)
+    public function enqueueSendEmailJob(AbstractEntity $email)
     {
         return $this->resque->enqueue(
             'email',
