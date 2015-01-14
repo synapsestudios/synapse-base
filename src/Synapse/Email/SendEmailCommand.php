@@ -6,7 +6,6 @@ use Synapse\Command\CommandInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Synapse\Mapper\AbstractMapper;
-use Synapse\Entity\AbstractEntity;
 
 use LogicException;
 use OutOfBoundsException;
