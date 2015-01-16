@@ -7,6 +7,7 @@ use Silex\ServiceProviderInterface;
 use Monolog\Logger;
 use Monolog\Handler\LogglyHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\ErrorHandler as MonologErrorHandler;
 use Synapse\Log\Handler\RollbarHandler;
@@ -39,30 +40,7 @@ class LogServiceProvider implements ServiceProviderInterface
     {
         $this->config = $app['config']->load('log');
 
-        $handlers = [];
-
-        // File Handler
-        $file = Arr::path($this->config, 'file.path');
-
-        if ($file) {
-            $handlers[] = $this->fileHandler($file);
-            $handlers[] = $this->fileExceptionHandler($file);
-        }
-
-        // Loggly Handler
-        $enableLoggly = Arr::path($this->config, 'loggly.enable');
-
-        if ($enableLoggly) {
-            $handlers[] = $this->logglyHandler();
-        }
-
-        // Rollbar Handler
-        $enableRollbar = Arr::path($this->config, 'rollbar.enable');
-
-        if ($enableRollbar) {
-            $handlers[] = $this->rollbarHandler($app['environment']);
-        }
-
+        $handlers = $this->getHandlers();
         $app['log'] = $app->share(function ($app) use ($handlers) {
             return new Logger('main', $handlers);
         });
@@ -74,7 +52,7 @@ class LogServiceProvider implements ServiceProviderInterface
     }
 
     /**
-     * Perform extra chores on boot (none needed here)
+     * Perform extra chores on boot
      *
      * @param  Application $app
      */
@@ -88,12 +66,65 @@ class LogServiceProvider implements ServiceProviderInterface
     }
 
     /**
+     * Get an array of logging handlers to use
+     *
+     * @return  array
+     */
+    protected function getHandlers()
+    {
+        $handlers = [];
+
+        // File Handler
+        $file = Arr::path($this->config, 'file.path');
+
+        if ($file) {
+            $handlers[] = $this->getFileHandler($file);
+            $handlers[] = $this->getFileExceptionHandler($file);
+        }
+
+        // Loggly Handler
+        $enableLoggly = Arr::path($this->config, 'loggly.enable');
+
+        if ($enableLoggly) {
+            $handlers[] = $this->getLogglyHandler();
+        }
+
+        // Rollbar Handler
+        $enableRollbar = Arr::path($this->config, 'rollbar.enable');
+
+        if ($enableRollbar) {
+            $handlers[] = $this->getRollbarHandler($app['environment']);
+        }
+
+        // Syslog Handler
+        $syslogIdent = Arr::path($this->config, 'syslog.ident');
+
+        if ($syslogIdent) {
+            $handlers[] = $this->getSyslogHandler($syslogIdent);
+        }
+
+        return $handlers;
+    }
+
+    /**
+     * Create and return a syslog handler
+     *
+     * @param  string $ident
+     * @return SyslogHandler
+     */
+    protected function getSyslogHandler($ident)
+    {
+        $handler = new SyslogHandler($ident, LOG_LOCAL0);
+        return $handler;
+    }
+
+    /**
      * Log handler for files
      *
      * @param  string      $file Path of log file
      * @return FileHandler
      */
-    protected function fileHandler($file)
+    protected function getFileHandler($file)
     {
         $format = '[%datetime%] %channel%.%level_name%: %message% %context% %extra%'.PHP_EOL;
 
@@ -109,7 +140,7 @@ class LogServiceProvider implements ServiceProviderInterface
      * @param  string      $file Path of log file
      * @return FileHandler
      */
-    protected function fileExceptionHandler($file)
+    protected function getFileExceptionHandler($file)
     {
         $format = '%context.stacktrace%'.PHP_EOL;
 
@@ -124,7 +155,7 @@ class LogServiceProvider implements ServiceProviderInterface
      *
      * @return LogglyHandler
      */
-    protected function logglyHandler()
+    protected function getLogglyHandler()
     {
         $token = Arr::path($this->config, 'loggly.token');
 
@@ -140,7 +171,7 @@ class LogServiceProvider implements ServiceProviderInterface
      *
      * @return RollbarHandler
      */
-    protected function rollbarHandler($environment)
+    protected function getRollbarHandler($environment)
     {
         $rollbarConfig = Arr::get($this->config, 'rollbar', []);
 
