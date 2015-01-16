@@ -39,6 +39,38 @@ class LogServiceProvider implements ServiceProviderInterface
     {
         $this->config = $app['config']->load('log');
 
+        $handlers = $this->getHandlers();
+        $app['log'] = $app->share(function ($app) use ($handlers) {
+            return new Logger('main', $handlers);
+        });
+
+        $app->initializer('Synapse\\Log\\LoggerAwareInterface', function ($object, $app) {
+            $object->setLogger($app['log']);
+            return $object;
+        });
+    }
+
+    /**
+     * Perform extra chores on boot (none needed here)
+     *
+     * @param  Application $app
+     */
+    public function boot(Application $app)
+    {
+        // Register Monolog error handler for fatal errors here because Symfony's handler overrides it
+        $monologErrorHandler = new MonologErrorHandler($app['log']);
+
+        $monologErrorHandler->registerErrorHandler();
+        $monologErrorHandler->registerFatalHandler();
+    }
+
+    /**
+     * Get an array of logging handlers to use
+     *
+     * @return  array
+     */
+    protected function getHandlers()
+    {
         $handlers = [];
 
         // File Handler
@@ -62,29 +94,6 @@ class LogServiceProvider implements ServiceProviderInterface
         if ($enableRollbar) {
             $handlers[] = $this->rollbarHandler($app['environment']);
         }
-
-        $app['log'] = $app->share(function ($app) use ($handlers) {
-            return new Logger('main', $handlers);
-        });
-
-        $app->initializer('Synapse\\Log\\LoggerAwareInterface', function ($object, $app) {
-            $object->setLogger($app['log']);
-            return $object;
-        });
-    }
-
-    /**
-     * Perform extra chores on boot (none needed here)
-     *
-     * @param  Application $app
-     */
-    public function boot(Application $app)
-    {
-        // Register Monolog error handler for fatal errors here because Symfony's handler overrides it
-        $monologErrorHandler = new MonologErrorHandler($app['log']);
-
-        $monologErrorHandler->registerErrorHandler();
-        $monologErrorHandler->registerFatalHandler();
     }
 
     /**
