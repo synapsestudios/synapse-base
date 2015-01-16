@@ -7,6 +7,7 @@ use Silex\ServiceProviderInterface;
 use Monolog\Logger;
 use Monolog\Handler\LogglyHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogHandler;
 use Monolog\Formatter\LineFormatter;
 use Monolog\ErrorHandler as MonologErrorHandler;
 use Synapse\Log\Handler\RollbarHandler;
@@ -95,7 +96,20 @@ class LogServiceProvider implements ServiceProviderInterface
             $handlers[] = $this->rollbarHandler($app['environment']);
         }
 
+        // Syslog Handler
+        $syslogIdent = Arr::path($this->config, 'syslog.ident');
+
+        if ($syslogIdent) {
+            $handlers[] = $this->syslogHandler($syslogIdent);
+        }
+
         return $handlers;
+    }
+
+    protected function syslogHandler($ident)
+    {
+        $handler = new SyslogHandler($ident, LOG_LOCAL0);
+        return $handler;
     }
 
     /**
