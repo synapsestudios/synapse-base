@@ -94,6 +94,8 @@ class LogServiceProvider implements ServiceProviderInterface
         if ($enableRollbar) {
             $handlers[] = $this->rollbarHandler($app['environment']);
         }
+
+        return $handlers;
     }
 
     /**
