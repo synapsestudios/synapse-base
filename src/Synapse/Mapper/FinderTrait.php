@@ -13,6 +13,9 @@ use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
 use Zend\Db\Sql\Predicate\Operator;
 use Zend\Db\Sql\Predicate\In;
+use Zend\Db\Sql\Predicate\NotIn;
+use Zend\Db\Sql\Predicate\IsNull;
+use Zend\Db\Sql\Predicate\IsNotNull;
 
 /**
  * Use this trait to add find functionality to AbstractMappers.
@@ -280,6 +283,17 @@ trait FinderTrait
                     case 'IN':
                         $predicate = new In($where[0], $where[2]);
                         break;
+                    case 'NOT IN':
+                        $predicate = new NotIn($where[0], $where[2]);
+                        break;
+                    case 'IS':
+                        $predicate = new IsNull($where[0]);
+                        break;
+                    case 'IS NOT':
+                        $predicate = new IsNotNull($where[0]);
+                        break;
+                    default:
+                        throw new LogicException(sprintf('Invalid operator "%s"', $operator));
                 }
 
                 $query->where($predicate);

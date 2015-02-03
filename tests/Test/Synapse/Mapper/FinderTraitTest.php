@@ -341,6 +341,51 @@ class FinderTraitTest extends MapperTestCase
         $this->assertRegExpOnSqlString($regexp);
     }
 
+    public function testFindAllByFormsNotInWhereClausesCorrectly()
+    {
+        $inArray = ['bar', 'baz', 'qux'];
+
+        $this->mapper->findAllBy([
+            ['foo', 'NOT IN', $inArray]
+        ]);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` NOT IN \(\'bar\', \'baz\', \'qux\'\)/');
+    }
+
+    public function testFindAllByFormsIsNullClausesCorrectly()
+    {
+        $this->mapper->findAllBy([
+            ['foo', 'IS', 'NULL']
+        ]);
+
+        $regexp = '/WHERE `foo` IS NULL/';
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->mapper->findAllBy([
+            ['foo', 'IS', null]
+        ]);
+
+        $this->assertRegExpOnSqlString($regexp, 1);
+    }
+
+    public function testFindAllByFormsIsNotNullClausesCorrectly()
+    {
+        $this->mapper->findAllBy([
+            ['foo', 'IS NOT', 'NULL']
+        ]);
+
+        $regexp = '/WHERE `foo` IS NOT NULL/';
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->mapper->findAllBy([
+            ['foo', 'IS NOT', null]
+        ]);
+
+        $this->assertRegExpOnSqlString($regexp, 1);
+    }
+
     /**
      * @expectedException LogicException
      */
