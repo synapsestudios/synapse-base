@@ -228,6 +228,8 @@ trait FinderTrait
     {
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
+                $leftOpRightSyntax = true;
+
                 $operator = $where[1];
 
                 switch ($operator)
@@ -293,13 +295,18 @@ trait FinderTrait
                         $predicate = new IsNotNull($where[0]);
                         break;
                     default:
-                        throw new LogicException(sprintf('Invalid operator "%s"', $operator));
+                        $leftOpRightSyntax = false;
+                        break;
                 }
 
-                $query->where($predicate);
+                if ($leftOpRightSyntax === false) {
+                    $predicate = [$key => $where];
+                }
             } else {
-                $query->where([$key => $where]);
+                $predicate = [$key => $where];
             }
+
+            $query->where($predicate);
         }
 
         return $query;
