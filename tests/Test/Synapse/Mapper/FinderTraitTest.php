@@ -386,6 +386,15 @@ class FinderTraitTest extends MapperTestCase
         $this->assertRegExpOnSqlString($regexp, 1);
     }
 
+    public function testFindAllByFormsInClausesWith3ItemsCorrectly()
+    {
+        $this->mapper->findAllBy([
+            'foo' => [1, 2, 3]
+        ]);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` IN \(\'1\', \'2\', \'3\'\)/');
+    }
+
     /**
      * @expectedException LogicException
      */
