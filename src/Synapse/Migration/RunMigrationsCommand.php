@@ -50,14 +50,25 @@ class RunMigrationsCommand extends AbstractDatabaseCommand
             return strcmp($a->getTimestamp(), $b->getTimestamp());
         });
 
-        $count = 0;
+        $count     = 0;
+        $totalTime = 0;
         foreach ($migrations as $migration) {
-            $migration->execute($this->db);
-
             $output->writeln(sprintf(
-                '  * DONE *  %s (%s)',
+                '  * STARTING *  %s (%s)',
                 $migration->getDescription(),
                 $migration->getTimestamp()
+            ));
+            $start = microtime(true);
+
+            $migration->execute($this->db);
+
+            $time = microtime(true) - $start;
+            $totalTime += $time;
+            $output->writeln(sprintf(
+                '  * DONE *  %s (%s) - Took %.2fs',
+                $migration->getDescription(),
+                $migration->getTimestamp(),
+                $time
             ));
 
             $this->recordMigration($migration);
@@ -68,7 +79,7 @@ class RunMigrationsCommand extends AbstractDatabaseCommand
         if ($count === 0) {
             $message = '  No new migrations to run';
         } else {
-            $message = sprintf('  Executed %d migrations', $count);
+            $message = sprintf('  Executed %d migrations in %.2fs', $count, $totalTime);
         }
 
         $output->writeln([$message, ''], true);
