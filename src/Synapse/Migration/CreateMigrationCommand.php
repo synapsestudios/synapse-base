@@ -57,7 +57,7 @@ class CreateMigrationCommand implements CommandInterface
     {
         $description = $input->getArgument('description');
         $time        = date('YmdHis');
-        $classname   = $this->classname($time, $description);
+        $classname   = $this->generateClassName($time, $description);
         $filepath    = APPDIR.'/src/'.$this->namespaceToPath().$classname.'.php';
 
         if (! is_dir(dirname($filepath))) {
@@ -81,24 +81,24 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * Get the name of the new migration class
      *
-     * Converts description to camelCase and appends timestamp.
+     * Converts description to PascalCase and prepends constant string and timestamp.
      * Example:
      *     // From:
      *     Example description of a migration
      *
      *     // To:
-     *     ExampleDescriptionOfAMigration20140220001906
+     *     Migration20140220001906ExampleDescriptionOfAMigration
      *
      * @param  string $time        Timestamp
      * @param  string $description User-provided description of new migration
      * @return string
      */
-    protected function classname($time, $description)
+    protected function generateClassName($time, $description)
     {
         $description = substr(strtolower($description), 0, 30);
         $description = ucwords($description);
         $description = preg_replace('/[^a-zA-Z]+/', '', $description);
-        return $description.$time;
+        return 'Migration'.$time.$description;
     }
 
     /**
