@@ -5,7 +5,6 @@ namespace Synapse\Migration;
 use Synapse\Command\CommandInterface;
 use Synapse\View\Migration\Create as CreateMigrationView;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -19,7 +18,7 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * View for new migration files
      *
-     * @var Synapse\View\Migration\Create
+     * @var \Synapse\View\Migration\Create
      */
     protected $newMigrationView;
 
@@ -28,7 +27,6 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * Set the injected new migration view, call the parent constructor
      *
-     * @param string              $name             Name of the console command
      * @param CreateMigrationView $newMigrationView
      */
     public function __construct(CreateMigrationView $newMigrationView)
@@ -40,6 +38,8 @@ class CreateMigrationCommand implements CommandInterface
      * Set the namespace for the migrations
      *
      * @param string $namespace
+     *
+     * @return $this
      */
     public function setMigrationNamespace($namespace)
     {
