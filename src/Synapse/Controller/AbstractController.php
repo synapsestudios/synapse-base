@@ -22,7 +22,12 @@ use Zend\Stdlib\ArraySerializableInterface;
 /**
  * Abstract controller defining universal helper methods
  */
-abstract class AbstractController implements UrlGenInterface, LoggerInterface, DebugInterface, ValidationInterface
+abstract class AbstractController implements
+    UrlGenInterface,
+    LoggerInterface,
+    DebugInterface,
+    ValidationInterface,
+    TransactionAwareInterface
 {
     use UrlGeneratorAwareTrait,
         LoggerAwareTrait,
