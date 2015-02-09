@@ -7,7 +7,7 @@ interface TransactionAwareInterface
     /**
      * Set transaction object
      *
-     * @param Transation $transaction
+     * @param Transaction $transaction
      */
     public function setTransaction(Transaction $transaction);
 }
