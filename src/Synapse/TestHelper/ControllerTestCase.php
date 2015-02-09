@@ -52,4 +52,24 @@ abstract class ControllerTestCase extends AbstractSecurityAwareTestCase
             ->method('groupViolationsByField')
             ->will($this->returnValue(['foo' => 'bar']));
     }
+
+    public function injectMockTransaction(AbstractController $controller)
+    {
+        $this->mockTransaction = $this->getMockBuilder('Synapse\Db\Transaction')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $controller->setTransaction($this->mockTransaction);
+    }
+
+    /**
+     * Shortcut for calling the other inject methods in this class
+     *
+     * @param  AbstractController $controller
+     */
+    public function injectCommonDependencies(AbstractController $controller)
+    {
+        $this->injectMockTransaction($controller);
+        $this->injectMockValidationErrorFormatter($controller);
+    }
 }
