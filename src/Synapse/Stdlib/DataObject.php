@@ -155,6 +155,17 @@ abstract class DataObject implements ArraySerializableInterface
     }
 
     /**
+     * Set the given field with the given value typecasted as a float
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     */
+    protected function setAsFloat($field, $value)
+    {
+        $this->object[$field] = (float) $value;
+    }
+
+    /**
      * Set the given field with the given value typecasted as a boolean
      *
      * @param string $field Field to set

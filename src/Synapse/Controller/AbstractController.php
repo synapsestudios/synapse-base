@@ -4,6 +4,9 @@ namespace Synapse\Controller;
 
 use Synapse\Application\UrlGeneratorAwareInterface as UrlGenInterface;
 use Synapse\Application\UrlGeneratorAwareTrait;
+use Synapse\Db\Transaction;
+use Synapse\Db\TransactionAwareInterface;
+use Synapse\Db\TransactionAwareTrait;
 use Synapse\Debug\DebugModeAwareInterface as DebugInterface;
 use Synapse\Debug\DebugModeAwareTrait;
 use Synapse\Validator\ValidationErrorFormatterAwareInterface as ValidationInterface;
@@ -19,9 +22,18 @@ use Zend\Stdlib\ArraySerializableInterface;
 /**
  * Abstract controller defining universal helper methods
  */
-abstract class AbstractController implements UrlGenInterface, LoggerInterface, DebugInterface, ValidationInterface
+abstract class AbstractController implements
+    UrlGenInterface,
+    LoggerInterface,
+    DebugInterface,
+    ValidationInterface,
+    TransactionAwareInterface
 {
-    use UrlGeneratorAwareTrait, LoggerAwareTrait, DebugModeAwareTrait, ValidationErrorFormatterAwareTrait;
+    use UrlGeneratorAwareTrait,
+        LoggerAwareTrait,
+        DebugModeAwareTrait,
+        ValidationErrorFormatterAwareTrait,
+        TransactionAwareTrait;
 
     /**
      * Create and return a 404 response object
