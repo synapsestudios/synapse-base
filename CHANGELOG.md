@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+Upcoming Release - up to 8cf951d
+--------------------------------
+* Add TransactionAwareInterface and TransactionAwareTrait
+* Auto-inject Transaction object into classes implementing TransactionAwareInterface
+* Have AbstractController implement TransactionAwareInterface
+* Add test helper InjectMockTransactionTrait
+* Have ControllerTestCase use InjectMockTransactionTrait
+
 0.2.6 (2014-08-08)
 -----------------
 
