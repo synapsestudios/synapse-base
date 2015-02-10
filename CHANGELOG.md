@@ -1,13 +1,15 @@
 CHANGELOG
 =========
 
-Upcoming Release - up to 8cf951d
+Upcoming Release - up to f502ff2
 --------------------------------
 * Add TransactionAwareInterface and TransactionAwareTrait
 * Auto-inject Transaction object into classes implementing TransactionAwareInterface
 * Have AbstractController implement TransactionAwareInterface
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
+* Add createdDatetimeColumn and updatedDatetimeColumn to AbstractMapper
+* Deprecate createdTimestampColumn and updatedTimestampColumn
 
 0.2.6 (2014-08-08)
 -----------------
