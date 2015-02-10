@@ -8,6 +8,8 @@ Upcoming Release - up to 8cf951d
 * Have AbstractController implement TransactionAwareInterface
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
+* Add output when starting a specific migration
+* Add times for each migration and total time
 
 0.2.6 (2014-08-08)
 -----------------
