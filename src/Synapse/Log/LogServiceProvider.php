@@ -40,7 +40,7 @@ class LogServiceProvider implements ServiceProviderInterface
     {
         $this->config = $app['config']->load('log');
 
-        $handlers = $this->getHandlers();
+        $handlers = $this->getHandlers($app);
         $app['log'] = $app->share(function ($app) use ($handlers) {
             return new Logger('main', $handlers);
         });
@@ -68,9 +68,10 @@ class LogServiceProvider implements ServiceProviderInterface
     /**
      * Get an array of logging handlers to use
      *
+     * @param  Application $app
      * @return  array
      */
-    protected function getHandlers()
+    protected function getHandlers(Application $app)
     {
         $handlers = [];
 
