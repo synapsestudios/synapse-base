@@ -7,11 +7,14 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolation;
 use Synapse\Controller\AbstractController;
 use Synapse\Stdlib\Arr;
+use Synapse\TestHelper\InjectMockTransactionTrait;
 use Synapse\User\UserEntity;
 use stdClass;
 
 abstract class ControllerTestCase extends AbstractSecurityAwareTestCase
 {
+    use InjectMockTransactionTrait;
+
     public function createJsonRequest($method, array $params = [])
     {
         $this->request = new Request(
@@ -51,5 +54,16 @@ abstract class ControllerTestCase extends AbstractSecurityAwareTestCase
         $mockValidationErrorFormatter->expects($this->any())
             ->method('groupViolationsByField')
             ->will($this->returnValue(['foo' => 'bar']));
+    }
+
+    /**
+     * Shortcut for calling the other inject methods in this class
+     *
+     * @param  AbstractController $controller
+     */
+    public function injectCommonDependencies(AbstractController $controller)
+    {
+        $this->injectMockTransaction($controller);
+        $this->injectMockValidationErrorFormatter($controller);
     }
 }

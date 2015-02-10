@@ -29,6 +29,14 @@ class DbServiceProvider implements ServiceProviderInterface
             return new Transaction($app['db']);
         });
 
+        $app->initializer(
+            'Synapse\\Db\\TransactionAwareInterface',
+            function ($object, $app) {
+                $object->setTransaction($app['db.transaction']);
+                return $object;
+            }
+        );
+
         $this->registerMapperInitializer($app);
     }
 
