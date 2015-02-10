@@ -8,6 +8,7 @@ Upcoming Release - up to 8cf951d
 * Have AbstractController implement TransactionAwareInterface
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
+* Change in migration class naming for easier sorting
 
 0.2.6 (2014-08-08)
 -----------------
