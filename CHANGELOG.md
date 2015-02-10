@@ -9,6 +9,12 @@ Upcoming Release - up to 8cf951d
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
 
+1.3.4 (2015-02-10)
+-----------------
+
+* Allow 'order' option to be specified on `FinderTrait::findBy` just like `findAllBy`
+
+
 0.2.6 (2014-08-08)
 -----------------
 
