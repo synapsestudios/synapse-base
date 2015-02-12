@@ -41,6 +41,12 @@ trait InserterTrait
             $values[$this->createdTimestampColumn] = $timestamp;
         }
 
+        if ($this->createdDatetimeColumn) {
+            $datetime = date('Y-m-d H:i:s');
+            $entity->exchangeArray([$this->createdDatetimeColumn => $datetime]);
+            $values[$this->createdDatetimeColumn] = $datetime;
+        }
+
         $columns = array_keys($values);
 
         $query = $this->getSqlObject()

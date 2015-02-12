@@ -19,6 +19,9 @@ class UpdaterTraitTest extends MapperTestCase
 
         $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
         $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->datetimeMapper = new DatetimeColumnMapper($this->mockAdapter, $this->timestampPrototype);
+        $this->datetimeMapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
@@ -125,6 +128,23 @@ class UpdaterTraitTest extends MapperTestCase
         $this->timestampMapper->update($entity);
 
         $regexp = sprintf('/\SET .+ `updated` = \'[0-9]+\' WHERE/');
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->assertNotNull($entity->getUpdated());
+    }
+
+    public function testUpdateSetsUpdatedDatetimeColumnAutomaticallyOnEntityAndDbQuery()
+    {
+        $entity = $this->createTimestampEntityToUpdate()
+            ->setUpdated(null);
+
+        $this->datetimeMapper->update($entity);
+
+        $regexp = sprintf(
+            '/\SET .+ `updated` = \'%s+\' WHERE/',
+            '(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})' // datetime pattern
+        );
 
         $this->assertRegExpOnSqlString($regexp);
 

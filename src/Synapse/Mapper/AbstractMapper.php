@@ -67,9 +67,24 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $sqlFactory;
 
     /**
+     * The name of the column where a time created datetime is stored
+     *
+     * @var string
+     */
+    protected $createdDatetimeColumn = null;
+
+    /**
+     * The name of the column where a time updated datetime is stored
+     *
+     * @var string
+     */
+    protected $updatedDatetimeColumn = null;
+
+    /**
      * The name of the column where a time created timestamp is stored
      *
      * @var string
+     * @deprecated Use createdDatetimeColumn instead
      */
     protected $createdTimestampColumn = null;
 
@@ -77,6 +92,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * The name of the column where a time updated timestamp is stored
      *
      * @var string
+     * @deprecated Use updatedDatetimeColumn instead
      */
     protected $updatedTimestampColumn = null;
 
