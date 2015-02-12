@@ -46,9 +46,12 @@ trait UpdaterTrait
             $values[$this->updatedDatetimeColumn] = $datetime;
         }
 
-        unset($values['id']);
-
-        $condition = ['id' => $entity->getId()];
+        $condition = [];
+        $arrayCopy = $entity->getArrayCopy();
+        foreach ($this->primaryKey as $keyColumn) {
+            unset($values[$keyColumn]);
+            $condition[$keyColumn] = $arrayCopy[$keyColumn];
+        }
 
         $query = $this->getSqlObject()
             ->update()

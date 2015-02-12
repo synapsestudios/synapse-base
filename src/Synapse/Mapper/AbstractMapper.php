@@ -97,6 +97,13 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $updatedTimestampColumn = null;
 
     /**
+     * Array of primary key columns
+     *
+     * @var array
+     */
+    protected $primaryKey = ['id'];
+
+    /**
      * Set injected objects as properties
      *
      * @param DbAdapter      $db        Query builder object
