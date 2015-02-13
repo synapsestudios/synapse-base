@@ -3,6 +3,7 @@
 namespace Synapse\Mapper;
 
 use Synapse\Entity\AbstractEntity;
+use Synapse\Stdlib\Arr;
 
 /**
  * Use this trait to add create functionality to AbstractMappers.
@@ -58,7 +59,7 @@ trait InserterTrait
 
         $result = $statement->execute();
 
-        if ($this->autoIncrementColumn && ! $values[$this->autoIncrementColumn]) {
+        if ($this->autoIncrementColumn && ! Arr::get($values, $this->autoIncrementColumn)) {
             $entity->exchangeArray([
                 $this->autoIncrementColumn => $result->getGeneratedValue()
             ]);
