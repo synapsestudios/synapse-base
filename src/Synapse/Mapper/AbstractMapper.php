@@ -104,6 +104,13 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $primaryKey = ['id'];
 
     /**
+     * Column that auto increments. Set to null if none.
+     *
+     * @var string
+     */
+    protected $autoIncrementColumn = 'id';
+
+    /**
      * Set injected objects as properties
      *
      * @param DbAdapter      $db        Query builder object
