@@ -22,6 +22,12 @@ class InserterTraitTest extends MapperTestCase
 
         $this->datetimeMapper = new DatetimeColumnMapper($this->mockAdapter, $this->timestampPrototype);
         $this->datetimeMapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->invalidAutoincrementMapper = new InvalidAutoincrementMapper(
+            $this->mockAdapter,
+            $this->timestampPrototype
+        );
+        $this->invalidAutoincrementMapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
@@ -160,5 +166,14 @@ class InserterTraitTest extends MapperTestCase
         $this->mapper->insert($entity);
 
         $this->assertEquals($expectedId, $entity->getId());
+    }
+
+    public function testInsertDoesNotCauseAnErrorIfAutoincrementColumnNotInEntity()
+    {
+        $entity = $this->createEntityToInsert();
+
+        $this->invalidAutoincrementMapper->insert($entity);
+
+        $this->assertNull($entity->getId());
     }
 }
