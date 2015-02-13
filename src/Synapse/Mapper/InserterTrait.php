@@ -15,10 +15,15 @@ trait InserterTrait
      *
      * @param  AbstractEntity $entity
      * @return AbstractEntity         Entity with ID populated
+     * @throws Exception              if autoIncrementColumn not in entity
      */
     public function insert(AbstractEntity $entity)
     {
         $values = $entity->getDbValues();
+
+        if ($this->autoIncrementColumn && ! array_key_exists($this->autoIncrementColumn, $values)) {
+            throw new Exception('auto_increment column ' + $this->autoIncrementColumn + ' not found');
+        }
 
         return $this->insertRow($entity, $values);
     }
