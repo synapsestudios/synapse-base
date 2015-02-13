@@ -189,6 +189,23 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
+     * Get a wheres array for finding the row that matches an entity
+     *
+     * @return array
+     */
+    protected function getPrimaryKeyWheres(AbstractEntity $entity)
+    {
+        $wheres = [];
+
+        $arrayCopy = $entity->getArrayCopy();
+        foreach ($this->primaryKey as $keyColumn) {
+            $wheres[$keyColumn] = $arrayCopy[$keyColumn];
+        }
+
+        return $wheres;
+    }
+
+    /**
      * Set up the hydrator and prototype of this mapper if not yet set
      */
     protected function initialize()

@@ -17,9 +17,7 @@ trait DeleterTrait
      */
     public function delete(AbstractEntity $entity)
     {
-        return $this->deleteWhere([
-            'id' => $entity->getId()
-        ]);
+        return $this->deleteWhere($this->getPrimaryKeyWheres($entity));
     }
 
     /**
