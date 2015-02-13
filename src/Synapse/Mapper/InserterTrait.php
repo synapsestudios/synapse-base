@@ -58,7 +58,8 @@ trait InserterTrait
 
         $result = $statement->execute();
 
-        if ($this->autoIncrementColumn) {
+        $entityValues = $entity->getArrayCopy();
+        if ($this->autoIncrementColumn && ! $entityValues[$this->autoIncrementColumn]) {
             $entity->exchangeArray([
                 $this->autoIncrementColumn => $result->getGeneratedValue()
             ]);
