@@ -67,9 +67,24 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $sqlFactory;
 
     /**
+     * The name of the column where a time created datetime is stored
+     *
+     * @var string
+     */
+    protected $createdDatetimeColumn = null;
+
+    /**
+     * The name of the column where a time updated datetime is stored
+     *
+     * @var string
+     */
+    protected $updatedDatetimeColumn = null;
+
+    /**
      * The name of the column where a time created timestamp is stored
      *
      * @var string
+     * @deprecated Use createdDatetimeColumn instead
      */
     protected $createdTimestampColumn = null;
 
@@ -77,8 +92,23 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * The name of the column where a time updated timestamp is stored
      *
      * @var string
+     * @deprecated Use updatedDatetimeColumn instead
      */
     protected $updatedTimestampColumn = null;
+
+    /**
+     * Array of primary key columns
+     *
+     * @var array
+     */
+    protected $primaryKey = ['id'];
+
+    /**
+     * Column that auto increments. Set to null if none.
+     *
+     * @var string
+     */
+    protected $autoIncrementColumn = 'id';
 
     /**
      * Set injected objects as properties
@@ -156,6 +186,23 @@ abstract class AbstractMapper implements LoggerAwareInterface
     {
         $this->prototype = $prototype;
         return $this;
+    }
+
+    /**
+     * Get a wheres array for finding the row that matches an entity
+     *
+     * @return array
+     */
+    protected function getPrimaryKeyWheres(AbstractEntity $entity)
+    {
+        $wheres = [];
+
+        $arrayCopy = $entity->getArrayCopy();
+        foreach ($this->primaryKey as $keyColumn) {
+            $wheres[$keyColumn] = $arrayCopy[$keyColumn];
+        }
+
+        return $wheres;
     }
 
     /**

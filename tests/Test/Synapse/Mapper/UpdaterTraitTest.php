@@ -19,6 +19,15 @@ class UpdaterTraitTest extends MapperTestCase
 
         $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
         $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->datetimeMapper = new DatetimeColumnMapper($this->mockAdapter, $this->timestampPrototype);
+        $this->datetimeMapper->setSqlFactory($this->mockSqlFactory);
+
+        $this->differentPrimaryKeyMapper = new MapperWithDifferentPrimaryKey(
+            $this->mockAdapter,
+            $this->prototype
+        );
+        $this->differentPrimaryKeyMapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function createPrototype()
@@ -129,5 +138,41 @@ class UpdaterTraitTest extends MapperTestCase
         $this->assertRegExpOnSqlString($regexp);
 
         $this->assertNotNull($entity->getUpdated());
+    }
+
+    public function testUpdateSetsUpdatedDatetimeColumnAutomaticallyOnEntityAndDbQuery()
+    {
+        $entity = $this->createTimestampEntityToUpdate()
+            ->setUpdated(null);
+
+        $this->datetimeMapper->update($entity);
+
+        $regexp = sprintf(
+            '/\SET .+ `updated` = \'%s+\' WHERE/',
+            '(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})' // datetime pattern
+        );
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->assertNotNull($entity->getUpdated());
+    }
+
+    public function testUpdateOnMapperWithDifferentPrimaryKeyDoesWhereOnPrimaryKeyFields()
+    {
+        $keyValues = [
+            'id'    => '123',
+            'email' => 'foo@bar.com'
+        ];
+        $entity = new UserEntity($keyValues);
+
+        $this->differentPrimaryKeyMapper->update($entity);
+
+        $this->assertRegExpOnSqlString(
+            sprintf(
+                '/WHERE `id` = \'%s\' AND `email` = \'%s\'/',
+                $keyValues['id'],
+                $keyValues['email']
+            )
+        );
     }
 }
