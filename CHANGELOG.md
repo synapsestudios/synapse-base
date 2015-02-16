@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-Upcoming Release - up to 8cf951d
+Upcoming Release - up to f502ff2
 --------------------------------
 * Add TransactionAwareInterface and TransactionAwareTrait
 * Auto-inject Transaction object into classes implementing TransactionAwareInterface
@@ -10,6 +10,14 @@ Upcoming Release - up to 8cf951d
 * Have ControllerTestCase use InjectMockTransactionTrait
 * Add output when starting a specific migration
 * Add times for each migration and total time
+* Add createdDatetimeColumn and updatedDatetimeColumn to AbstractMapper
+* Deprecate createdTimestampColumn and updatedTimestampColumn
+
+1.3.4 (2015-02-10)
+-----------------
+
+* Allow 'order' option to be specified on `FinderTrait::findBy` just like `findAllBy`
+
 
 0.2.6 (2014-08-08)
 -----------------

@@ -199,6 +199,21 @@ class FinderTraitTest extends MapperTestCase
         $this->assertRegExp($regexp, $this->getSqlString());
     }
 
+    public function testFindBySetsOrderByColumnAscendingIfOrderColumnProvidedInOptionsArray()
+    {
+        $orderColumn = 'ad9fe8c7';
+
+        $options = ['order' => [$orderColumn]];
+
+        $constraints = $this->createSearchConstraints();
+
+        $this->mapper->findBy($constraints, $options);
+
+        $regexp = sprintf('/ORDER BY `%s` ASC/', $orderColumn);
+
+        $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
     /**
      * @dataProvider provideOrderDirectionValues
      */

@@ -40,14 +40,16 @@ trait UpdaterTrait
             $values[$this->updatedTimestampColumn] = $timestamp;
         }
 
-        unset($values['id']);
-
-        $condition = ['id' => $entity->getId()];
+        if ($this->updatedDatetimeColumn) {
+            $datetime = date('Y-m-d H:i:s');
+            $entity->exchangeArray([$this->updatedDatetimeColumn => $datetime]);
+            $values[$this->updatedDatetimeColumn] = $datetime;
+        }
 
         $query = $this->getSqlObject()
             ->update()
             ->set($values)
-            ->where($condition);
+            ->where($this->getPrimaryKeyWheres($entity));
 
         $this->execute($query);
 

@@ -58,6 +58,10 @@ trait FinderTrait
 
         $this->addWheres($query, $wheres, $options);
 
+        if (Arr::get($options, 'order')) {
+            $this->setOrder($query, $options['order']);
+        }
+
         return $this->executeAndGetResultsAsEntity($query);
     }
 
