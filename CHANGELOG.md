@@ -10,6 +10,7 @@ Upcoming Release - up to 21847688add410970fe78f92723c612d32dcaf65
 * Have ControllerTestCase use InjectMockTransactionTrait
 * Add output when starting a specific migration
 * Add times for each migration and total time
+* Change in migration class naming for easier sorting
 * Add createdDatetimeColumn and updatedDatetimeColumn to AbstractMapper
 * Deprecate createdTimestampColumn and updatedTimestampColumn
 
