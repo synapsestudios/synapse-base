@@ -8,6 +8,8 @@ Upcoming Release - up to f502ff2
 * Have AbstractController implement TransactionAwareInterface
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
+* Add output when starting a specific migration
+* Add times for each migration and total time
 * Add createdDatetimeColumn and updatedDatetimeColumn to AbstractMapper
 * Deprecate createdTimestampColumn and updatedTimestampColumn
 
