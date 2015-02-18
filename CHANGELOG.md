@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-Upcoming Release - up to f502ff2
+Upcoming Release - up to 21847688add410970fe78f92723c612d32dcaf65
 --------------------------------
 * Add TransactionAwareInterface and TransactionAwareTrait
 * Auto-inject Transaction object into classes implementing TransactionAwareInterface
