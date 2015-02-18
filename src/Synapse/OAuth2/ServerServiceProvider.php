@@ -87,12 +87,17 @@ class ServerServiceProvider implements ServiceProviderInterface
         $this->setup($app);
         $this->setFirewalls($app);
 
-        $app->get('/oauth/authorize', 'oauth.controller:authorize');
+        $app->get('/oauth/authorize', 'oauth.controller:authorize')
+            ->bind('oauth-authorize');
+
         $app->post('/oauth/authorize-submit', 'oauth.controller:authorizeFormSubmit')
             ->bind('oauth-authorize-form-submit');
 
-        $app->post('/oauth/token', 'oauth.controller:token');
-        $app->post('/oauth/logout', 'oauth.controller:logout');
+        $app->post('/oauth/token', 'oauth.controller:token')
+            ->bind('oauth-token');
+
+        $app->post('/oauth/logout', 'oauth.controller:logout')
+            ->bind('oauth-logout');
     }
 
     /**
