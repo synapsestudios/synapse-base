@@ -4,7 +4,7 @@ namespace Synapse\TestHelper;
 
 use Synapse\Db\TransactionAwareInterface;
 
-trait InjectMockTransactionTrait
+trait TransactionTraitMockInjector
 {
     protected $mockTransaction;
 
