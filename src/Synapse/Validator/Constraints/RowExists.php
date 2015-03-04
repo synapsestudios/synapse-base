@@ -11,8 +11,9 @@ use LogicException;
  */
 class RowExists extends Constraint
 {
-    public $message = 'Entity must exist with {{ field }} field equal to {{ value }}.';
-    public $field   = 'id';
+    public $message        = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+    public $field          = 'id';
+    public $filterCallback = null;
 
     /**
      * Mapper to use to search for entity
@@ -27,6 +28,18 @@ class RowExists extends Constraint
      */
     public function __construct(AbstractMapper $mapper, $options = null)
     {
+        if (isset($options['filterCallback']) && isset($options['field'])) {
+            throw new LogicException('filterCallback and field are both set. Only one is expected.');
+        }
+
+        if (isset($options['field'])) {
+            $options['filterCallback'] = function ($value) use ($options) {
+                return [
+                    $options['field'] => $value
+                ];
+            };
+        }
+
         if (! method_exists($mapper, 'findBy')) {
             $message = sprintf(
                 'Mapper injected into %s must use FinderTrait',
