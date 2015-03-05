@@ -8,6 +8,8 @@ use Test\Synapse\Entity\GenericEntity;
 
 class RowExistsValidatorTest extends ValidatorConstraintTestCase
 {
+    const MESSAGE = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+
     public function setUp()
     {
         $this->validator = new RowExistsValidator;
@@ -36,6 +38,13 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
             ->will($this->returnValue($this->mockMapper));
     }
 
+    public function withFilterCallbackReturningWheres($wheres = [])
+    {
+        $this->mockConstraint->filterCallback = function () use ($wheres) {
+            return $wheres;
+        };
+    }
+
     public function withEntityFound()
     {
         $entity = new GenericEntity;
@@ -52,10 +61,8 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
             ->will($this->returnValue(false));
     }
 
-    public function expectingEntitySearchedForWithFieldAndValue($field, $value)
+    public function expectingEntitySearchedForWithWheres($wheres)
     {
-        $wheres = [$field => $value];
-
         $this->mockMapper->expects($this->once())
             ->method('findBy')
             ->with($this->equalTo($wheres));
@@ -69,6 +76,7 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
     public function testValidateAddsNoViolationsIfEntityFound()
     {
         $this->withEntityFound();
+        $this->withFilterCallbackReturningWheres();
 
         $this->validateWithValue('foo');
 
@@ -80,6 +88,8 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         $value = 'foo';
 
         $this->withEntityNotFound();
+        $this->withFilterCallbackReturningWheres();
+        $this->mockConstraint->message = self::MESSAGE;
 
         $this->validateWithValue($value);
 
@@ -89,7 +99,7 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         ];
 
         $this->assertViolationAdded(
-            'Entity must exist with {{ field }} field equal to {{ value }}.',
+            self::MESSAGE,
             $params,
             $value
         );
@@ -100,9 +110,10 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         $field = 'foo';
         $value = 'bar';
 
-        $this->mockConstraint->field = $field;
+        $wheres = ['x' => 'y'];
+        $this->withFilterCallbackReturningWheres($wheres);
 
-        $this->expectingEntitySearchedForWithFieldAndValue($field, $value);
+        $this->expectingEntitySearchedForWithWheres($wheres);
 
         $this->validateWithValue($value);
     }

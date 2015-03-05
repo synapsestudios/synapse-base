@@ -18,9 +18,8 @@ class RowNotExistsValidator extends ConstraintValidator
      */
     public function validate($value, Constraint $constraint)
     {
-        $entity = $constraint->getMapper()->findBy([
-            $constraint->field => $value
-        ]);
+        $callback = $constraint->filterCallback;
+        $entity = $constraint->getMapper()->findBy($callback($value));
 
         if (! $entity instanceof AbstractEntity) {
             return;

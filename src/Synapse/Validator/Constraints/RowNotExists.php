@@ -7,5 +7,6 @@ namespace Synapse\Validator\Constraints;
  */
 class RowNotExists extends RowExists
 {
-    public $message = 'Entity must not exist with {{ field }} field equal to {{ value }}.';
+    public $message = 'Entity must not exist with specified parameters.';
+    protected $fieldMessage = 'Entity must not exist with {{ field }} field equal to {{ value }}.';
 }
