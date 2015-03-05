@@ -8,6 +8,8 @@ use Test\Synapse\Entity\GenericEntity;
 
 class RowsExistValidatorTest extends ValidatorConstraintTestCase
 {
+    const MESSAGE = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+
     public function setUp()
     {
         $this->validator = new RowsExistValidator;
@@ -86,6 +88,7 @@ class RowsExistValidatorTest extends ValidatorConstraintTestCase
 
         $this->withEntityNotFound();
         $this->withFilterCallbackReturningWheres();
+        $this->mockConstraint->message = self::MESSAGE;
 
         $this->validateWithValues($values);
 
@@ -100,7 +103,7 @@ class RowsExistValidatorTest extends ValidatorConstraintTestCase
 
         foreach ($values as $key => $value) {
             $this->assertViolationAdded(
-                'Entity must exist with {{ field }} field equal to {{ value }}.',
+                self::MESSAGE,
                 $params[$key],
                 $value
             );

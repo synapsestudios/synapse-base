@@ -11,9 +11,16 @@ use LogicException;
  */
 class RowExists extends Constraint
 {
-    public $message        = 'Entity must exist with {{ field }} field equal to {{ value }}.';
-    public $field          = 'id';
+    public $message        = 'Entity must exist with specified parameters.';
     public $filterCallback = null;
+    public $field          = 'id';
+
+    /**
+     * Message to use if we're using the 'field' option
+     *
+     * @var string
+     */
+    protected $fieldMessage = 'Entity must exist with {{ field }} field equal to {{ value }}.';
 
     /**
      * Mapper to use to search for entity
@@ -38,6 +45,7 @@ class RowExists extends Constraint
                     $options['field'] => $value
                 ];
             };
+            $this->message = $this->fieldMessage;
         }
 
         if (! method_exists($mapper, 'findBy')) {
