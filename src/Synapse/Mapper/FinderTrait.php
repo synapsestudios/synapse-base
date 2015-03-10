@@ -4,7 +4,7 @@ namespace Synapse\Mapper;
 
 use InvalidArgumentException;
 use LogicException;
-use Synapse\Mapper\PaginationData;
+use Synapse\Entity\AbstractEntity;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
 use Zend\Db\Sql\Select;
@@ -84,7 +84,7 @@ trait FinderTrait
      *                        ['column', 'operator', 'value']
      * @param  array $options Array of options for this request.
      *                        May include 'order', 'page', or 'resultsPerPage'.
-     * @return array          Array of AbstractEntity objects
+     * @return EntityIterator AbstractEntity objects
      * @throws Exception      If pagination enabled and no 'order' option specified.
      */
     public function findAllBy(array $wheres, array $options = [])
@@ -142,6 +142,8 @@ trait FinderTrait
      *
      * @param Select $query
      * @param array  $order
+     *
+     * @return Select
      */
     protected function setOrder(Select $query, array $order)
     {
