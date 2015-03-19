@@ -1,7 +1,11 @@
 CHANGELOG
 =========
 
-## [v1.4.0](https://github.com/synapsestudios/synapse-base/compare/v1.3.3...v1.3.4) (2015-03-16)
+## [v1.4.1](https://github.com/synapsestudios/synapse-base/compare/v1.4.0...v1.4.1) (2015-03-19)
+
+* Fix bug with RowExists and other related constraints.
+
+## [v1.4.0](https://github.com/synapsestudios/synapse-base/compare/v1.3.4...v1.4.0) (2015-03-16)
 
 * Add test helper InjectMockTransactionTrait
 * Have ControllerTestCase use InjectMockTransactionTrait
