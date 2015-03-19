@@ -20,7 +20,7 @@ class RowExists extends Constraint
      *
      * @var string
      */
-    protected $fieldMessage = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+    const FIELD_MESSAGE = 'Entity must exist with {{ field }} field equal to {{ value }}.';
 
     /**
      * Mapper to use to search for entity
@@ -39,13 +39,8 @@ class RowExists extends Constraint
             throw new LogicException('filterCallback and field are both set. Only one is expected.');
         }
 
-        if (isset($options['field'])) {
-            $options['filterCallback'] = function ($value) use ($options) {
-                return [
-                    $options['field'] => $value
-                ];
-            };
-            $this->message = $this->fieldMessage;
+        if (isset($options['field']) && (! isset($options['message']))) {
+            $this->message = $self::FIELD_MESSAGE;
         }
 
         if (! method_exists($mapper, 'findBy')) {
@@ -53,6 +48,12 @@ class RowExists extends Constraint
                 'Mapper injected into %s must use FinderTrait',
                 get_class($this)
             );
+
+            throw new LogicException($message);
+        }
+
+        if (isset($options['field']) && (! is_string($options['field']))) {
+            $message = sprintf('RowExists field must be string, %s given', gettype($options['field']));
 
             throw new LogicException($message);
         }
@@ -68,5 +69,20 @@ class RowExists extends Constraint
     public function getMapper()
     {
         return $this->mapper;
+    }
+
+    public function getFilterCallback()
+    {
+        if ($this->filterCallback !== null) {
+            $callback = $this->filterCallback;
+        } else {
+            $field = $this->field;
+
+            $callback = function ($value) use ($field) {
+                return [$field => $value];
+            };
+        }
+
+        return $callback;
     }
 }
