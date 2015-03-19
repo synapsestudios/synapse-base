@@ -71,6 +71,12 @@ class RowExists extends Constraint
         return $this->mapper;
     }
 
+    /**
+     * Get callback that takes the value being validated and returns an array of
+     * "wheres" to be used with the mapper.
+     *
+     * @return function
+     */
     public function getFilterCallback()
     {
         if ($this->filterCallback !== null) {
