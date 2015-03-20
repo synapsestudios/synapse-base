@@ -15,10 +15,10 @@ use Zend\Db\Sql\SqlInterface;
  * To use:
  * 1. Call parent::setUp() from setUp
  * 2. Instantiate the mapper
- * 3. Call setSqlFactory($this->mockSqlFactory) on the mapper.
+ * 3. Call setSqlFactory($this->mocks['sqlFactory']) on the mapper.
  * 4. In your tests, get query strings with $this->getSqlStrings().
  */
-abstract class MapperTestCase extends AbstractSecurityAwareTestCase
+abstract class MapperTestCase extends TestCase
 {
     const GENERATED_ID = 123;
 
@@ -134,39 +134,39 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
     public function setUpMockAdapter()
     {
-        $this->mockAdapter = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
+        $this->mocks['adapter'] = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockAdapter->expects($this->any())
+        $this->mocks['adapter']->expects($this->any())
             ->method('query')
             ->will($this->returnCallback([$this, 'handleAdapterQuery']));
 
-        $this->mockDriver = $this->getMockBuilder('Zend\Db\Adapter\Driver\Mysqli\Mysqli')
+        $this->mocks['driver'] = $this->getMockBuilder('Zend\Db\Adapter\Driver\Mysqli\Mysqli')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockDriver->expects($this->any())
+        $this->mocks['driver']->expects($this->any())
             ->method('createStatement')
             ->will($this->returnValue($this->getMockStatement()));
 
-        $this->mockConnection = $this->getMock('Zend\Db\Adapter\Driver\ConnectionInterface');
+        $this->mocks['connection'] = $this->getMock('Zend\Db\Adapter\Driver\ConnectionInterface');
 
-        $this->mockDriver->expects($this->any())
+        $this->mocks['driver']->expects($this->any())
             ->method('getConnection')
-            ->will($this->returnValue($this->mockConnection));
+            ->will($this->returnValue($this->mocks['connection']));
 
-        $this->mockConnection->expects($this->any())
+        $this->mocks['connection']->expects($this->any())
             ->method('getResource')
             ->will($this->returnValue(
                 $this->getMock('mysqli')
             ));
 
-        $this->mockAdapter->expects($this->any())
+        $this->mocks['adapter']->expects($this->any())
             ->method('getDriver')
-            ->will($this->returnValue($this->mockDriver));
+            ->will($this->returnValue($this->mocks['driver']));
 
-        $this->mockAdapter->expects($this->any())
+        $this->mocks['adapter']->expects($this->any())
             ->method('getPlatform')
             ->will($this->returnValue($this->getPlatform()));
     }
@@ -224,9 +224,9 @@ abstract class MapperTestCase extends AbstractSecurityAwareTestCase
 
     public function setUpMockSqlFactory()
     {
-        $this->mockSqlFactory = $this->getMock('Synapse\Mapper\SqlFactory');
+        $this->mocks['sqlFactory'] = $this->getMock('Synapse\Mapper\SqlFactory');
 
-        $this->mockSqlFactory->expects($this->any())
+        $this->mocks['sqlFactory']->expects($this->any())
             ->method('getSqlObject')
             // Using returnCallback, because otherwise a reference to the same object will
             // be returned every time.

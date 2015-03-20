@@ -25,7 +25,7 @@ abstract class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
         $this->setUpMockExecutionContext();
         $this->setUpMockConstraint();
 
-        $validator->initialize($this->mockExecutionContext);
+        $validator->initialize($this->mocks['executionContext']);
     }
 
     /**
@@ -33,7 +33,7 @@ abstract class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
      */
     public function setUpMockExecutionContext()
     {
-        $this->mockExecutionContext = $this->getMock('Symfony\Component\Validator\ExecutionContextInterface');
+        $this->mocks['executionContext'] = $this->getMock('Symfony\Component\Validator\ExecutionContextInterface');
 
         $callback = function ($message, array $params = [], $invalidValue = null, $plural = null, $code = null) {
             $this->violations[] = [
@@ -45,14 +45,14 @@ abstract class ValidatorConstraintTestCase extends PHPUnit_Framework_TestCase
             ];
         };
 
-        $this->mockExecutionContext->expects($this->any())
+        $this->mocks['executionContext']->expects($this->any())
             ->method('addViolation')
             ->will($this->returnCallback($callback));
     }
 
     public function setUpMockConstraint()
     {
-        $this->mockConstraint = $this->getMock('Symfony\Component\Validator\Constraint');
+        $this->mocks['constraint'] = $this->getMock('Symfony\Component\Validator\Constraint');
     }
 
     public function assertNoViolationsAdded()

@@ -26,7 +26,7 @@ trait SecurityContextMockInjector
             $this->captured = new stdClass();
         }
 
-        $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
+        $this->mocks['securityContext'] = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -39,7 +39,7 @@ trait SecurityContextMockInjector
                 return $this->captured->userReturnedFromSecurityContext;
             }));
 
-        $this->mockSecurityContext->expects($this->any())
+        $this->mocks['securityContext']->expects($this->any())
             ->method('getToken')
             ->will($this->returnValue($mockSecurityToken));
     }
