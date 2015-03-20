@@ -57,11 +57,6 @@ trait SecurityContextMockInjector
      */
     public function getLoggedInUserEntity()
     {
-        // If not changed from initial value, return default.
-        if ($this->loggedInUserEntity === false) {
-            $this->loggedInUserEntity = $this->getDefaultLoggedInUserEntity();
-        }
-
         return $this->loggedInUserEntity;
     }
 
