@@ -12,9 +12,9 @@ class AbstractMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new Mapper($this->mockAdapter);
+        $this->mapper = new Mapper($this->mocks['adapter']);
 
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createPrototype()
@@ -93,7 +93,7 @@ class AbstractMapperTest extends MapperTestCase
         $hydrator1 = $reflectionObject->getProperty('hydrator');
         $hydrator1->setAccessible(true);
 
-        $this->mapper->__construct($this->mockAdapter);
+        $this->mapper->__construct($this->mocks['adapter']);
 
         $hydrator2 = $reflectionObject->getProperty('hydrator');
         $hydrator2->setAccessible(true);

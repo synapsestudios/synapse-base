@@ -12,8 +12,8 @@ class UserMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new UserMapper($this->mockAdapter, new UserEntity);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new UserMapper($this->mocks['adapter'], new UserEntity);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createUserEntity()
@@ -35,7 +35,9 @@ class UserMapperTest extends MapperTestCase
             ['UserEntity'],
             ['foo'],
             [123],
-            [function () {return 'This is a closure';}],
+            [function () {
+                return 'This is a closure';
+            }],
             [new \stdClass()],
         ];
     }

@@ -22,8 +22,8 @@ class FinderTraitTest extends MapperTestCase
 
         $this->prototype = $this->createPrototype();
 
-        $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new Mapper($this->mocks['adapter'], $this->prototype);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
 
         $this->mapper->setResultsPerPage(self::RESULTS_PER_PAGE);
     }

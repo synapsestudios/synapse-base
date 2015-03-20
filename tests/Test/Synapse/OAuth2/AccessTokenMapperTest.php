@@ -14,8 +14,8 @@ class AccessTokenMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new AccessTokenMapper($this->mockAdapter, new AccessTokenEntity);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new AccessTokenMapper($this->mocks['adapter'], new AccessTokenEntity);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createEntity()
