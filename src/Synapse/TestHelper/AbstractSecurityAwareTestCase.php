@@ -2,13 +2,11 @@
 
 namespace Synapse\TestHelper;
 
-use PHPUnit_Framework_TestCase;
-
 /**
  * Extend this class to create mocks of the security token and context for testing
  * @deprecated - use SecurityContextMockInjector instead
  */
-abstract class AbstractSecurityAwareTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractSecurityAwareTestCase extends TestCase
 {
     use SecurityContextMockInjector;
 
