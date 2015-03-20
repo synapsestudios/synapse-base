@@ -24,7 +24,6 @@ trait SecurityContextMockInjector
      * Set up the mock security context
      *
      * `getToken` returns a mocked security token whose getUser method returns a UserEntity.
-     * Customize the user returned by overloading getDefaultLoggedInUserEntity.
      */
     protected function setUpMockSecurityContext()
     {
