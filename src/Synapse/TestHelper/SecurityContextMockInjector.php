@@ -20,11 +20,6 @@ trait SecurityContextMockInjector
         $injectee->setSecurityContext($this->mocks['securityContext']);
     }
 
-    public function getLoggedInUserId()
-    {
-        return 42;
-    }
-
     /**
      * Set up the mock security context
      *
