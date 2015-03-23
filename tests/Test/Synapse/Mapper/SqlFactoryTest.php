@@ -18,7 +18,7 @@ class SqlFactoryTest extends MapperTestCase
 
     public function testGetSqlObjectReturnsSqlObject()
     {
-        $sqlObject = $this->factory->getSqlObject($this->mockAdapter, self::TABLE);
+        $sqlObject = $this->factory->getSqlObject($this->mocks['adapter'], self::TABLE);
 
         $this->assertInstanceOf(
             'Zend\Db\Sql\Sql',
@@ -28,9 +28,9 @@ class SqlFactoryTest extends MapperTestCase
 
     public function testGetSqlObjectInjectsAdapterAndTable()
     {
-        $sqlObject = $this->factory->getSqlObject($this->mockAdapter, self::TABLE);
+        $sqlObject = $this->factory->getSqlObject($this->mocks['adapter'], self::TABLE);
 
-        $this->assertSame($this->mockAdapter, $sqlObject->getAdapter());
+        $this->assertSame($this->mocks['adapter'], $sqlObject->getAdapter());
 
         $this->assertSame(self::TABLE, $sqlObject->getTable());
     }

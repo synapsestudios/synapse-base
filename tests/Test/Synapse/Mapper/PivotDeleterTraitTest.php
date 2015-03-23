@@ -12,8 +12,8 @@ class PivotDeleterTraitTest extends MapperTestCase
 
         $this->prototype = $this->createPrototype();
 
-        $this->mapper = new PivotMapper($this->mockAdapter, $this->prototype);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new PivotMapper($this->mocks['adapter'], $this->prototype);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createPrototype()

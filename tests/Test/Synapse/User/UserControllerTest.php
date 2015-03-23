@@ -31,8 +31,9 @@ class UserControllerTest extends ControllerTestCase
         $this->userController->setUserService($this->mockUserService)
             ->setUserValidator($this->mockUserValidator)
             ->setUserRegistrationValidator($this->mockUserRegistrationValidator)
-            ->setUrlGenerator($this->mockUrlGenerator)
-            ->setSecurityContext($this->mockSecurityContext);
+            ->setUrlGenerator($this->mockUrlGenerator);
+
+        $this->injectMockSecurityContext($this->userController);
 
         $this->injectMockValidationErrorFormatter($this->userController);
     }

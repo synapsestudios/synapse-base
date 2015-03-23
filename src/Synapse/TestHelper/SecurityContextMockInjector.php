@@ -2,31 +2,36 @@
 
 namespace Synapse\TestHelper;
 
+use Synapse\Security\SecurityAwareInterface;
 use Synapse\User\UserEntity;
 use stdClass;
 
 trait SecurityContextMockInjector
 {
-    protected static $loggedInUserId = 42;
-
     /**
      * @var mixed  UserEntity or null to simulate the user not being logged in
      */
     protected $loggedInUserEntity = false;
 
+    public function injectMockSecurityContext(SecurityAwareInterface $injectee)
+    {
+        $this->setUpMockSecurityContext();
+
+        $injectee->setSecurityContext($this->mocks['securityContext']);
+    }
+
     /**
      * Set up the mock security context
      *
      * `getToken` returns a mocked security token whose getUser method returns a UserEntity.
-     * Customize the user returned by overloading getDefaultLoggedInUserEntity.
      */
-    public function setUpMockSecurityContext()
+    protected function setUpMockSecurityContext()
     {
         if (! isset($this->captured)) {
             $this->captured = new stdClass();
         }
 
-        $this->mockSecurityContext = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
+        $this->mocks['securityContext'] = $this->getMockBuilder('Symfony\Component\Security\Core\SecurityContext')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -39,31 +44,9 @@ trait SecurityContextMockInjector
                 return $this->captured->userReturnedFromSecurityContext;
             }));
 
-        $this->mockSecurityContext->expects($this->any())
+        $this->mocks['securityContext']->expects($this->any())
             ->method('getToken')
             ->will($this->returnValue($mockSecurityToken));
-    }
-
-    /**
-     * Return a Mocked UserEntity object
-     *
-     * @return UserEntity
-     */
-    public function getDefaultLoggedInUserEntity()
-    {
-        $user = new UserEntity;
-
-        $user->exchangeArray([
-            'id'         => self::$loggedInUserId,
-            'email'      => 'test@example.com',
-            'password'   => 'password',
-            'last_login' => 1397078025,
-            'created'    => 1397077825,
-            'enabled'    => 1,
-            'verified'   => 1,
-        ]);
-
-        return $user;
     }
 
     /**
@@ -73,11 +56,6 @@ trait SecurityContextMockInjector
      */
     public function getLoggedInUserEntity()
     {
-        // If not changed from initial value, return default.
-        if ($this->loggedInUserEntity === false) {
-            $this->loggedInUserEntity = $this->getDefaultLoggedInUserEntity();
-        }
-
         return $this->loggedInUserEntity;
     }
 

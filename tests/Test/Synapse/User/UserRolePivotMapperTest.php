@@ -15,8 +15,8 @@ class UserRolePivotMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new UserRolePivotMapper($this->mockAdapter, new UserEntity);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new UserRolePivotMapper($this->mocks['adapter'], new UserEntity);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function testFindRoleNamesByUserIdSearchesByUserId()

@@ -12,8 +12,8 @@ class SocialLoginMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new SocialLoginMapper($this->mockAdapter, new SocialLoginEntity);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new SocialLoginMapper($this->mocks['adapter'], new SocialLoginEntity);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function testFindByUserIdSearchesByUserIdOnly()

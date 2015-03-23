@@ -2,26 +2,20 @@
 
 namespace Test\Synapse\CliCommand;
 
-use PHPUnit_Framework_TestCase;
-
 use Synapse\CliCommand\AbstractCliCommand;
 use Synapse\CliCommand\CliCommandOptions;
 use Synapse\CliCommand\CliCommandResponse;
+use Synapse\TestHelper\TestCase;
 
-class CliCommandTest extends PHPUnit_Framework_TestCase
+class CliCommandTest extends TestCase
 {
     public function setUp()
     {
-        $this->setUpExecutor();
-        $this->command = new CliCommand($this->executor);
-        $this->options = new CliCommandOptions;
-    }
+        $this->setMocks(['executor' => 'Synapse\CliCommand\CliCommandExecutor']);
 
-    public function setUpExecutor()
-    {
-        $this->executor = $this->getMockBuilder('Synapse\CliCommand\CliCommandExecutor')
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $this->command = new CliCommand($this->mocks['executor']);
+
+        $this->options = new CliCommandOptions;
     }
 
     public function createResponseObject($output, $returnCode)
@@ -37,7 +31,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $command  = 'pwd foo bar=baz 9999 2>&1';
         $expected = '/current/working/directory';
 
-        $this->executor
+        $this->mocks['executor']
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -65,7 +59,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
         $command  = 'stat /foo 2>&1';
         $expected = 'stat: /foo: stat: No such file or directory';
 
-        $this->executor
+        $this->mocks['executor']
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -89,7 +83,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsInCorrectDirectory()
     {
-        $this->executor
+        $this->mocks['executor']
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -111,7 +105,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectEnvironment()
     {
-        $this->executor
+        $this->mocks['executor']
             ->expects($this->any())
             ->method('execute')
             ->with(
@@ -135,7 +129,7 @@ class CliCommandTest extends PHPUnit_Framework_TestCase
 
     public function testCommandRunsWithCorrectRedirect()
     {
-        $this->executor
+        $this->mocks['executor']
             ->expects($this->any())
             ->method('execute')
             ->with(

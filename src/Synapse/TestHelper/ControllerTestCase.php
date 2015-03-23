@@ -7,13 +7,14 @@ use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolation;
 use Synapse\Controller\AbstractController;
 use Synapse\Stdlib\Arr;
+use Synapse\TestHelper\SecurityContextMockInjector;
 use Synapse\TestHelper\TransactionMockInjector;
 use Synapse\User\UserEntity;
 use stdClass;
 
-abstract class ControllerTestCase extends AbstractSecurityAwareTestCase
+abstract class ControllerTestCase extends TestCase
 {
-    use TransactionMockInjector;
+    use SecurityContextMockInjector, TransactionMockInjector;
 
     public function createJsonRequest($method, array $params = [])
     {

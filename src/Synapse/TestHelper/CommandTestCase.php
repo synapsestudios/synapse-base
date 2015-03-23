@@ -2,11 +2,10 @@
 
 namespace Synapse\TestHelper;
 
-use PHPUnit_Framework_TestCase;
 use Synapse\Stdlib\Arr;
 use stdClass;
 
-abstract class CommandTestCase extends PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TestCase
 {
     /**
      * Child classes should set this to the command to be tested in setUp
@@ -27,7 +26,7 @@ abstract class CommandTestCase extends PHPUnit_Framework_TestCase
 
     public function setUpMockOutput()
     {
-        $this->mockOutput = $this->getMockBuilder('Symfony\Component\Console\Output\ConsoleOutput')
+        $this->mocks['output'] = $this->getMockBuilder('Symfony\Component\Console\Output\ConsoleOutput')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -37,22 +36,22 @@ abstract class CommandTestCase extends PHPUnit_Framework_TestCase
             $this->captured->outputWrittenToConsole[] = $message;
         };
 
-        $this->mockOutput->expects($this->any())
+        $this->mocks['output']->expects($this->any())
             ->method('write')
             ->will($this->returnCallback($outputCapturer));
 
-        $this->mockOutput->expects($this->any())
+        $this->mocks['output']->expects($this->any())
             ->method('writeln')
             ->will($this->returnCallback($outputCapturer));
     }
 
     public function setMockInputWithArguments(array $args = [])
     {
-        $this->mockInput = $this->getMockBuilder('Symfony\Component\Console\Input\ArrayInput')
+        $this->mocks['input'] = $this->getMockBuilder('Symfony\Component\Console\Input\ArrayInput')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->mockInput->expects($this->any())
+        $this->mocks['input']->expects($this->any())
             ->method('getArguments')
             ->will($this->returnValue($args));
 
@@ -60,7 +59,7 @@ abstract class CommandTestCase extends PHPUnit_Framework_TestCase
             return Arr::get($args, $field);
         };
 
-        $this->mockInput->expects($this->any())
+        $this->mocks['input']->expects($this->any())
             ->method('getArgument')
             ->will($this->returnCallback($getter));
     }
@@ -74,6 +73,6 @@ abstract class CommandTestCase extends PHPUnit_Framework_TestCase
     {
         $this->setMockInputWithArguments($args);
 
-        return $this->command->run($this->mockInput, $this->mockOutput);
+        return $this->command->run($this->mocks['input'], $this->mocks['output']);
     }
 }
