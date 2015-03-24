@@ -63,7 +63,7 @@ class ErrorServiceProvider implements ServiceProviderInterface
             return $getCorsResponse('Could not parse json body', 400);
         });
 
-        $app->error(function (Exception $e, $code) use ($app) {
+        $app->error(function (Exception $e, $code) use ($getCorsResponse, $app) {
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
             $debug = $app['config']->load('init')['debug'];
