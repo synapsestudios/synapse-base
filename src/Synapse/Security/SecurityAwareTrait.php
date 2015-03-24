@@ -37,21 +37,12 @@ trait SecurityAwareTrait
             return null;
         }
 
-        if (!is_object($user = $token->getUser())) {
+        $user = $token->getUser();
+
+        if (! is_object($user)) {
             return null;
         }
 
         return $user;
-    }
-
-    /**
-     * Alias for the getUser() function
-     * To be deprecated in v2.0
-     *
-     * @return mixed
-     */
-    public function user()
-    {
-        return $this->getUser();
     }
 }
