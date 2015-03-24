@@ -20,4 +20,11 @@ class RowExistsTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($constraint->getFilterCallback());
     }
+
+    public function testDefaultMessageIsSetIfFieldProvidedButNoMessageProvided()
+    {
+        $constraint = new RowExists($this->mockMapper, ['field' => 'foo']);
+
+        $this->assertEquals(RowExists::FIELD_MESSAGE, $constraint->message);
+    }
 }
