@@ -22,7 +22,6 @@ class Services implements ServicesInterface
         $app->register(new \Silex\Provider\SecurityServiceProvider);
 
         $this->registerSecurityFirewalls($app);
-
         $this->registerServiceProviders($app);
     }
 
