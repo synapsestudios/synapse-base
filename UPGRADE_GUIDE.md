@@ -4,6 +4,54 @@ Upgrade Guide
 Pre-2.0.0 -> 2.0.0
 ------------------
 
+## Mapper changes
+
+### Update overridden `insert` and `update` methods
+
+Internally, `insert` and `update` call `insertRow` and `updateRow`, respectively, in order to perfom the actual database queries. Children who overrode `insert` or `update` previously may have called `insertRow` and `updateRow` internally. However, the logic that sets magic created/updated timestamp columns was moved from `insertRow` into `insert`. (Same for `updateRow` and `update`.)
+
+```PHP
+// Pre-2.0.0
+
+use Synapse\Mapper;
+use Synapse\Entity\AbstractEntity;
+
+class FooMapper extends Mapper\AbstractMapper {
+    use InserterTrait;
+
+    public function insert(AbstractEntity $entity)
+    {
+        $values = $entity->getArrayCopy();
+
+        // Custom logic to transform $values
+
+        return $this->insertRow($entity, $values);
+    }
+}
+```
+
+From 2.0.0 on, overridden `insert` and `update` methods should call the parent `insert` and `update` methods instead of `insertRow` and `updateRow`.
+
+```PHP
+// 2.0.0
+
+use Synapse\Mapper;
+use Synapse\Entity\AbstractEntity;
+
+class FooMapper extends Mapper\AbstractMapper {
+    use InserterTrait {
+        insert as parentInsert;
+    };
+
+    public function insert(AbstractEntity $entity)
+    {
+        // Custom logic to transform $entity
+
+        return $this->parentInsert($entity);
+    }
+}
+```
+
 ## Test changes
 
 A new TestCase class has been added, which includes a more concise way of
