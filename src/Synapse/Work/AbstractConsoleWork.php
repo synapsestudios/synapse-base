@@ -58,16 +58,12 @@ abstract class AbstractConsoleWork
 
         $app = $applicationInitializer->initialize();
 
-        // Set the default routes and services
-        $defaultRoutes   = new Application\Routes;
-        $defaultServices = new Application\Services;
-
-        $defaultRoutes->define($app);
+        // Set the default services
+        $defaultServices = new \Synapse\Application\Services;
         $defaultServices->register($app);
 
         // Set the application-specific services
         $appServices = new \Application\Services;
-
         $appServices->register($app);
 
         return $app;

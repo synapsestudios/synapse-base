@@ -14,8 +14,9 @@ class Services implements ServicesInterface
      */
     public function register(Application $app)
     {
-        // Register log provider first to catch any exceptions thrown in the others
+        // Register log and error providers first to catch any exceptions thrown in the others
         $app->register(new \Synapse\Log\LogServiceProvider);
+        $app->register(new ErrorServiceProvider);
 
         // Register security component before other providers attempt to extend $app['security.firewalls']
         $app->register(new \Silex\Provider\SecurityServiceProvider);

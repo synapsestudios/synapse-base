@@ -2,18 +2,19 @@
 
 namespace Synapse\Application;
 
+use Silex\ServiceProviderInterface;
+use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Synapse\Application;
 use Synapse\Rest\Exception\MethodNotImplementedException;
 use Exception;
 
 /**
  * Define routes
  */
-class Routes implements RoutesInterface
+class ErrorServiceProvider implements ServiceProviderInterface
 {
     /**
      * Message for 501 responses
@@ -21,17 +22,14 @@ class Routes implements RoutesInterface
     const METHOD_NOT_IMPLEMENTED_MESSAGE = 'Method not implemented';
 
     /**
-     * {@inheritDoc}
+     * Register error handlers on the application.
+     * Has entries for both Synapse's and Symfony's 501 exceptions so that both return the same response.
      *
-     * Has entries for both Synapse's and Symfony's 501 exceptions so that both return the same response
-     *
-     * @param  Application $app
+     * @param Application $app
      */
-    public function define(Application $app)
+    public function register(Application $app)
     {
-        $routes = $this;
-
-        $getCorsResponse = function ($message, $statusCode) use ($app, $routes) {
+        $getCorsResponse = function ($message, $statusCode) use ($app) {
             $response = new JsonResponse(['message' => $message], $statusCode);
 
             $app['cors']($app['request'], $response);
@@ -64,5 +62,13 @@ class Routes implements RoutesInterface
 
             return $getCorsResponse('Something went wrong with your request', 500);
         });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function boot(Application $app)
+    {
+        // Noop
     }
 }
