@@ -3,6 +3,7 @@
 namespace Synapse\Mapper;
 
 use Synapse\Entity\AbstractEntity;
+use LogicException;
 
 /**
  * Use this trait to add create functionality to AbstractMappers.
@@ -10,49 +11,45 @@ use Synapse\Entity\AbstractEntity;
 trait InserterTrait
 {
     /**
-     * Insert the given entity into the database
+     * Insert the given entity into the database.
+     * If the entity does not have its `$this->autoIncrementColumn` field already
+     * set, populate that field with the value returned from the query.
+     *
+     * Set the created timestamp and created datetime columns if they exist.
      *
      * @param  AbstractEntity $entity
-     * @return AbstractEntity         Entity with ID populated
-     * @throws Exception              if autoIncrementColumn not in entity
+     * @return AbstractEntity Entity with ID populated
+     * @throws LogicException if autoIncrementColumn not in entity
      */
     public function insert(AbstractEntity $entity)
     {
-        $values = $entity->getDbValues();
-
-        if ($this->autoIncrementColumn && ! array_key_exists($this->autoIncrementColumn, $values)) {
-            throw new Exception('auto_increment column ' + $this->autoIncrementColumn + ' not found');
+        if ($this->createdTimestampColumn) {
+            $entity->exchangeArray([$this->createdTimestampColumn => time()]);
         }
 
-        return $this->insertRow($entity, $values);
+        if ($this->createdDatetimeColumn) {
+            $entity->exchangeArray([$this->createdDatetimeColumn => date('Y-m-d H:i:s')]);
+        }
+
+        $this->insertRow($entity);
+
+        return $entity;
     }
 
     /**
      * Insert an entity's DB row using the given values.
      * Set the ID on the entity from the query result.
-     * Set the created timestamp column if it exists.
      *
      * @param  AbstractEntity $entity
-     * @param  array          $values Values with which to create the entity
-     * @return AbstractEntity
      */
-    protected function insertRow(AbstractEntity $entity, array $values)
+    protected function insertRow(AbstractEntity $entity)
     {
-        if ($this->createdTimestampColumn) {
-            $timestamp = time();
-
-            $entity->exchangeArray([$this->createdTimestampColumn => $timestamp]);
-
-            $values[$this->createdTimestampColumn] = $timestamp;
-        }
-
-        if ($this->createdDatetimeColumn) {
-            $datetime = date('Y-m-d H:i:s');
-            $entity->exchangeArray([$this->createdDatetimeColumn => $datetime]);
-            $values[$this->createdDatetimeColumn] = $datetime;
-        }
-
+        $values  = $entity->getDbValues();
         $columns = array_keys($values);
+
+        if ($this->autoIncrementColumn && ! array_key_exists($this->autoIncrementColumn, $values)) {
+            throw new LogicException('auto_increment column ' + $this->autoIncrementColumn + ' not found');
+        }
 
         $query = $this->getSqlObject()
             ->insert()
@@ -60,15 +57,12 @@ trait InserterTrait
             ->values($values);
 
         $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
-
-        $result = $statement->execute();
+        $result    = $statement->execute();
 
         if ($this->autoIncrementColumn && ! $values[$this->autoIncrementColumn]) {
             $entity->exchangeArray([
                 $this->autoIncrementColumn => $result->getGeneratedValue()
             ]);
         }
-
-        return $entity;
     }
 }

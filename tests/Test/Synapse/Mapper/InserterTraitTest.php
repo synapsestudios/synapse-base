@@ -170,7 +170,7 @@ class InserterTraitTest extends MapperTestCase
 
     public function testInsertThrowsExceptionIfAutoincrementColumnNotInEntity()
     {
-        $this->setExpectedException('Synapse\Mapper\Exception');
+        $this->setExpectedException('LogicException');
 
         $entity = $this->createEntityToInsert();
 

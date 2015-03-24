@@ -85,7 +85,7 @@ trait FinderTrait
      * @param  array $options Array of options for this request.
      *                        May include 'order', 'page', or 'resultsPerPage'.
      * @return EntityIterator AbstractEntity objects
-     * @throws Exception      If pagination enabled and no 'order' option specified.
+     * @throws LogicException If pagination enabled and no 'order' option specified.
      */
     public function findAllBy(array $wheres, array $options = [])
     {
