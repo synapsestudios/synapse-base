@@ -2,7 +2,6 @@
 
 namespace Synapse\Controller;
 
-use Exception;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +16,6 @@ use Zend\Stdlib\ArraySerializableInterface;
  */
 abstract class AbstractRestController extends AbstractController
 {
-    const SERVER_ERROR_MESSAGE = 'An unknown error has occurred';
-
     /**
      * Request body content decoded from JSON
      *
@@ -45,13 +42,7 @@ abstract class AbstractRestController extends AbstractController
             );
         }
 
-        try {
-            $result = $this->{$method}($request);
-        } catch (BadRequestException $e) {
-            return $this->createSimpleResponse(400, 'Could not parse json body');
-        } catch (Exception $e) {
-            return $this->createExceptionResponse($e);
-        }
+        $result = $this->{$method}($request);
 
         if ($result instanceof ArraySerializableInterface) {
             return new EntityResponse($result);
@@ -88,33 +79,5 @@ abstract class AbstractRestController extends AbstractController
         }
 
         return $content;
-    }
-
-    /**
-     * Create a 500 response.  If debugging, it will contain the error message
-     * and a stack trace.
-     *
-     * @return Response
-     */
-    protected function createExceptionResponse(Exception $exception)
-    {
-        if ($this->logger) {
-            $this->logger->addError(
-                $exception->getMessage(),
-                ['exception' => $exception]
-            );
-        }
-
-        $responseData = [
-            'error' => $this->debug ? $exception->getMessage() : self::SERVER_ERROR_MESSAGE
-        ];
-
-        if ($this->debug) {
-            $responseData['file']   = $exception->getFile();
-            $responseData['line']  = $exception->getLine();
-            $responseData['trace'] = $exception->getTrace();
-        };
-
-        return $this->createJsonResponse($responseData, 500);
     }
 }

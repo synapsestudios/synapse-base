@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Synapse\Rest\Exception\MethodNotImplementedException;
+use Synapse\Controller\BadRequestException;
 use Exception;
 
 /**
@@ -20,6 +21,11 @@ class ErrorServiceProvider implements ServiceProviderInterface
      * Message for 501 responses
      */
     const METHOD_NOT_IMPLEMENTED_MESSAGE = 'Method not implemented';
+
+    /**
+     * Message for exceptions if not in debug mode
+     */
+    const SERVER_ERROR_MESSAGE = 'Something went wrong with your request';
 
     /**
      * Register error handlers on the application.
@@ -53,14 +59,31 @@ class ErrorServiceProvider implements ServiceProviderInterface
             return $getCorsResponse('Access denied', 403);
         });
 
-        $app->error(function (Exception $e, $code) use ($getCorsResponse, $app) {
+        $app->error(function (BadRequestException $e, $code) use ($getCorsResponse) {
+            return $getCorsResponse('Could not parse json body', 400);
+        });
+
+        $app->error(function (Exception $e, $code) use ($app) {
             $app['log']->addError($e->getMessage(), ['exception' => $e]);
 
-            if ($app['debug'] === true) {
-                throw $e;
+            $debug = $app['config']->load('init')['debug'];
+
+            if ($debug) {
+                $responseBody = [
+                    'error' => $e->getMessage(),
+                    'file'  => $e->getFile(),
+                    'line'  => $e->getLine(),
+                    'trace' => $e->getTrace(),
+                ];
+
+                $response = new JsonResponse($responseBody, 500);
+            } else {
+                $response = $getCorsResponse(self::SERVER_ERROR_MESSAGE, 500);
             }
 
-            return $getCorsResponse('Something went wrong with your request', 500);
+            $app['cors']($app['request'], $response);
+
+            return $response;
         });
     }
 
