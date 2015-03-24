@@ -21,6 +21,12 @@ $defaultServices = new Synapse\Application\Services;
 $defaultServices->register($app);
 ```
 
+## Controller changes
+
+### Use `$this->getUser()` instead of `$this->user()` to get the logged in user
+
+The old method alias in `SecurityAwareTrait` has been removed.
+
 ## Mapper changes
 
 ### Update overridden `insert` and `update` methods

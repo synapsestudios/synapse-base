@@ -41,7 +41,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         $userEntity = $request->attributes->get('user');
 
         if ($userEntity === null) {
-            $userEntity = $this->user();
+            $userEntity = $this->getUser();
         } elseif ($userEntity === false) {
             return $this->createNotFoundResponse();
         }
@@ -90,7 +90,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
      */
     public function put(Request $request)
     {
-        $user = $this->user();
+        $user = $this->getUser();
 
         $userValidationCopy = clone $user;
 
