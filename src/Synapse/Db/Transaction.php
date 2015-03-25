@@ -3,13 +3,24 @@
 namespace Synapse\Db;
 
 use Zend\Db\Adapter\Adapter as DbAdapter;
+use Zend\Db\Adapter\Driver\ConnectionInterface;
 
 /**
  * Gateway for starting, committing and rolling back database transactions
  */
 class Transaction
 {
+    /**
+     * @var ConnectionInterface
+     */
     protected $connection;
+
+    /**
+     * The current transaction depth
+     *
+     * @var integer
+     */
+    protected $transactionDepth = 0;
 
     /**
      * @param DbAdapter $dbAdapter Query builder object
@@ -24,7 +35,13 @@ class Transaction
      */
     public function begin()
     {
-        $this->connection->beginTransaction();
+        if ($this->transactionDepth === 0) {
+            $this->connection->beginTransaction();
+        }
+
+        $this->transactionDepth += 1;
+
+        return $this;
     }
 
     /**
@@ -32,7 +49,13 @@ class Transaction
      */
     public function commit()
     {
-        $this->connection->commit();
+        if ($this->transactionDepth === 1) {
+            $this->connection->commit();
+        }
+
+        $this->transactionDepth -= 1;
+
+        return $this;
     }
 
     /**
@@ -40,6 +63,12 @@ class Transaction
      */
     public function rollback()
     {
-        $this->connection->rollback();
+        if ($this->transactionDepth === 1) {
+            $this->connection->rollback();
+        }
+
+        $this->transactionDepth -= 1;
+
+        return $this;
     }
 }

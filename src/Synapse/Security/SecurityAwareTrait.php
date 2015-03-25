@@ -31,13 +31,15 @@ trait SecurityAwareTrait
      *
      * @see TokenInterface::getUser()
      */
-    public function user()
+    public function getUser()
     {
         if (null === $token = $this->security->getToken()) {
             return null;
         }
 
-        if (!is_object($user = $token->getUser())) {
+        $user = $token->getUser();
+
+        if (! is_object($user)) {
             return null;
         }
 

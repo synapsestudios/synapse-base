@@ -2,65 +2,45 @@
 
 namespace Test\Synapse\Email;
 
-use PHPUnit_Framework_TestCase;
-use Synapse\Email\SendEmailCommandProxy;
+use Synapse\TestHelper\CommandTestCase;
 use Synapse\Email\SendEmailCommand;
 use Synapse\Install\GenerateInstallCommand;
 use Synapse\Email\EmailEntity;
 
-class SendEmailCommandTest extends PHPUnit_Framework_TestCase
+class SendEmailCommandTest extends CommandTestCase
 {
     public function setUp()
     {
-        $this->sendCommand = new SendEmailCommandProxy('email:send');
-        $this->sendCommand->setApp($this->getMockApp());
+        parent::setUp();
+
+        $this->command = new SendEmailCommand('email:send');
 
         // Create mocks
         $this->mockEmailMapper = $this->getMockBuilder('Synapse\Email\EmailMapper')
             ->disableOriginalConstructor()
             ->getMock();
+
         $this->mockEmailSender = $this->getMock('Synapse\Email\SenderInterface');
+
         $this->mockInputInterface = $this->getMock('Symfony\Component\Console\Input\InputInterface');
         $this->mockOutputInterface = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
     }
 
-    public function getMockApp()
-    {
-        return $this->getMockBuilder('Synapse\Application')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
     public function withConfiguredSendObject()
     {
-        $this->sendCommand->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailMapper($this->mockEmailMapper);
-            $command->setEmailSender($this->mockEmailSender);
-            return $command;
-        });
+        $this->command->setEmailMapper($this->mockEmailMapper);
+        $this->command->setEmailSender($this->mockEmailSender);
     }
 
-    public function withEmailThatIsNotFound()
+    public function withEmailNotFound()
     {
-         $this->mockInputInterface->expects($this->once())
-            ->method('getArgument')
-            ->with($this->equalTo('id'))
-            ->will($this->returnValue('emailId'));
-
         $this->mockEmailMapper->expects($this->once())
             ->method('findById')
-            ->with($this->equalTo('emailId'))
-            ->will($this->returnValue(new EmailEntity));
+            ->will($this->returnValue(false));
     }
 
-    public function withEmailThatIsFound()
+    public function withEmailFound()
     {
-         $this->mockInputInterface->expects($this->once())
-            ->method('getArgument')
-            ->with($this->equalTo('id'))
-            ->will($this->returnValue('emailId'));
-
         $email = new EmailEntity();
         $email->exchangeArray(['id' => 'emailId']);
 
@@ -108,16 +88,10 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfEmailSenderNotSet()
     {
-        $this->sendCommand->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailMapper($this->mockEmailMapper);
-            return $command;
-        });
+        $command = new SendEmailCommand;
+        $command->setEmailMapper($this->mockEmailMapper);
 
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
+        $this->executeCommand();
     }
 
     /**
@@ -125,16 +99,10 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
      */
     public function testThrowsExceptionIfEmailMapperNotSet()
     {
-        $this->sendCommand->setFactory(function () {
-            $command = new SendEmailCommand;
-            $command->setEmailSender($this->mockEmailSender);
-            return $command;
-        });
+        $command = new SendEmailCommand;
+        $command->setEmailSender($this->mockEmailSender);
 
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
+        $this->executeCommand();
     }
 
     /**
@@ -143,69 +111,30 @@ class SendEmailCommandTest extends PHPUnit_Framework_TestCase
     public function testThrowsExceptionIfEmailSpecifiedInInputNotFound()
     {
         $this->withConfiguredSendObject();
-        $this->withEmailThatIsNotFound();
+        $this->withEmailNotFound();
 
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
+        $this->executeCommand(['id' => '1']);
     }
 
     public function testEmailPassedToSendersSendMethodIfEmailFound()
     {
         $this->withConfiguredSendObject();
-        $email = $this->withEmailThatIsFound();
+        $email = $this->withEmailFound();
 
         $this->withSuccessfullySentEmail($email);
 
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
+        $this->executeCommand(['id' => 'emailId']);
     }
 
     public function testReturns500IfStatusIsNotSent()
     {
         $this->withConfiguredSendObject();
-        $email = $this->withEmailThatIsFound();
+        $email = $this->withEmailFound();
 
         $this->withRejectedEmail($email);
 
-        $returnValue = $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
+        $returnValue = $this->executeCommand(['id' => 'emailId']);
 
         $this->assertEquals(500, $returnValue);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testProxyThrowsExceptionIfFactoryDoesNotReturnCommand()
-    {
-        $this->sendCommand->setFactory(function () {
-            return null;
-        });
-
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testProxyThrowsExceptionIfFactoryReturnsIncorrectInstance()
-    {
-        $this->sendCommand->setFactory(function () {
-            return new GenerateInstallCommand;
-        });
-
-        $this->sendCommand->run(
-            $this->mockInputInterface,
-            $this->mockOutputInterface
-        );
     }
 }

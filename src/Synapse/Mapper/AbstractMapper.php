@@ -13,6 +13,7 @@ use Synapse\Log\LoggerAwareTrait;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\PreparableSqlInterface;
+use Zend\Db\ResultSet\ResultSet;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Zend\Stdlib\Hydrator\ArraySerializable;
 
@@ -66,9 +67,24 @@ abstract class AbstractMapper implements LoggerAwareInterface
     protected $sqlFactory;
 
     /**
+     * The name of the column where a time created datetime is stored
+     *
+     * @var string
+     */
+    protected $createdDatetimeColumn = null;
+
+    /**
+     * The name of the column where a time updated datetime is stored
+     *
+     * @var string
+     */
+    protected $updatedDatetimeColumn = null;
+
+    /**
      * The name of the column where a time created timestamp is stored
      *
      * @var string
+     * @deprecated Use createdDatetimeColumn instead
      */
     protected $createdTimestampColumn = null;
 
@@ -76,8 +92,23 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * The name of the column where a time updated timestamp is stored
      *
      * @var string
+     * @deprecated Use updatedDatetimeColumn instead
      */
     protected $updatedTimestampColumn = null;
+
+    /**
+     * Array of primary key columns
+     *
+     * @var array
+     */
+    protected $primaryKey = ['id'];
+
+    /**
+     * Column that auto increments. Set to null if none.
+     *
+     * @var string
+     */
+    protected $autoIncrementColumn = 'id';
 
     /**
      * Set injected objects as properties
@@ -157,17 +188,37 @@ abstract class AbstractMapper implements LoggerAwareInterface
         return $this;
     }
 
+    /**
+     * Get a wheres array for finding the row that matches an entity
+     *
+     * @return array
+     */
+    protected function getPrimaryKeyWheres(AbstractEntity $entity)
+    {
+        $wheres = [];
+
+        $arrayCopy = $entity->getArrayCopy();
+        foreach ($this->primaryKey as $keyColumn) {
+            $wheres[$keyColumn] = $arrayCopy[$keyColumn];
+        }
+
+        return $wheres;
+    }
+
+    /**
+     * Set up the hydrator and prototype of this mapper if not yet set
+     */
     protected function initialize()
     {
         if ($this->initialized) {
             return;
         }
 
-        if (!is_object($this->prototype)) {
+        if (! is_object($this->prototype)) {
             $this->prototype = new ArrayObject;
         }
 
-        if (!$this->hydrator instanceof HydratorInterface) {
+        if (! $this->hydrator instanceof HydratorInterface) {
             $this->hydrator = new ArraySerializable;
         }
 
@@ -221,15 +272,19 @@ abstract class AbstractMapper implements LoggerAwareInterface
     }
 
     /**
-     * Rename to getSqlObject, but this method kept for backwards compatibility
+     * Execute the given query and return the result as an array of arrays
      *
-     * @return Sql
-     *
-     * @codeCoverageIgnore
+     * @param  PreparableSqlInterface $query Query to be executed
+     * @return array
      */
-    protected function sql()
+    protected function executeAndGetResultsAsArray(PreparableSqlInterface $query)
     {
-        return $this->getSqlObject();
+        $statement = $this->getSqlObject()->prepareStatementForSqlObject($query);
+        $resultSet = new ResultSet();
+
+        $resultSet->initialize($statement->execute());
+
+        return $resultSet->toArray();
     }
 
     /**
@@ -239,11 +294,6 @@ abstract class AbstractMapper implements LoggerAwareInterface
      */
     protected function getSqlObject()
     {
-        // For backwards compatibility, support the old unmockable way
-        if (! $this->sqlFactory) {
-            return new Sql($this->dbAdapter, $this->tableName);
-        }
-
         return $this->sqlFactory->getSqlObject(
             $this->dbAdapter,
             $this->tableName

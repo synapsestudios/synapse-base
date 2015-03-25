@@ -22,8 +22,8 @@ class FinderTraitTest extends MapperTestCase
 
         $this->prototype = $this->createPrototype();
 
-        $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new Mapper($this->mocks['adapter'], $this->prototype);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
 
         $this->mapper->setResultsPerPage(self::RESULTS_PER_PAGE);
     }
@@ -199,6 +199,21 @@ class FinderTraitTest extends MapperTestCase
         $this->assertRegExp($regexp, $this->getSqlString());
     }
 
+    public function testFindBySetsOrderByColumnAscendingIfOrderColumnProvidedInOptionsArray()
+    {
+        $orderColumn = 'ad9fe8c7';
+
+        $options = ['order' => [$orderColumn]];
+
+        $constraints = $this->createSearchConstraints();
+
+        $this->mapper->findBy($constraints, $options);
+
+        $regexp = sprintf('/ORDER BY `%s` ASC/', $orderColumn);
+
+        $this->assertRegExp($regexp, $this->getSqlString());
+    }
+
     /**
      * @dataProvider provideOrderDirectionValues
      */
@@ -339,6 +354,60 @@ class FinderTraitTest extends MapperTestCase
         );
 
         $this->assertRegExpOnSqlString($regexp);
+    }
+
+    public function testFindAllByFormsNotInWhereClausesCorrectly()
+    {
+        $inArray = ['bar', 'baz', 'qux'];
+
+        $this->mapper->findAllBy([
+            ['foo', 'NOT IN', $inArray]
+        ]);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` NOT IN \(\'bar\', \'baz\', \'qux\'\)/');
+    }
+
+    public function testFindAllByFormsIsNullClausesCorrectly()
+    {
+        $this->mapper->findAllBy([
+            ['foo', 'IS', 'NULL']
+        ]);
+
+        $regexp = '/WHERE `foo` IS NULL/';
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->mapper->findAllBy([
+            ['foo', 'IS', null]
+        ]);
+
+        $this->assertRegExpOnSqlString($regexp, 1);
+    }
+
+    public function testFindAllByFormsIsNotNullClausesCorrectly()
+    {
+        $this->mapper->findAllBy([
+            ['foo', 'IS NOT', 'NULL']
+        ]);
+
+        $regexp = '/WHERE `foo` IS NOT NULL/';
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->mapper->findAllBy([
+            ['foo', 'IS NOT', null]
+        ]);
+
+        $this->assertRegExpOnSqlString($regexp, 1);
+    }
+
+    public function testFindAllByFormsInClausesWith3ItemsCorrectly()
+    {
+        $this->mapper->findAllBy([
+            'foo' => [1, 2, 3]
+        ]);
+
+        $this->assertRegExpOnSqlString('/WHERE `foo` IN \(\'1\', \'2\', \'3\'\)/');
     }
 
     /**

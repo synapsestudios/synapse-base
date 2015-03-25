@@ -5,7 +5,6 @@ namespace Synapse\Migration;
 use Synapse\Command\CommandInterface;
 use Synapse\View\Migration\Create as CreateMigrationView;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -19,7 +18,7 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * View for new migration files
      *
-     * @var Synapse\View\Migration\Create
+     * @var \Synapse\View\Migration\Create
      */
     protected $newMigrationView;
 
@@ -28,7 +27,6 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * Set the injected new migration view, call the parent constructor
      *
-     * @param string              $name             Name of the console command
      * @param CreateMigrationView $newMigrationView
      */
     public function __construct(CreateMigrationView $newMigrationView)
@@ -40,6 +38,8 @@ class CreateMigrationCommand implements CommandInterface
      * Set the namespace for the migrations
      *
      * @param string $namespace
+     *
+     * @return $this
      */
     public function setMigrationNamespace($namespace)
     {
@@ -57,7 +57,7 @@ class CreateMigrationCommand implements CommandInterface
     {
         $description = $input->getArgument('description');
         $time        = date('YmdHis');
-        $classname   = $this->classname($time, $description);
+        $classname   = $this->generateClassName($time, $description);
         $filepath    = APPDIR.'/src/'.$this->namespaceToPath().$classname.'.php';
 
         if (! is_dir(dirname($filepath))) {
@@ -81,24 +81,24 @@ class CreateMigrationCommand implements CommandInterface
     /**
      * Get the name of the new migration class
      *
-     * Converts description to camelCase and appends timestamp.
+     * Converts description to PascalCase and prepends constant string and timestamp.
      * Example:
      *     // From:
      *     Example description of a migration
      *
      *     // To:
-     *     ExampleDescriptionOfAMigration20140220001906
+     *     Migration20140220001906ExampleDescriptionOfAMigration
      *
      * @param  string $time        Timestamp
      * @param  string $description User-provided description of new migration
      * @return string
      */
-    protected function classname($time, $description)
+    protected function generateClassName($time, $description)
     {
         $description = substr(strtolower($description), 0, 30);
         $description = ucwords($description);
         $description = preg_replace('/[^a-zA-Z]+/', '', $description);
-        return $description.$time;
+        return 'Migration'.$time.$description;
     }
 
     /**

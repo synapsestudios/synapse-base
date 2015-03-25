@@ -14,7 +14,7 @@ class SecurityServiceProvider implements ServiceProviderInterface
     {
         $app->initializer(
             'Synapse\Security\SecurityAwareInterface',
-            function ($object) use ($app) {
+            function ($object, $app) {
                 $object->setSecurityContext($app['security']);
                 return $object;
             }

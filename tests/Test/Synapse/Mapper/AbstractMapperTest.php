@@ -12,7 +12,9 @@ class AbstractMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new Mapper($this->mockAdapter);
+        $this->mapper = new Mapper($this->mocks['adapter']);
+
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createPrototype()
@@ -27,11 +29,6 @@ class AbstractMapperTest extends MapperTestCase
             'email'    => 'address@a.com',
             'password' => 'password',
         ]);
-    }
-
-    public function capturingSqlStrings()
-    {
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
     }
 
     public function testGetPrototypeReturnsCloneOfPrototype()
@@ -67,8 +64,6 @@ class AbstractMapperTest extends MapperTestCase
 
     public function testPersistCallsUpdateIfEntityHasId()
     {
-        $this->capturingSqlStrings();
-
         $entity = $this->createEntity();
 
         $this->mapper->persist($entity);
@@ -78,8 +73,6 @@ class AbstractMapperTest extends MapperTestCase
 
     public function testPersistCallsInsertIfEntityDoesNotHaveId()
     {
-        $this->capturingSqlStrings();
-
         $entity = $this->createEntity()->setId(null);
 
         $this->mapper->persist($entity);
@@ -100,7 +93,7 @@ class AbstractMapperTest extends MapperTestCase
         $hydrator1 = $reflectionObject->getProperty('hydrator');
         $hydrator1->setAccessible(true);
 
-        $this->mapper->__construct($this->mockAdapter);
+        $this->mapper->__construct($this->mocks['adapter']);
 
         $hydrator2 = $reflectionObject->getProperty('hydrator');
         $hydrator2->setAccessible(true);
@@ -109,5 +102,27 @@ class AbstractMapperTest extends MapperTestCase
             $hydrator1->getValue($hydrator1),
             $hydrator2->getValue($hydrator2)
         );
+    }
+
+    public function testQueryingAlternateTableIsMockedCorrectlyAsInZendDb()
+    {
+        $this->mapper->queryAlternateTable();
+
+        $this->assertRegExpOnSqlString('/SELECT `other_table`.* FROM `other_table` WHERE `foo` = \'bar\'/');
+    }
+
+    public function testExecuteAndGetResultsAsArrayReturnsResultsAsArray()
+    {
+        $mockResults = [
+            ['foo' => 'bar'],
+            ['foo' => 'baz'],
+        ];
+
+        $this->setMockResults($mockResults);
+
+        $result = $this->mapper->performQueryAndGetResultsAsArray();
+
+        $this->assertInternalType('array', $result);
+        $this->assertEquals($mockResults, $result);
     }
 }

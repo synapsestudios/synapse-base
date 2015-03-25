@@ -14,11 +14,20 @@ class UpdaterTraitTest extends MapperTestCase
         $this->prototype = $this->createPrototype();
         $this->timestampPrototype = $this->createTimestampPrototype();
 
-        $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new Mapper($this->mocks['adapter'], $this->prototype);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
 
-        $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
-        $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
+        $this->timestampMapper = new TimestampColumnMapper($this->mocks['adapter'], $this->timestampPrototype);
+        $this->timestampMapper->setSqlFactory($this->mocks['sqlFactory']);
+
+        $this->datetimeMapper = new DatetimeColumnMapper($this->mocks['adapter'], $this->timestampPrototype);
+        $this->datetimeMapper->setSqlFactory($this->mocks['sqlFactory']);
+
+        $this->differentPrimaryKeyMapper = new MapperWithDifferentPrimaryKey(
+            $this->mocks['adapter'],
+            $this->prototype
+        );
+        $this->differentPrimaryKeyMapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createPrototype()
@@ -129,5 +138,41 @@ class UpdaterTraitTest extends MapperTestCase
         $this->assertRegExpOnSqlString($regexp);
 
         $this->assertNotNull($entity->getUpdated());
+    }
+
+    public function testUpdateSetsUpdatedDatetimeColumnAutomaticallyOnEntityAndDbQuery()
+    {
+        $entity = $this->createTimestampEntityToUpdate()
+            ->setUpdated(null);
+
+        $this->datetimeMapper->update($entity);
+
+        $regexp = sprintf(
+            '/\SET .+ `updated` = \'%s+\' WHERE/',
+            '(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})' // datetime pattern
+        );
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->assertNotNull($entity->getUpdated());
+    }
+
+    public function testUpdateOnMapperWithDifferentPrimaryKeyDoesWhereOnPrimaryKeyFields()
+    {
+        $keyValues = [
+            'id'    => '123',
+            'email' => 'foo@bar.com'
+        ];
+        $entity = new UserEntity($keyValues);
+
+        $this->differentPrimaryKeyMapper->update($entity);
+
+        $this->assertRegExpOnSqlString(
+            sprintf(
+                '/WHERE `id` = \'%s\' AND `email` = \'%s\'/',
+                $keyValues['id'],
+                $keyValues['email']
+            )
+        );
     }
 }

@@ -14,11 +14,20 @@ class InserterTraitTest extends MapperTestCase
         $this->prototype          = $this->createPrototype();
         $this->timestampPrototype = $this->createTimestampPrototype();
 
-        $this->mapper = new Mapper($this->mockAdapter, $this->prototype);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new Mapper($this->mocks['adapter'], $this->prototype);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
 
-        $this->timestampMapper = new TimestampColumnMapper($this->mockAdapter, $this->timestampPrototype);
-        $this->timestampMapper->setSqlFactory($this->mockSqlFactory);
+        $this->timestampMapper = new TimestampColumnMapper($this->mocks['adapter'], $this->timestampPrototype);
+        $this->timestampMapper->setSqlFactory($this->mocks['sqlFactory']);
+
+        $this->datetimeMapper = new DatetimeColumnMapper($this->mocks['adapter'], $this->timestampPrototype);
+        $this->datetimeMapper->setSqlFactory($this->mocks['sqlFactory']);
+
+        $this->invalidAutoincrementMapper = new InvalidAutoincrementMapper(
+            $this->mocks['adapter'],
+            $this->timestampPrototype
+        );
+        $this->invalidAutoincrementMapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createPrototype()
@@ -112,6 +121,23 @@ class InserterTraitTest extends MapperTestCase
         $entity = $this->createTimestampEntityToInsert()
             ->setCreated(null);
 
+        $this->datetimeMapper->insert($entity);
+
+        $regexp = sprintf(
+            '/\(`id`, `foo`, `created`, `updated`\) VALUES \(NULL, \'bar\', \'%s+\', NULL\)/',
+            '(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})' // datetime pattern
+        );
+
+        $this->assertRegExpOnSqlString($regexp);
+
+        $this->assertNotNull($entity->getCreated());
+    }
+
+    public function testInsertSetsCreatedDatetimeColumnAutomaticallyOnEntityAndDbQuery()
+    {
+        $entity = $this->createTimestampEntityToInsert()
+            ->setCreated(null);
+
         $this->timestampMapper->insert($entity);
 
         $regexp = sprintf('/\(`id`, `foo`, `created`, `updated`\) VALUES \(NULL, \'bar\', \'[0-9]+\', NULL\)/');
@@ -119,5 +145,35 @@ class InserterTraitTest extends MapperTestCase
         $this->assertRegExpOnSqlString($regexp);
 
         $this->assertNotNull($entity->getCreated());
+    }
+
+    public function testInsertSetsGeneratedAutoIncrementIdOnEntityIfEntityDoesNotAlreadyHaveAnId()
+    {
+        $entity     = $this->createEntityToInsert();
+        $expectedId = self::GENERATED_ID;
+
+        $this->mapper->insert($entity);
+
+        $this->assertEquals($expectedId, $entity->getId());
+    }
+
+    public function testInsertDoesNotSetIdOnEntityIfEntityAlreadyHasAnId()
+    {
+        $entity     = $this->createEntityToInsert();
+        $expectedId = self::GENERATED_ID + 1;
+
+        $entity->setId($expectedId);
+        $this->mapper->insert($entity);
+
+        $this->assertEquals($expectedId, $entity->getId());
+    }
+
+    public function testInsertThrowsExceptionIfAutoincrementColumnNotInEntity()
+    {
+        $this->setExpectedException('LogicException');
+
+        $entity = $this->createEntityToInsert();
+
+        $this->invalidAutoincrementMapper->insert($entity);
     }
 }

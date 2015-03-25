@@ -10,16 +10,24 @@ use Synapse\Entity\AbstractEntity;
 trait UpdaterTrait
 {
     /**
-     * Update the given entity in the database
+     * Update the given entity in the database.
      *
      * @param  AbstractEntity $entity
      * @return AbstractEntity
      */
     public function update(AbstractEntity $entity)
     {
-        $values = $entity->getDbValues();
+        if ($this->updatedTimestampColumn) {
+            $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
+        }
 
-        return $this->updateRow($entity, $values);
+        if ($this->updatedDatetimeColumn) {
+            $entity->exchangeArray([$this->updatedDatetimeColumn => date('Y-m-d H:i:s')]);
+        }
+
+        $this->updateRow($entity);
+
+        return $entity;
     }
 
     /**
@@ -28,29 +36,16 @@ trait UpdaterTrait
      *
      * @param  AbstractEntity $entity
      * @param  array          $values Values to set on the entity
-     * @return AbstractEntity
      */
-    protected function updateRow(AbstractEntity $entity, array $values)
+    protected function updateRow(AbstractEntity $entity)
     {
-        if ($this->updatedTimestampColumn) {
-            $timestamp = time();
-
-            $entity->exchangeArray([$this->updatedTimestampColumn => $timestamp]);
-
-            $values[$this->updatedTimestampColumn] = $timestamp;
-        }
-
-        unset($values['id']);
-
-        $condition = ['id' => $entity->getId()];
+        $values = $entity->getDbValues();
 
         $query = $this->getSqlObject()
             ->update()
             ->set($values)
-            ->where($condition);
+            ->where($this->getPrimaryKeyWheres($entity));
 
         $this->execute($query);
-
-        return $entity;
     }
 }

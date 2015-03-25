@@ -20,7 +20,7 @@ class ControllerServiceProvider implements ServiceProviderInterface
 
         $app->initializer(
             'Synapse\\Application\\UrlGeneratorAwareInterface',
-            function ($object) use ($app) {
+            function ($object, $app) {
                 $object->setUrlGenerator($app['url_generator']);
                 return $object;
             }
@@ -28,7 +28,7 @@ class ControllerServiceProvider implements ServiceProviderInterface
 
         $app->initializer(
             'Synapse\\Debug\\DebugModeAwareInterface',
-            function ($object) use ($app) {
+            function ($object, $app) {
                 $object->setDebug($app['debug']);
                 return $object;
             }

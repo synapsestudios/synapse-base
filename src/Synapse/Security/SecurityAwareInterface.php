@@ -16,5 +16,5 @@ interface SecurityAwareInterface
      *
      * @return mixed
      */
-    public function user();
+    public function getUser();
 }

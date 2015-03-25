@@ -14,8 +14,8 @@ class RefreshTokenMapperTest extends MapperTestCase
     {
         parent::setUp();
 
-        $this->mapper = new RefreshTokenMapper($this->mockAdapter, new RefreshTokenEntity);
-        $this->mapper->setSqlFactory($this->mockSqlFactory);
+        $this->mapper = new RefreshTokenMapper($this->mocks['adapter'], new RefreshTokenEntity);
+        $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
     }
 
     public function createEntity()

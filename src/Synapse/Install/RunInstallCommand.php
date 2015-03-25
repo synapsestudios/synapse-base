@@ -156,7 +156,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
     {
         $dropTables = $input->getOption('drop-tables');
 
-        if (! $this->hasTables() || $dropTables) {
+        if (! $this->hasTablesOrViews() || $dropTables) {
             if ($dropTables && $this->appEnv === 'production') {
                 $output->writeln('Cannot drop tables when app environment is production.');
                 return;
@@ -166,6 +166,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
             $output->write(['', '  -- APP INSTALL --', ''], true);
 
             $output->write(['  Dropping tables', ''], true);
+            $this->dropViews();
             $this->dropTables();
 
             try {
@@ -193,7 +194,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
      *
      * @return boolean Whether or not there are existing tables
      */
-    protected function hasTables()
+    protected function hasTablesOrViews()
     {
         $tables = $this->db->query('SHOW TABLES', DbAdapter::QUERY_MODE_EXECUTE);
 
@@ -205,7 +206,10 @@ class RunInstallCommand extends AbstractDatabaseCommand
      */
     protected function dropTables()
     {
-        $tables = $this->db->query('SHOW TABLES', DbAdapter::QUERY_MODE_EXECUTE);
+        $tables = $this->db->query(
+            'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "BASE_TABLE"',
+            DbAdapter::QUERY_MODE_EXECUTE
+        );
 
         // Disable foreign key checks -- we are wiping the database on purpose
         $this->db->query(
@@ -225,6 +229,24 @@ class RunInstallCommand extends AbstractDatabaseCommand
             'SET FOREIGN_KEY_CHECKS = 1',
             DbAdapter::QUERY_MODE_EXECUTE
         );
+    }
+
+    /**
+     * Drop all views from the database
+     */
+    protected function dropViews()
+    {
+        $views = $this->db->query(
+            'SHOW FULL TABLES WHERE TABLE_TYPE LIKE "VIEW"',
+            DbAdapter::QUERY_MODE_EXECUTE
+        );
+
+        foreach ($views as $view) {
+            $this->db->query(
+                'DROP VIEW '.reset($view),
+                DbAdapter::QUERY_MODE_EXECUTE
+            );
+        }
     }
 
     /**

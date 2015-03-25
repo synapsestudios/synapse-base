@@ -4,6 +4,7 @@ namespace Synapse\Stdlib;
 
 use BadMethodCallException;
 use InvalidArgumentException;
+use Synapse\Entity\AbstractEntity;
 use Zend\Stdlib\ArraySerializableInterface;
 
 abstract class DataObject implements ArraySerializableInterface
@@ -141,5 +142,65 @@ abstract class DataObject implements ArraySerializableInterface
         }
 
         return $property;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as an integer
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsInteger($field, $value)
+    {
+        $this->object[$field] = (int) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a float
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsFloat($field, $value)
+    {
+        $this->object[$field] = (float) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a boolean
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsBoolean($field, $value)
+    {
+        $this->object[$field] = (bool) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a string
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsString($field, $value)
+    {
+        $this->object[$field] = (string) $value;
+
+        return $this;
     }
 }

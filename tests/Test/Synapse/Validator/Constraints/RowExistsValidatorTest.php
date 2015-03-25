@@ -2,76 +2,24 @@
 
 namespace Test\Synapse\Validator\Constraints;
 
-use Synapse\TestHelper\ValidatorConstraintTestCase;
 use Synapse\Validator\Constraints\RowExistsValidator;
-use Test\Synapse\Entity\GenericEntity;
 
-class RowExistsValidatorTest extends ValidatorConstraintTestCase
+class RowExistsValidatorTest extends AbstractRowExistsTestCase
 {
+    const MESSAGE = 'Entity must exist with {{ field }} field equal to {{ value }}.';
+
     public function setUp()
     {
         $this->validator = new RowExistsValidator;
 
-        $this->setUpMocksOnValidator($this->validator);
-        $this->setUpMockConstraint();
-
-        $this->setUpMapperInMockConstraint();
-    }
-
-    public function setUpMockConstraint()
-    {
-        $this->mockConstraint = $this->getMockBuilder('Synapse\Validator\Constraints\RowExists')
-            ->disableOriginalConstructor()
-            ->getMock();
-    }
-
-    public function setUpMapperInMockConstraint()
-    {
-        $this->mockMapper = $this->getMockBuilder('Test\Synapse\Mapper\Mapper')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->mockConstraint->expects($this->any())
-            ->method('getMapper')
-            ->will($this->returnValue($this->mockMapper));
-    }
-
-    public function withEntityFound()
-    {
-        $entity = new GenericEntity;
-
-        $this->mockMapper->expects($this->any())
-            ->method('findBy')
-            ->will($this->returnValue($entity));
-    }
-
-    public function withEntityNotFound()
-    {
-        $this->mockMapper->expects($this->any())
-            ->method('findBy')
-            ->will($this->returnValue(false));
-    }
-
-    public function expectingEntitySearchedForWithFieldAndValue($field, $value)
-    {
-        $wheres = [$field => $value];
-
-        $this->mockMapper->expects($this->once())
-            ->method('findBy')
-            ->with($this->equalTo($wheres));
-    }
-
-    public function validateWithValue($value)
-    {
-        return $this->validator->validate($value, $this->mockConstraint);
+        parent::setUp();
     }
 
     public function testValidateAddsNoViolationsIfEntityFound()
     {
         $this->withEntityFound();
-
+        $this->withFilterCallbackReturningWheres();
         $this->validateWithValue('foo');
-
         $this->assertNoViolationsAdded();
     }
 
@@ -80,6 +28,8 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         $value = 'foo';
 
         $this->withEntityNotFound();
+        $this->withFilterCallbackReturningWheres();
+        $this->mockConstraint->message = self::MESSAGE;
 
         $this->validateWithValue($value);
 
@@ -89,21 +39,9 @@ class RowExistsValidatorTest extends ValidatorConstraintTestCase
         ];
 
         $this->assertViolationAdded(
-            'Entity must exist with {{ field }} field equal to {{ value }}.',
+            self::MESSAGE,
             $params,
             $value
         );
-    }
-
-    public function testValidateSearchesForEntityByFieldSetInConstraint()
-    {
-        $field = 'foo';
-        $value = 'bar';
-
-        $this->mockConstraint->field = $field;
-
-        $this->expectingEntitySearchedForWithFieldAndValue($field, $value);
-
-        $this->validateWithValue($value);
     }
 }

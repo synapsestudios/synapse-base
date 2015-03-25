@@ -4,7 +4,7 @@ namespace Synapse\Mapper;
 
 use InvalidArgumentException;
 use LogicException;
-use Synapse\Mapper\PaginationData;
+use Synapse\Entity\AbstractEntity;
 use Synapse\Stdlib\Arr;
 use Synapse\Entity\EntityIterator;
 use Zend\Db\Sql\Select;
@@ -13,6 +13,9 @@ use Zend\Db\Sql\Predicate\Like;
 use Zend\Db\Sql\Predicate\NotLike;
 use Zend\Db\Sql\Predicate\Operator;
 use Zend\Db\Sql\Predicate\In;
+use Zend\Db\Sql\Predicate\NotIn;
+use Zend\Db\Sql\Predicate\IsNull;
+use Zend\Db\Sql\Predicate\IsNotNull;
 
 /**
  * Use this trait to add find functionality to AbstractMappers.
@@ -51,9 +54,13 @@ trait FinderTrait
 
         $this->setColumns($query, $options);
 
-        $wheres = $this->addJoins($query, $wheres);
+        $wheres = $this->addJoins($query, $wheres, $options);
 
         $this->addWheres($query, $wheres, $options);
+
+        if (Arr::get($options, 'order')) {
+            $this->setOrder($query, $options['order']);
+        }
 
         return $this->executeAndGetResultsAsEntity($query);
     }
@@ -77,8 +84,8 @@ trait FinderTrait
      *                        ['column', 'operator', 'value']
      * @param  array $options Array of options for this request.
      *                        May include 'order', 'page', or 'resultsPerPage'.
-     * @return array          Array of AbstractEntity objects
-     * @throws Exception      If pagination enabled and no 'order' option specified.
+     * @return EntityIterator AbstractEntity objects
+     * @throws LogicException If pagination enabled and no 'order' option specified.
      */
     public function findAllBy(array $wheres, array $options = [])
     {
@@ -135,6 +142,8 @@ trait FinderTrait
      *
      * @param Select $query
      * @param array  $order
+     *
+     * @return Select
      */
     protected function setOrder(Select $query, array $order)
     {
@@ -225,6 +234,8 @@ trait FinderTrait
     {
         foreach ($wheres as $key => $where) {
             if (is_array($where) && count($where) === 3) {
+                $leftOpRightSyntax = true;
+
                 $operator = $where[1];
 
                 switch ($operator)
@@ -280,12 +291,28 @@ trait FinderTrait
                     case 'IN':
                         $predicate = new In($where[0], $where[2]);
                         break;
+                    case 'NOT IN':
+                        $predicate = new NotIn($where[0], $where[2]);
+                        break;
+                    case 'IS':
+                        $predicate = new IsNull($where[0]);
+                        break;
+                    case 'IS NOT':
+                        $predicate = new IsNotNull($where[0]);
+                        break;
+                    default:
+                        $leftOpRightSyntax = false;
+                        break;
                 }
 
-                $query->where($predicate);
+                if ($leftOpRightSyntax === false) {
+                    $predicate = [$key => $where];
+                }
             } else {
-                $query->where([$key => $where]);
+                $predicate = [$key => $where];
             }
+
+            $query->where($predicate);
         }
 
         return $query;
