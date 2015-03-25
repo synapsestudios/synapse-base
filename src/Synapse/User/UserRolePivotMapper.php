@@ -11,8 +11,18 @@ use Zend\Db\Sql\Expression;
  */
 class UserRolePivotMapper extends Mapper\AbstractMapper implements RoleFinderInterface
 {
-    use Mapper\PivotInserterTrait;
-    use Mapper\PivotDeleterTrait;
+    use Mapper\InserterTrait;
+    use Mapper\DeleterTrait;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $primaryKey = ['role_id', 'user_id'];
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $autoIncrementColumn = null;
 
     /**
      * {@inheritDoc}

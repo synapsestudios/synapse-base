@@ -58,6 +58,41 @@ class FooMapper extends Mapper\AbstractMapper {
 }
 ```
 
+### Stop using `PivotInserterTrait` and `PivotDeleterTrait`
+
+These have been removed because the missing functionality that required them to exist has now been added to InserterTrait and DeleterTrait.
+
+```PHP
+// Pre-2.0.0
+class UserRolePivotMapper extends Mapper\AbstractMapper
+{
+    use Mapper\PivotInserterTrait;
+    use Mapper\PivotDeleterTrait;
+
+    // ...
+}
+```
+
+Just make sure to fill in `$this->primaryKey` and `$this->autoIncrementColumn` and your mapper will work as before.
+
+```PHP
+class UserRolePivotMapper extends Mapper\AbstractMapper
+{
+    use Mapper\InserterTrait;
+    use Mapper\DeleterTrait;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $primaryKey = ['role_id', 'user_id'];
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $autoIncrementColumn = null;
+}
+```
+
 ## Test changes
 
 A new TestCase class has been added, which includes a more concise way of
