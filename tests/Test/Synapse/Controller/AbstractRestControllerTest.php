@@ -79,113 +79,15 @@ class AbstractRestControllerTest extends ControllerTestCase
         $this->assertEquals('{"test":"test"}', (string) $response->getContent());
     }
 
-    public function testGetContentAsArrayThrowsExceptionWhichExecuteCatchesAndReturns400IfContentInvalid()
+    /**
+     * @expectedException Synapse\Controller\BadRequestException
+     */
+    public function testGetContentAsArrayThrowsBadRequestExceptionIfContentInvalid()
     {
         $invalidJson = 'This is not JSON.';
-
-        $request = new Request([], [], [], [], [], [], $invalidJson);
-
+        $request     = new Request([], [], [], [], [], [], $invalidJson);
         $request->setMethod('delete');
 
         $response = $this->controller->execute($request);
-
-        $this->assertEquals(400, $response->getStatusCode());
-    }
-
-    public function testRequestThatThrowsAnExceptionReturnsA500Response()
-    {
-        $this->controller->withExceptionThrownOnGet(new Exception(self::ERROR_MESSAGE));
-
-        $response = $this->controller->execute($this->createJsonRequest('GET'));
-
-        $this->assertEquals(500, $response->getStatusCode());
-    }
-
-    public function testRequestThatThrowsExceptionReturnsContentWithExceptionMessageIfDebugging()
-    {
-        $this->controller->withExceptionThrownOnGet(new Exception(self::ERROR_MESSAGE));
-        $this->controller->setDebug(true);
-
-        $response = $this->controller->execute($this->createJsonRequest('GET'));
-
-        $error = json_decode($response->getContent(), true)['error'];
-
-        $this->assertEquals(self::ERROR_MESSAGE, $error);
-    }
-
-    public function testRequestThatThrowsExceptionReturnsContentWithGenericMessageIfNotDebugging()
-    {
-        $this->controller->withExceptionThrownOnGet(new Exception(self::ERROR_MESSAGE));
-        $this->controller->setDebug(false);
-
-        $response = $this->controller->execute($this->createJsonRequest('GET'));
-
-        $error = json_decode($response->getContent(), true)['error'];
-
-        $this->assertEquals(AbstractRestController::SERVER_ERROR_MESSAGE, $error);
-    }
-
-    public function testRequestThatThrowsExceptionReturnsContentWithStackTraceIfDebugging()
-    {
-        $exception = new Exception(self::ERROR_MESSAGE);
-        $this->controller->withExceptionThrownOnGet($exception);
-        $this->controller->setDebug(true);
-
-        $response = $this->controller->execute($this->createJsonRequest('GET'));
-
-        $content = json_decode($response->getContent(), true);
-
-        $this->assertArrayHasKey('trace', $content);
-        $this->assertArrayHasKey('line', $content);
-        $this->assertArrayHasKey('file', $content);
-        $this->assertTrue(is_array($content['trace']));
-    }
-
-    public function testRequestThatThrowsExceptionReturnsContentWithNoStackTraceIfNotDebugging()
-    {
-        $this->controller->withExceptionThrownOnGet(new Exception(self::ERROR_MESSAGE));
-        $this->controller->setDebug(false);
-
-        $response = $this->controller->execute($this->createJsonRequest('GET'));
-
-        $content = json_decode($response->getContent(), true);
-
-        $this->assertArrayNotHasKey('trace', $content);
-        $this->assertArrayNotHasKey('line', $content);
-        $this->assertArrayNotHasKey('file', $content);
-    }
-
-    public function testRequestThatThrowsExceptionLogsErrorMessageAndStackTraceIfDebugging()
-    {
-        $this->capturingLoggedErrors();
-        $exception = new Exception(self::ERROR_MESSAGE);
-        $this->controller->withExceptionThrownOnGet($exception);
-        $this->controller->setDebug(true);
-
-        $this->controller->execute($this->createJsonRequest('GET'));
-
-        $this->assertEquals(1, count($this->captured->loggedErrors));
-        $this->assertEquals($exception->getMessage(), $this->captured->loggedErrors[0]['message']);
-        $this->assertEquals(
-            ['exception' => $exception],
-            $this->captured->loggedErrors[0]['context']
-        );
-    }
-
-    public function testRequestThatThrowsExceptionLogsErrorMessageAndStackTraceIfNotDebugging()
-    {
-        $this->capturingLoggedErrors();
-        $exception = new Exception(self::ERROR_MESSAGE);
-        $this->controller->withExceptionThrownOnGet($exception);
-        $this->controller->setDebug(false);
-
-        $this->controller->execute($this->createJsonRequest('GET'));
-
-        $this->assertEquals(1, count($this->captured->loggedErrors));
-        $this->assertEquals($exception->getMessage(), $this->captured->loggedErrors[0]['message']);
-        $this->assertEquals(
-            ['exception' => $exception],
-            $this->captured->loggedErrors[0]['context']
-        );
     }
 }

@@ -4,6 +4,23 @@ Upgrade Guide
 Pre-2.0.0 -> 2.0.0
 ------------------
 
+## Bootstrap changes
+
+### Remove Routes definition
+
+```PHP
+// Pre-2.0.0
+$defaultRoutes   = new Synapse\Application\Routes;
+$defaultServices = new Synapse\Application\Services;
+
+$defaultRoutes->define($app);
+$defaultServices->register($app);
+
+// 2.0.0
+$defaultServices = new Synapse\Application\Services;
+$defaultServices->register($app);
+```
+
 ## Controller changes
 
 ### Use `$this->getUser()` instead of `$this->user()` to get the logged in user
