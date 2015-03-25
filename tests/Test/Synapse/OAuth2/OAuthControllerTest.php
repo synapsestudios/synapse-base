@@ -162,6 +162,8 @@ class OAuthControllerTest extends ControllerTestCase
     {
         $request = new Request([], $postParams);
 
+        $request->setMethod('post');
+
         return $this->controller->authorizeFormSubmit($request);
     }
 

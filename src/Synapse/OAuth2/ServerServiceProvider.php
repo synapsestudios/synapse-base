@@ -90,7 +90,8 @@ class ServerServiceProvider implements ServiceProviderInterface
         $app->get('/oauth/authorize', 'oauth.controller:authorize')
             ->bind('oauth-authorize');
 
-        $app->post('/oauth/authorize-submit', 'oauth.controller:authorizeFormSubmit')
+        $app->match('/oauth/authorize-submit', 'oauth.controller:authorizeFormSubmit')
+            ->method('GET|POST')
             ->bind('oauth-authorize-form-submit');
 
         $app->post('/oauth/token', 'oauth.controller:token')
