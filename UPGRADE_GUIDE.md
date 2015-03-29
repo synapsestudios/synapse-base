@@ -9,6 +9,8 @@ Pre-2.0.0 -> 2.0.0
 ### Remove Routes definition
 
 ```PHP
+// bootstrap.php
+
 // Pre-2.0.0
 $defaultRoutes   = new Synapse\Application\Routes;
 $defaultServices = new Synapse\Application\Services;
