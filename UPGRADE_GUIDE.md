@@ -33,11 +33,13 @@ The old method alias in `SecurityAwareTrait` has been removed.
 
 ### Update overridden `insert` and `update` methods
 
-Internally, `insert` and `update` call `insertRow` and `updateRow`, respectively, in order to perfom the actual database queries. Children who overrode `insert` or `update` previously may have called `insertRow` and `updateRow` internally. However, the logic that sets magic created/updated timestamp columns was moved from `insertRow` into `insert`. (Same for `updateRow` and `update`.)
+Prior to 2.0.0 it was valid to override `insertRow` and `updateRow`, or to call them in `insert` and `update`. Starting in 2.0.0, mappers should override `insert` and `update` only, and then call the "parent" `insert` and `update` methods rather than `insertRow` and `updateRow`.
+
+#### Pre-2.0.0
+
+There are 2 ways Mappers may have overridden `insert`/`update` before v2.0.0. Take note of the `return` line.
 
 ```PHP
-// Pre-2.0.0
-
 use Synapse\Mapper;
 use Synapse\Entity\AbstractEntity;
 
@@ -55,7 +57,29 @@ class FooMapper extends Mapper\AbstractMapper {
 }
 ```
 
-From 2.0.0 on, overridden `insert` and `update` methods should call the parent `insert` and `update` methods instead of `insertRow` and `updateRow`.
+```PHP
+use Synapse\Mapper;
+use Synapse\Entity\AbstractEntity;
+
+class BarMapper extends Mapper\AbstractMapper {
+    use InserterTrait {
+        insertRow as parentInsertRow;
+    };
+
+    public function insertRow(AbstractEntity $entity)
+    {
+        $values = $entity->getArrayCopy();
+
+        // Custom logic to transform $values
+
+        return $this->parentInsertRow($entity, $values);
+    }
+}
+```
+
+#### Post-2.0.0
+
+Again, take note of the `return` line.
 
 ```PHP
 // 2.0.0
@@ -76,6 +100,8 @@ class FooMapper extends Mapper\AbstractMapper {
     }
 }
 ```
+
+Note: The logic that sets magic created/updated timestamp columns was moved from `insertRow` into `insert`. (Same for `updateRow` and `update`.)
 
 ### Stop using `PivotInserterTrait` and `PivotDeleterTrait`
 
