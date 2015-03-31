@@ -29,9 +29,6 @@ class ApplicationInitializer
         // Handle init config
         $initConfig = $app['config']->load('init');
 
-        // Store application version
-        $app['version'] = $initConfig['version'];
-
         if ($initConfig['debug']) {
             Debug::enable();
             $app['debug'] = true;
