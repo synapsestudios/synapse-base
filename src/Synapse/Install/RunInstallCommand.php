@@ -32,13 +32,6 @@ class RunInstallCommand extends AbstractDatabaseCommand
     protected $installScript;
 
     /**
-     * Current version of the application
-     *
-     * @var string
-     */
-    protected $appVersion;
-
-    /**
      * Current environment of the application
      *
      * @var string
@@ -67,16 +60,6 @@ class RunInstallCommand extends AbstractDatabaseCommand
     public function setUpgradeNamespace($installNamespace)
     {
         $this->installNamespace = $installNamespace;
-    }
-
-    /**
-     * Set the current app version
-     *
-     * @param string $version
-     */
-    public function setAppVersion($version)
-    {
-        $this->appVersion = $version;
     }
 
     /**
@@ -186,7 +169,7 @@ class RunInstallCommand extends AbstractDatabaseCommand
         $output->writeln('  Executing new migrations');
         $this->runMigrationsCommand->run(new ArrayInput(['migrations:run']), $output);
 
-        $output->write([sprintf('  Done!', $this->appVersion), ''], true);
+        $output->write(['  Done!', ''], true);
     }
 
     /**
