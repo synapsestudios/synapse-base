@@ -145,6 +145,20 @@ specifying mocks. Many existing tests will be unaffected, but starting now test 
 should use the `setMocks()` method and extend `Synapse\TestHelper\TestCase`
 instead of `PHPUnit_Framework_TestCase`.
 
+### `setMocks`
+
+`TestCase::setMocks` accepts an array that is a map of `alias` to `className`, as such:
+
+```PHP
+$this->setMocks([
+    'jobMapper'       => 'Application\Job\JobMapper',
+    'intercomService' => 'Application\Intercom\IntercomService',
+]);
+
+// The mock `jobMapper` is accessible from:
+$this->mocks['jobMapper']
+```
+
 For existing tests, the following changes may be necessary:
 
 ### Use the SecurityContextMockInjector trait instead of AbstractSecurityAwareTestCase
