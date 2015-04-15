@@ -40,7 +40,7 @@ class RowExists extends Constraint
         }
 
         if (isset($options['field']) && (! isset($options['message']))) {
-            $this->message = $self::FIELD_MESSAGE;
+            $this->message = static::FIELD_MESSAGE;
         }
 
         if (! method_exists($mapper, 'findBy')) {
