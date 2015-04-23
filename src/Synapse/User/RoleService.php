@@ -28,6 +28,14 @@ class RoleService
      */
     public function addRoleForUser(UserEntity $user, $role)
     {
-        $this->userRolePivotMapper->addRoleForUser($user->getId(), $role);
+        $roles = $user->getRoles();
+
+        if (! in_array($role, $roles)) {
+            $this->userRolePivotMapper->addRoleForUser($user->getId(), $role);
+
+            array_push($roles, $role);
+
+            $user->setRoles($roles);
+        }
     }
 }
