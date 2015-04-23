@@ -56,4 +56,15 @@ class RoleServiceTest extends TestCase
 
         $this->assertContains(self::ROLE, $this->user->getRoles());
     }
+
+    public function testAddRoleForUserDoesNotPersistRoleToDatabaseOrAddToEntityIfAlreadyAdded()
+    {
+        $this->user->setRoles([self::ROLE]);
+        $this->assertCount(1, $this->user->getRoles());
+
+        $this->service->addRoleForUser($this->user, self::ROLE);
+
+        $this->assertCount(1, $this->user->getRoles());
+        $this->assertFalse(isset($this->captured->persistedRole));
+    }
 }
