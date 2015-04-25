@@ -14,9 +14,12 @@ class UserRegistrationValidator extends AbstractArrayValidator
     protected function getConstraints(array $contextData, AbstractEntity $contextEntity = null)
     {
         return [
-            'email' => new Assert\Email([
-                'checkHost' => true
-            ]),
+            'email' => [
+                new Assert\NotBlank(),
+                new Assert\Email([
+                    'checkHost' => true
+                ]),
+            ],
             'password' => new Assert\NotBlank(),
         ];
     }
