@@ -1,5 +1,32 @@
 CHANGELOG
 =========
+## [v2.1.2](https://github.com/synapsestudios/synapse-base/compare/v2.1.1...v2.1.2) (2015-04-25)
+
+* Fixed user creation with an empty string for the email address.
+
+## [v2.1.1](https://github.com/synapsestudios/synapse-base/compare/v2.1.0...v2.1.1) (2015-04-23)
+
+* Setting role on user entity, not just database, in role service.
+
+## [v2.1.0](https://github.com/synapsestudios/synapse-base/compare/v2.0.0...v2.1.0) (2015-04-16)
+
+* Removed View for DB Upgrades.
+
+## [v2.0.0](https://github.com/synapsestudios/synapse-base/compare/v1.4.1...v2.0.0) (2015-03-29)
+
+* Implemented OAuth2 Spec More Accurately.
+* Added base TestCase class.
+* Facilitating testing of time-related logic with TimeAwareInterface.
+* Fixed RowExists constraint giving ContextErrorException when passing field in the options.
+* Fixed RowNotExists constraint returning message from RowExists if no message was supplied.
+* Renamed Application\Routes to Application\ErrorHandlers.
+* Focusing insertRow and updateRow methods.
+* Changed user() to getUser() in SecurityAwareTrait.
+* Removed PivotInserterTrait, PivotUpdaterTrait, and PivotDeleterTrait.
+
+## [v1.4.2](https://github.com/synapsestudios/synapse-base/compare/v1.4.1...v1.4.2) (2015-04-15)
+
+* Patched 1.4.x to fix RowExists for older projects.
 
 ## [v1.4.1](https://github.com/synapsestudios/synapse-base/compare/v1.4.0...v1.4.1) (2015-03-19)
 
