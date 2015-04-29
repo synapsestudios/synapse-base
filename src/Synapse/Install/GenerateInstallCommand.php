@@ -159,7 +159,7 @@ class GenerateInstallCommand implements CommandInterface
             $this->dbConfig['database'],
             $this->dbConfig['username'],
             $this->dbConfig['password'],
-            $outputPath.self::STRUCTURE_FILE
+            $outputPath.'/'.self::STRUCTURE_FILE
         ));
     }
 
@@ -186,7 +186,7 @@ class GenerateInstallCommand implements CommandInterface
             implode(' ', $tables),
             escapeshellarg($this->dbConfig['username']),
             escapeshellarg($this->dbConfig['password']),
-            escapeshellarg($outputPath.self::DATA_FILE)
+            escapeshellarg($outputPath.'/'.self::DATA_FILE)
         );
 
         return shell_exec($command);
