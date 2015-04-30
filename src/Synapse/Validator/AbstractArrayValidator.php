@@ -50,7 +50,10 @@ abstract class AbstractArrayValidator
 
         $constraints = $this->getConstraints($values, $contextEntity);
 
-        $arrayConstraint = new Assert\Collection($constraints);
+        $arrayConstraint = new Assert\Collection([
+            'fields'               => $constraints,
+            'missingFieldsMessage' => 'MISSING',
+        ]);
 
         return $this->validator->validateValue(
             $values,
