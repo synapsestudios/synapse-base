@@ -14,6 +14,8 @@ use Synapse\Entity\AbstractEntity;
  */
 abstract class AbstractArrayValidator
 {
+    const MISSING = 'MISSING';
+
     /**
      * Symfony validator component
      *
@@ -52,7 +54,7 @@ abstract class AbstractArrayValidator
 
         $arrayConstraint = new Assert\Collection([
             'fields'               => $constraints,
-            'missingFieldsMessage' => 'MISSING',
+            'missingFieldsMessage' => self::MISSING,
         ]);
 
         return $this->validator->validateValue(
