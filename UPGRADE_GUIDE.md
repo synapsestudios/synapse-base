@@ -1,6 +1,27 @@
 Upgrade Guide
 =============
 
+Pre-3.0.0 -> 3.0.0
+------------------
+
+### New configuration file
+
+Add `login.php` to your `config` directory. The default value is `false`.
+```
+<?php
+
+/**
+ * Settings
+ * ========
+ *
+ * requireVerification Require the user to be verified before logging in
+ */
+
+return [
+    'requireVerification' => true,
+];
+```
+
 Pre-2.0.0 -> 2.0.0
 ------------------
 
