@@ -3,6 +3,7 @@
 namespace Test\Synapse\OAuth2;
 
 use Synapse\User\UserEntity;
+use Synapse\Stdlib\Arr;
 use Synapse\TestHelper\ControllerTestCase;
 use Synapse\OAuth2\OAuthController;
 use stdClass;
@@ -21,6 +22,7 @@ class OAuthControllerTest extends ControllerTestCase
         $this->setUpMockMustacheEngine();
         $this->setUpMockSession();
         $this->setUpMockUrlGenerator();
+        $this->setUpMockLoginConfig();
 
         $this->controller = new OAuthController(
             $this->mockOAuth2Server,
@@ -28,7 +30,8 @@ class OAuthControllerTest extends ControllerTestCase
             $this->mockAccessTokenMapper,
             $this->mockRefreshTokenMapper,
             $this->mockMustacheEngine,
-            $this->mockSession
+            $this->mockSession,
+            $this->mockLoginConfig
         );
 
         $this->controller->setUrlGenerator($this->mockUrlGenerator);
@@ -83,6 +86,13 @@ class OAuthControllerTest extends ControllerTestCase
             ->getMock();
     }
 
+    public function setUpMockLoginConfig()
+    {
+        $this->mockLoginConfig = [
+            'requireVerification' => true,
+        ];
+    }
+
     public function expectingTemplateVarsSet($vars)
     {
         $this->mockMustacheEngine->expects($this->once())
@@ -127,6 +137,8 @@ class OAuthControllerTest extends ControllerTestCase
     {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
+        $attributes['enabled']  = Arr::get($attributes, 'enabled', '1');
+        $attributes['verified'] = Arr::get($attributes, 'verified', '1');
         $attributes['password'] = $hashedPassword;
 
         $user = new UserEntity($attributes);
@@ -284,6 +296,48 @@ class OAuthControllerTest extends ControllerTestCase
             );
 
         $this->withUserFoundHavingPassword($password, ['id' => $userId]);
+
+        $this->performPostRequestToAuthorizeFormSubmit([
+            'password' => $password,
+        ]);
+    }
+
+    public function testAuthorizeFormSubmitDoesNotAuthorizeUnverifiedUser()
+    {
+        $userId   = 123;
+        $password = 'foo';
+
+        $this->mockOAuth2Server->expects($this->never())
+            ->method('handleAuthorizeRequest')
+            ->with(
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request'),
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response'),
+                $this->equalTo(true),
+                $this->equalTo($userId)
+            );
+
+        $this->withUserFoundHavingPassword($password, ['id' => $userId, 'verified' => '0']);
+
+        $this->performPostRequestToAuthorizeFormSubmit([
+            'password' => $password,
+        ]);
+    }
+
+    public function testAuthorizeFormSubmitDoesNotAuthorizeDisabledUser()
+    {
+        $userId   = 123;
+        $password = 'foo';
+
+        $this->mockOAuth2Server->expects($this->never())
+            ->method('handleAuthorizeRequest')
+            ->with(
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request'),
+                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response'),
+                $this->equalTo(true),
+                $this->equalTo($userId)
+            );
+
+        $this->withUserFoundHavingPassword($password, ['id' => $userId, 'enabled' => '0']);
 
         $this->performPostRequestToAuthorizeFormSubmit([
             'password' => $password,
