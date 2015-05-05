@@ -2,6 +2,7 @@
 
 namespace Synapse\OAuth2;
 
+use Exception;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\RequestMatcher;
@@ -60,13 +61,16 @@ class ServerServiceProvider implements ServiceProviderInterface
         });
 
         $app['oauth.controller'] = $app->share(function ($app) {
+            $loginConfiguration = $app['config']->load('login');
+
             return new OAuthController(
                 $app['oauth_server'],
                 $app['user.service'],
                 $app['oauth-access-token.mapper'],
                 $app['oauth-refresh-token.mapper'],
                 $app['mustache'],
-                $app['session']
+                $app['session'],
+                $loginConfiguration['requireVerification']
             );
         });
 
