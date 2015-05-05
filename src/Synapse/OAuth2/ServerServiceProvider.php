@@ -63,7 +63,7 @@ class ServerServiceProvider implements ServiceProviderInterface
         $app['oauth.controller'] = $app->share(function ($app) {
             try {
                 $loginConfiguration = $app['config']->load('login');
-            } catch(Exception $e) {
+            } catch (Exception $e) {
                 $loginConfiguration = [];
             }
 
