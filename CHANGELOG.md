@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## [v3.0.0](https://github.com/synapsestudios/synapse-base/compare/v2.1.2...v3.0.0) (2015-05-05)
+
+* Adds a new config file, `login.php`, which allows for requiring a user to be verified before login
+
 ## [v2.1.2](https://github.com/synapsestudios/synapse-base/compare/v2.1.1...v2.1.2) (2015-04-25)
 
 * Fixed user creation with an empty string for the email address.
