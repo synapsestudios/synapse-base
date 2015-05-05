@@ -82,7 +82,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     protected $session;
 
     /**
-     * @var bool
+     * @var boolean
      */
     protected $requireVerification;
 
@@ -93,7 +93,7 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
      * @param RefreshTokenMapper $refreshTokenMapper
      * @param Mustache_Engine    $mustache
      * @param Session            $session
-     * @param array              $loginConfiguration
+     * @param boolean            $requireVerification
      */
     public function __construct(
         OAuth2Server $server,
@@ -102,20 +102,15 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         RefreshTokenMapper $refreshTokenMapper,
         Mustache_Engine $mustache,
         Session $session,
-        array $loginConfiguration
+        $requireVerification
     ) {
-        $this->server             = $server;
-        $this->userService        = $userService;
-        $this->accessTokenMapper  = $accessTokenMapper;
-        $this->refreshTokenMapper = $refreshTokenMapper;
-        $this->mustache           = $mustache;
-        $this->session            = $session;
-
-        if (Arr::get($loginConfiguration, 'requireVerification', false)) {
-            $this->requireVerification = true;
-        } else {
-            $this->requireVerification = false;
-        }
+        $this->server              = $server;
+        $this->userService         = $userService;
+        $this->accessTokenMapper   = $accessTokenMapper;
+        $this->refreshTokenMapper  = $refreshTokenMapper;
+        $this->mustache            = $mustache;
+        $this->session             = $session;
+        $this->requireVerification = $requireVerification;
     }
 
     /**

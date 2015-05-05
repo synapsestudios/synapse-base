@@ -22,7 +22,6 @@ class OAuthControllerTest extends ControllerTestCase
         $this->setUpMockMustacheEngine();
         $this->setUpMockSession();
         $this->setUpMockUrlGenerator();
-        $this->setUpMockLoginConfig();
 
         $this->controller = new OAuthController(
             $this->mockOAuth2Server,
@@ -31,7 +30,7 @@ class OAuthControllerTest extends ControllerTestCase
             $this->mockRefreshTokenMapper,
             $this->mockMustacheEngine,
             $this->mockSession,
-            $this->mockLoginConfig
+            true
         );
 
         $this->controller->setUrlGenerator($this->mockUrlGenerator);
@@ -84,13 +83,6 @@ class OAuthControllerTest extends ControllerTestCase
         $this->mockUrlGenerator = $this->getMockBuilder('Symfony\Component\Routing\Generator\UrlGeneratorInterface')
             ->disableOriginalConstructor()
             ->getMock();
-    }
-
-    public function setUpMockLoginConfig()
-    {
-        $this->mockLoginConfig = [
-            'requireVerification' => true,
-        ];
     }
 
     public function expectingTemplateVarsSet($vars)

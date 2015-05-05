@@ -61,11 +61,7 @@ class ServerServiceProvider implements ServiceProviderInterface
         });
 
         $app['oauth.controller'] = $app->share(function ($app) {
-            try {
-                $loginConfiguration = $app['config']->load('login');
-            } catch (Exception $e) {
-                $loginConfiguration = [];
-            }
+            $loginConfiguration = $app['config']->load('login');
 
             return new OAuthController(
                 $app['oauth_server'],
@@ -74,7 +70,7 @@ class ServerServiceProvider implements ServiceProviderInterface
                 $app['oauth-refresh-token.mapper'],
                 $app['mustache'],
                 $app['session'],
-                $loginConfiguration
+                $loginConfiguration['requireVerification']
             );
         });
 
