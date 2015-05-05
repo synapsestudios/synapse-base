@@ -82,12 +82,18 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     protected $session;
 
     /**
+     * @var bool
+     */
+    protected $requireVerification;
+
+    /**
      * @param OAuth2Server       $server
      * @param UserService        $userService
      * @param AccessTokenMapper  $accessTokenMapper
      * @param RefreshTokenMapper $refreshTokenMapper
      * @param Mustache_Engine    $mustache
      * @param Session            $session
+     * @param array              $loginConfiguration
      */
     public function __construct(
         OAuth2Server $server,
@@ -95,7 +101,8 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         AccessTokenMapper $accessTokenMapper,
         RefreshTokenMapper $refreshTokenMapper,
         Mustache_Engine $mustache,
-        Session $session
+        Session $session,
+        array $loginConfiguration
     ) {
         $this->server             = $server;
         $this->userService        = $userService;
@@ -103,6 +110,12 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $this->refreshTokenMapper = $refreshTokenMapper;
         $this->mustache           = $mustache;
         $this->session            = $session;
+
+        if (Arr::get($loginConfiguration, 'requireVerification', false)) {
+            $this->requireVerification = true;
+        } else {
+            $this->requireVerification = false;
+        }
     }
 
     /**
@@ -142,6 +155,15 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         $user = $this->getUserFromRequest($request);
 
         if (! $user) {
+            return $this->createInvalidCredentialResponse();
+        }
+
+        // If enabled in config, check that user is verified
+        if ($this->requireVerification && $user->getVerified() !== '1') {
+            return $this->createInvalidCredentialResponse();
+        }
+
+        if ($user->getEnabled() !== '1') {
             return $this->createInvalidCredentialResponse();
         }
 
