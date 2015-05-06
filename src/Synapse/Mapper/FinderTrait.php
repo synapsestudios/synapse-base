@@ -238,6 +238,8 @@ trait FinderTrait
 
                 $operator = $where[1];
 
+                $where[0] = $this->getKeyWithTableName($where[0]);
+
                 switch ($operator)
                 {
                     case '=':
@@ -306,10 +308,10 @@ trait FinderTrait
                 }
 
                 if ($leftOpRightSyntax === false) {
-                    $predicate = [$key => $where];
+                    $predicate = [$this->getKeyWithTableName($key) => $where];
                 }
             } else {
-                $predicate = [$key => $where];
+                $predicate = [$this->getKeyWithTableName($key) => $where];
             }
 
             $query->where($predicate);
@@ -345,5 +347,20 @@ trait FinderTrait
     protected function setColumns($query, $options = [])
     {
         $query->columns(['*']);
+    }
+
+    /**
+     * Add table name to a $wheres key if needed
+     *
+     * @param $key
+     * @return string
+     */
+    protected function getKeyWithTableName($key)
+    {
+        if (strpos($key, '.') === false) {
+            return $this->tableName . '.' . $key;
+        } else {
+            return $key;
+        }
     }
 }
