@@ -15,7 +15,7 @@ abstract class AbstractCliCommand
      *
      * @return string shell command plus parameters
      */
-    abstract protected function getBaseCommand();
+    abstract protected function getBaseCommand(CliCommandOptions $options);
 
     protected function buildCommand(CliCommandOptions $options)
     {
