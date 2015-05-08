@@ -21,7 +21,7 @@ abstract class AbstractCliCommand
     {
         return trim(sprintf(
             '%s %s',
-            $this->getBaseCommand(),
+            $this->getBaseCommand($options),
             $options->getRedirect()
         ));
     }
