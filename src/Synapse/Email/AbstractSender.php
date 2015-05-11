@@ -3,6 +3,7 @@
 namespace Synapse\Email;
 
 use Synapse\Stdlib\Arr;
+use RuntimeException;
 
 abstract class AbstractSender implements SenderInterface
 {
@@ -68,6 +69,10 @@ abstract class AbstractSender implements SenderInterface
     protected function injectIntoTrapAddress($address)
     {
         $trapAddress = Arr::path($this->config, 'whitelist.trap');
+
+        if (! $trapAddress) {
+            throw new RuntimeException('Email address not whitelisted but no email trap exists');
+        }
 
         $address = str_ireplace('@', '+', $address);
 
