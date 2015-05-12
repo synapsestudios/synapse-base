@@ -3,6 +3,7 @@
 namespace Test\Synapse\CliCommand;
 
 use Synapse\CliCommand\AbstractCliCommand;
+use Synapse\CliCommand\CliCommandOptions;
 
 class CliCommand extends AbstractCliCommand
 {
@@ -11,7 +12,7 @@ class CliCommand extends AbstractCliCommand
     /**
      * {@inheritdoc }
      */
-    protected function getBaseCommand()
+    protected function getBaseCommand(CliCommandOptions $options)
     {
         return escapeshellcmd($this->command);
     }
