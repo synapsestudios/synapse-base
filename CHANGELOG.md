@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+## [v3.0.1](https://github.com/synapsestudios/synapse-base/compare/v2.1.2...v3.0.0) (2015-05-05)
+
+* Throws exception if email whitelist trap is misconfigured
+* Passes CliCommandOption to AbstractCliCommand::getBaseCommand
+
 ## [v3.0.0](https://github.com/synapsestudios/synapse-base/compare/v2.1.2...v3.0.0) (2015-05-05)
 
 * Adds a new config file, `login.php`, which allows for requiring a user to be verified before login
@@ -51,7 +56,7 @@ CHANGELOG
 * Add bind() values to OAuth server routes
 * Data Object: Add support for fluent interface in setAs* methods
 * Allow RowExists, RowsExist, and RowNotExists constraints to match on custom field names
-* Create SecurityContextMockInjector trait 
+* Create SecurityContextMockInjector trait
 
 ## [v1.3.4](https://github.com/synapsestudios/synapse-base/compare/v1.3.3...v1.3.4) (2015-02-10)
 
