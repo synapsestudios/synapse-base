@@ -15,13 +15,13 @@ abstract class AbstractCliCommand
      *
      * @return string shell command plus parameters
      */
-    abstract protected function getBaseCommand();
+    abstract protected function getBaseCommand(CliCommandOptions $options);
 
     protected function buildCommand(CliCommandOptions $options)
     {
         return trim(sprintf(
             '%s %s',
-            $this->getBaseCommand(),
+            $this->getBaseCommand($options),
             $options->getRedirect()
         ));
     }
