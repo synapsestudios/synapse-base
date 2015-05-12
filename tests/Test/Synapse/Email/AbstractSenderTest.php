@@ -23,6 +23,21 @@ class AbstractSenderTest extends PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * A test configuration with no valid emails but no trap set
+     *
+     * @return array
+     */
+    public function getMalconfiguredTestConfig()
+    {
+        return [
+            'whitelist' => [
+                'list' => [],
+                'trap' => null,
+            ],
+        ];
+    }
+
     public function provideWhitelistedAddresses()
     {
         return [
@@ -63,5 +78,14 @@ class AbstractSenderTest extends PHPUnit_Framework_TestCase
             $expectedFilteredAddress,
             $this->sender->getFilteredEmailAddress($emailAddress)
         );
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testFilterThroughWhitelistThrowsExceptionTryingToSendToTrapAddressButNoneSet()
+    {
+        $this->sender->setConfig($this->getMalconfiguredTestConfig());
+        $this->sender->getFilteredEmailAddress('foo@bar.com');
     }
 }
