@@ -6,9 +6,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ExecutionContextInterface as ExecutionContext;
 use Synapse\Entity\AbstractEntity;
 use Synapse\Validator\AbstractArrayValidator;
+use Synapse\Security\SecurityAwareInterface;
+use Synapse\Security\SecurityAwareTrait;
 
-class UserValidator extends AbstractArrayValidator
+class UserValidator extends AbstractArrayValidator implements SecurityAwareInterface
 {
+    use SecurityAwareTrait;
+
     /**
      * $contextEntity is the currently logged in user's UserEntity
      *
@@ -31,7 +35,7 @@ class UserValidator extends AbstractArrayValidator
         if (isset($contextData['email']) or isset($contextData['password'])) {
             $constraints['current_password'] = [
                 new Assert\NotBlank(),
-                new Assert\Callback([$this, 'validateCurrentPassword']),
+                new Assert\Callback(['callback' => [$this, 'validateCurrentPassword']]),
             ];
         }
 
@@ -46,9 +50,9 @@ class UserValidator extends AbstractArrayValidator
      * @param  string           $password The current password
      * @param  ExecutionContext $context
      */
-    protected function validateCurrentPassword($password, ExecutionContext $context)
+    public function validateCurrentPassword($password, ExecutionContext $context)
     {
-        if (! password_verify($password, $contextEntity->getPassword())) {
+        if (! password_verify($password, $this->getUser()->getPassword())) {
             $context->addViolation('INVALID');
         }
     }
