@@ -58,7 +58,10 @@ class VerifyRegistrationController extends AbstractRestController implements Sec
                 UserService::TOKEN_NOT_FOUND      => 404,
             ];
 
-            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createErrorResponse(
+                ['token' => ['INVALID']],
+                $httpCodes[$e->getCode()]
+            );
         }
 
         $user = $user->getArrayCopy();
