@@ -13,6 +13,8 @@ class UserValidator extends AbstractArrayValidator implements SecurityAwareInter
 {
     use SecurityAwareTrait;
 
+    const BLANK = 'BLANK';
+
     /**
      * $contextEntity is the currently logged in user's UserEntity
      *
@@ -20,21 +22,21 @@ class UserValidator extends AbstractArrayValidator implements SecurityAwareInter
      */
     protected function getConstraints(array $contextData, AbstractEntity $contextEntity = null)
     {
+        $notBlank = new Assert\NotBlank(['message' => self::BLANK]);
+
         $constraints = [
             'email' => new Assert\Optional([
-                new Assert\NotBlank(),
+                $notBlank,
                 new Assert\Email([
                     'checkHost' => true
                 ]),
             ]),
-            'password' => new Assert\Optional([
-                new Assert\NotBlank(),
-            ])
+            'password' => new Assert\Optional([$notBlank])
         ];
 
         if (isset($contextData['email']) or isset($contextData['password'])) {
             $constraints['current_password'] = [
-                new Assert\NotBlank(),
+                $notBlank,
                 new Assert\Callback(['callback' => [$this, 'validateCurrentPassword']]),
             ];
         }
