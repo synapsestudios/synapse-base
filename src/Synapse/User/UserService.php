@@ -6,6 +6,8 @@ use Synapse\Email\EmailService;
 use Synapse\View\Email\VerifyRegistration as VerifyRegistrationView;
 use Synapse\Stdlib\Arr;
 use OutOfBoundsException;
+use LogicException;
+use Synapse\Validator\AbstractArrayValidator;
 
 /**
  * Service for general purpose tasks regarding the user
@@ -15,12 +17,10 @@ class UserService
     /**
      * Error codes to return for specific exceptions
      */
-    const CURRENT_PASSWORD_REQUIRED = 1;
-    const FIELD_CANNOT_BE_EMPTY     = 2;
-    const EMAIL_NOT_UNIQUE          = 3;
-    const INCORRECT_TOKEN_TYPE      = 4;
-    const TOKEN_EXPIRED             = 5;
-    const TOKEN_NOT_FOUND           = 6;
+    const EMAIL_NOT_UNIQUE     = 1;
+    const INCORRECT_TOKEN_TYPE = 2;
+    const TOKEN_EXPIRED        = 3;
+    const TOKEN_NOT_FOUND      = 4;
 
     /**
      * @var UserMapper
@@ -83,10 +83,7 @@ class UserService
             $currentPassword = Arr::get($data, 'current_password');
 
             if (! $currentPassword or ! password_verify($currentPassword, $user->getPassword())) {
-                throw new OutOfBoundsException(
-                    'Current password missing or incorrect',
-                    self::CURRENT_PASSWORD_REQUIRED
-                );
+                throw new LogicException('Trying to update email or password but current password incorrect');
             }
         }
 
@@ -96,19 +93,12 @@ class UserService
 
         // Update email
         if (isset($data['email'])) {
-            if (! $data['email']) {
-                throw new OutOfBoundsException(
-                    'Email cannot be empty',
-                    self::FIELD_CANNOT_BE_EMPTY
-                );
-            }
-
             if ($data['email'] !== $user->getEmail()) {
                 $alreadyCreatedUser = $this->userMapper->findByEmail($data['email']);
 
                 if ($alreadyCreatedUser) {
                     throw new OutOfBoundsException(
-                        'A user was already created with this email address.',
+                        'EMAIL_NOT_UNIQUE',
                         self::EMAIL_NOT_UNIQUE
                     );
                 }
@@ -119,13 +109,6 @@ class UserService
 
         // Update password
         if (isset($data['password'])) {
-            if (! $data['password']) {
-                throw new OutOfBoundsException(
-                    'Password cannot be empty',
-                    self::FIELD_CANNOT_BE_EMPTY
-                );
-            }
-
             $update['password'] = $this->hashPassword($data['password']);
         }
 
@@ -263,18 +246,15 @@ class UserService
     public function verifyRegistration(TokenEntity $token)
     {
         if ($token->isNew()) {
-            throw new OutOfBoundsException('Token not found.', self::TOKEN_NOT_FOUND);
+            throw new OutOfBoundsException('NOT_FOUND', self::TOKEN_NOT_FOUND);
         }
 
         if ((int) $token->getTokenTypeId() !== TokenEntity::TYPE_VERIFY_REGISTRATION) {
-            $format  = 'Token specified is of type %s. Expected %s.';
-            $message = sprintf($format, $token->getTokenTypeId(), TokenEntity::TYPE_VERIFY_REGISTRATION);
-
-            throw new OutOfBoundsException($message, self::INCORRECT_TOKEN_TYPE);
+            throw new OutOfBoundsException('NOT_FOUND', self::INCORRECT_TOKEN_TYPE);
         }
 
         if ($token->getExpires() < time()) {
-            throw new OutOfBoundsException('Token expired', self::TOKEN_EXPIRED);
+            throw new OutOfBoundsException('EXPIRED', self::TOKEN_EXPIRED);
         }
 
         $user = $this->findById($token->getUserId());

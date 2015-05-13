@@ -87,7 +87,7 @@ class ResetPasswordController extends AbstractRestController
 
         $this->emailService->enqueueSendEmailJob($email);
 
-        return $this->createSimpleResponse(204, '');
+        return $this->create204Response(204, '');
     }
 
     /**
@@ -124,7 +124,7 @@ class ResetPasswordController extends AbstractRestController
 
         // Ensure user input is valid
         if (! $password) {
-            return $this->createSimpleResponse(422, 'Password cannot be empty');
+            return $this->createErrorResponse(['password' => ['EMPTY']], 422);
         }
 
         $this->userService->resetPassword($user, $password);

@@ -179,7 +179,7 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException OutOfBoundsException
+     * @expectedException LogicException
      */
     public function testExceptionThrownIfAttemptingToSetEmailWithoutSpecifyingCurrentPassword()
     {
@@ -190,41 +190,13 @@ class UserServiceTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException OutOfBoundsException
+     * @expectedException LogicException
      */
     public function testExceptionThrownIfAttemptingToSetPasswordWithoutSpecifyingCurrentPassword()
     {
         $this->userService->update(
             $this->getUserEntity(),
             ['password' => 'new_password']
-        );
-    }
-
-    /**
-     * @expectedException OutOfBoundsException
-     */
-    public function testExceptionThrownIfAttemptingToSetEmptyEmail()
-    {
-        $this->userService->update(
-            $this->getUserEntity(),
-            [
-                'current_password' => self::CURRENT_PASSWORD,
-                'email'            => ''
-            ]
-        );
-    }
-
-    /**
-     * @expectedException OutOfBoundsException
-     */
-    public function testExceptionThrownIfAttemptingToSetEmptyPassword()
-    {
-        $this->userService->update(
-            $this->getUserEntity(),
-            [
-                'current_password' => self::CURRENT_PASSWORD,
-                'password'         => ''
-            ]
         );
     }
 

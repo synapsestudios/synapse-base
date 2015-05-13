@@ -323,28 +323,6 @@ class UserControllerTest extends ControllerTestCase
         );
     }
 
-    public function testPutReturns403IfOutOfBoundsExceptionThrownWithPasswordRequiredErrorCode()
-    {
-        $this->withUserUpdateThrowingExceptionWithCode(
-            UserService::CURRENT_PASSWORD_REQUIRED
-        );
-
-        $response = $this->makePutRequest();
-
-        $this->assertEquals(403, $response->getStatusCode());
-    }
-
-    public function testPutReturns422IfOutOfBoundsExceptionThrownWithEmptyFieldErrorCode()
-    {
-        $this->withUserUpdateThrowingExceptionWithCode(
-            UserService::FIELD_CANNOT_BE_EMPTY
-        );
-
-        $response = $this->makePutRequest();
-
-        $this->assertEquals(422, $response->getStatusCode());
-    }
-
     public function testPutReturns422IfValidationConstraintsAreViolated()
     {
         $this->withValidatorValidateReturningErrors();
