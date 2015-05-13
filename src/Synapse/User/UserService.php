@@ -17,11 +17,10 @@ class UserService
     /**
      * Error codes to return for specific exceptions
      */
-    const CURRENT_PASSWORD_REQUIRED = 1;
-    const EMAIL_NOT_UNIQUE          = 2;
-    const INCORRECT_TOKEN_TYPE      = 3;
-    const TOKEN_EXPIRED             = 4;
-    const TOKEN_NOT_FOUND           = 5;
+    const EMAIL_NOT_UNIQUE     = 1;
+    const INCORRECT_TOKEN_TYPE = 2;
+    const TOKEN_EXPIRED        = 3;
+    const TOKEN_NOT_FOUND      = 4;
 
     /**
      * @var UserMapper

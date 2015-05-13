@@ -68,11 +68,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         try {
             $newUser = $this->userService->register($userData);
         } catch (OutOfBoundsException $e) {
-            $httpCodes = [
-                UserService::EMAIL_NOT_UNIQUE => 409,
-            ];
-
-            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createEmailNotUniqueResponse();
         }
 
         $newUser = $this->userArrayWithoutPassword($newUser);
@@ -97,7 +93,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         // Validate the modified fields
         $content = $this->getContentAsArray($request);
 
-        $errors = $this->userValidator->validate($content);
+        $errors = $this->userValidator->validate($content, $user);
 
         if (count($errors) > 0) {
             return $this->createConstraintViolationResponse($errors);
@@ -108,13 +104,7 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         try {
             $user = $this->userService->update($user, $this->getContentAsArray($request));
         } catch (OutOfBoundsException $e) {
-            $httpCodes = [
-                UserService::CURRENT_PASSWORD_REQUIRED => 403,
-                UserService::FIELD_CANNOT_BE_EMPTY     => 422,
-                UserService::EMAIL_NOT_UNIQUE          => 409,
-            ];
-
-            return $this->createSimpleResponse($httpCodes[$e->getCode()], $e->getMessage());
+            return $this->createEmailNotUniqueResponse();
         }
 
         return $this->userArrayWithoutPassword($user);
@@ -160,5 +150,15 @@ class UserController extends AbstractRestController implements SecurityAwareInte
         unset($user['password']);
 
         return $user;
+    }
+
+    /**
+     * Create a response to communicate that the provided email is not unique
+     *
+     * @return Response
+     */
+    protected function createEmailNotUniqueResponse()
+    {
+        return $this->createErrorResponse(['email' => ['EMAIL_NOT_UNIQUE']], 409);
     }
 }
