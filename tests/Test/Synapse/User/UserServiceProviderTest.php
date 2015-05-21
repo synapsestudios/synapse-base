@@ -13,7 +13,7 @@ class UserServiceProviderTest extends WebTestCase
             'userController'               => 'Synapse\User\UserController',
             'userConverter'                => 'Synapse\User\UserConverter',
             'resetPasswordController'      => 'Synapse\User\ResetPasswordController',
-            'verifyRegistrationController' => 'Synapse\User\verifyRegistrationController',
+            'verifyRegistrationController' => 'Synapse\User\VerifyRegistrationController',
         ]);
 
         $this->app = $this->createApplicationWithServices([new UserServiceProvider()]);
