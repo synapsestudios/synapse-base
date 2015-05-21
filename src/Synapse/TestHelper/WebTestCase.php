@@ -63,8 +63,22 @@ class WebTestCase extends WebCase
 
         $app = $applicationInitializer->initialize();
 
-        $defaultServices = new Synapse\Application\Services;
-        $defaultServices->register($app);
+        $app->register(new \Silex\Provider\SecurityServiceProvider);
+        $app->register(new \Synapse\Controller\ControllerServiceProvider);
+        $app->register(new \Silex\Provider\UrlGeneratorServiceProvider);
+
+        $app['security.firewalls'] = $app->share(function () {
+            return [
+                'base.api' => [
+                    'pattern' => '^/',
+                    'oauth'   => true,
+                ],
+            ];
+        });
+
+        $app['security.access_rules'] = $app->share(function () {
+            return [];
+        });
 
         // synapse's default session provider doesn't allow for testing so override
         $sessionServiceProvider = new SessionServiceProvider();
