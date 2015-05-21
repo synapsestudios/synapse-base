@@ -56,7 +56,7 @@ class UserServiceProviderTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testGetUserAccessibleByAdmin()
+    public function testGetUserIsAccessibleByAdmin()
     {
         $this->withValidResponseFromControllerMethod('userController', 'execute');
         $this->client->setBearerHeader();
@@ -68,7 +68,7 @@ class UserServiceProviderTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testGetUsersInaccessibleWithoutAdminRole()
+    public function testGetUserIsInaccessibleWithoutAdminRole()
     {
         $this->withValidResponseFromControllerMethod('userController', 'execute');
         $this->client->setBearerHeader();
