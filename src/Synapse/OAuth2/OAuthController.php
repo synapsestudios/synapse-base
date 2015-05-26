@@ -154,11 +154,11 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
         }
 
         // If enabled in config, check that user is verified
-        if ($this->requireVerification && $user->getVerified() !== '1') {
+        if ($this->requireVerification && ! $user->getVerified()) {
             return $this->createInvalidCredentialResponse();
         }
 
-        if ($user->getEnabled() !== '1') {
+        if (! $user->getEnabled()) {
             return $this->createInvalidCredentialResponse();
         }
 
