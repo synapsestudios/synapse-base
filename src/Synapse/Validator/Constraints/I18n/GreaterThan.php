@@ -10,6 +10,6 @@ class GreaterThan extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\GreaterThanValidator';
+        return parent::class + 'Validator';
     }
 }

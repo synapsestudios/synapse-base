@@ -10,6 +10,6 @@ class BelongsToEntity extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Synapse\Validator\Constraints\BelongsToEntityValidator';
+        return parent::class . 'Validator';
     }
 }

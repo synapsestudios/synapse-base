@@ -10,6 +10,6 @@ class Time extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\TimeValidator';
+        return parent::class + 'Validator';
     }
 }

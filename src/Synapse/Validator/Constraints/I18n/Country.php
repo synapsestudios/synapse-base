@@ -10,6 +10,6 @@ class Country extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\CountryValidator';
+        return parent::class . 'Validator';
     }
 }

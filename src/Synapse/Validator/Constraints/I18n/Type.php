@@ -10,6 +10,6 @@ class Type extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\TypeValidator';
+        return parent::class + 'Validator';
     }
 }

@@ -10,6 +10,6 @@ class Language extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\LanguageValidator';
+        return parent::class + 'Validator';
     }
 }

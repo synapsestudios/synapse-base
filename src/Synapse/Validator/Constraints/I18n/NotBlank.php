@@ -10,6 +10,6 @@ class NotBlank extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\NotBlankValidator';
+        return parent::class + 'Validator';
     }
 }

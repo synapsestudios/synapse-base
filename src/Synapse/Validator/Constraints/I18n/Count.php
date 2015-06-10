@@ -12,6 +12,6 @@ class Count extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\CountValidator';
+        return parent::class . 'Validator';
     }
 }

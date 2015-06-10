@@ -10,6 +10,6 @@ class NotNull extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\NotNullValidator';
+        return parent::class + 'Validator';
     }
 }

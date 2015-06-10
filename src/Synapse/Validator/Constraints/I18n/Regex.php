@@ -10,6 +10,6 @@ class Regex extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\RegexValidator';
+        return parent::class + 'Validator';
     }
 }

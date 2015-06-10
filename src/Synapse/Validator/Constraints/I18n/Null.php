@@ -10,6 +10,6 @@ class Null extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\NullValidator';
+        return parent::class + 'Validator';
     }
 }

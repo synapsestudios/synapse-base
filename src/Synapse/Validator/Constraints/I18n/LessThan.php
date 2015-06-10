@@ -10,6 +10,6 @@ class LessThan extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\LessThanValidator';
+        return parent::class + 'Validator';
     }
 }

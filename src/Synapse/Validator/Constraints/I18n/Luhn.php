@@ -10,6 +10,6 @@ class Luhn extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\LuhnValidator';
+        return parent::class + 'Validator';
     }
 }

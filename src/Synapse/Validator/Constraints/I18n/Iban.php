@@ -10,6 +10,6 @@ class Iban extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\IbanValidator';
+        return parent::class + 'Validator';
     }
 }

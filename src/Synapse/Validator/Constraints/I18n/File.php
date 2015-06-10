@@ -22,6 +22,6 @@ class File extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\FileValidator';
+        return parent::class + 'Validator';
     }
 }

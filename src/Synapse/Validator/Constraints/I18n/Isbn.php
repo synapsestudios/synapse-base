@@ -12,6 +12,6 @@ class Isbn extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\IsbnValidator';
+        return parent::class + 'Validator';
     }
 }

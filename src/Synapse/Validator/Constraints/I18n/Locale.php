@@ -10,6 +10,6 @@ class Locale extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\LocaleValidator';
+        return parent::class + 'Validator';
     }
 }

@@ -10,6 +10,6 @@ class Expression extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\ExpressionValidator';
+        return parent::class + 'Validator';
     }
 }

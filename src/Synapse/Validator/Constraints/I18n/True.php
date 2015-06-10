@@ -10,6 +10,6 @@ class True extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\TrueValidator';
+        return parent::class + 'Validator';
     }
 }

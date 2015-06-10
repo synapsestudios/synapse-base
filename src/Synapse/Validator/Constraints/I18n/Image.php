@@ -20,6 +20,6 @@ class Image extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\ImageValidator';
+        return parent::class + 'Validator';
     }
 }

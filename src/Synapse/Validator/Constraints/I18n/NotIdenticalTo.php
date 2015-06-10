@@ -10,6 +10,6 @@ class NotIdenticalTo extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\NotIdenticalToValidator';
+        return parent::class + 'Validator';
     }
 }

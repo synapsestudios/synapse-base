@@ -12,6 +12,6 @@ class Range extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\RangeValidator';
+        return parent::class + 'Validator';
     }
 }

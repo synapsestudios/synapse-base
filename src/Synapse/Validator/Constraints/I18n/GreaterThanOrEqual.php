@@ -10,6 +10,6 @@ class GreaterThanOrEqual extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\GreaterThanOrEqualValidator';
+        return parent::class + 'Validator';
     }
 }

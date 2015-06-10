@@ -13,6 +13,6 @@ class Choice extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\ChoiceValidator';
+        return parent::class . 'Validator';
     }
 }

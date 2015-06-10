@@ -10,6 +10,6 @@ class IdenticalTo extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\IdenticalToValidator';
+        return parent::class + 'Validator';
     }
 }

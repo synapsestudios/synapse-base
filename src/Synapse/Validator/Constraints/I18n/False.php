@@ -10,6 +10,6 @@ class False extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\FalseValidator';
+        return parent::class + 'Validator';
     }
 }

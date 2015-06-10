@@ -10,6 +10,6 @@ class Uuid extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\UuidValidator';
+        return parent::class + 'Validator';
     }
 }

@@ -10,6 +10,6 @@ class Email extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\EmailValidator';
+        return parent::class + 'Validator';
     }
 }

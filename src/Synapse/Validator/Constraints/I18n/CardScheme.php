@@ -10,6 +10,6 @@ class CardScheme extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\CardSchemeValidator';
+        return parent::class . 'Validator';
     }
 }

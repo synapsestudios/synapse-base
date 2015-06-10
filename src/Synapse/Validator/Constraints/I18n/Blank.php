@@ -10,6 +10,6 @@ class Blank extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\BlankValidator';
+        return parent::class . 'Validator';
     }
 }

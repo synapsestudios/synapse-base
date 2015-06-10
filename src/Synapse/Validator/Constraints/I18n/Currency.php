@@ -10,6 +10,6 @@ class Currency extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\CurrencyValidator';
+        return parent::class . 'Validator';
     }
 }

@@ -10,6 +10,6 @@ class Issn extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\IssnValidator';
+        return parent::class + 'Validator';
     }
 }

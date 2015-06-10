@@ -12,6 +12,6 @@ class Length extends ParentConstraint
 
     public function validatedBy()
     {
-        return 'Symfony\Component\Validator\Constraints\LengthValidator';
+        return parent::class + 'Validator';
     }
 }
