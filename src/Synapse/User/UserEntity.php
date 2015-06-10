@@ -54,6 +54,16 @@ class UserEntity extends AbstractEntity implements UserInterface
         return $this;
     }
 
+    public function setEnabled($value)
+    {
+        return $this->setAsBoolean('enabled', $value);
+    }
+
+    public function setVerified($value)
+    {
+        return $this->setAsBoolean('verified', $value);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -172,13 +172,13 @@ class ResetPasswordControllerTest extends ControllerTestCase
             ->method('enqueueSendEmailJob');
     }
 
-    public function expectingDeleteTokenCalledOnUserService()
+    public function capturingDeletedToken()
     {
-        $token = $this->createTokenEntity(self::FOUND_TOKEN_ID);
-
         $this->mockUserService->expects($this->once())
             ->method('deleteToken')
-            ->with($token);
+            ->will($this->returnCallback(function ($token) {
+                $this->captured->deletedToken = $token;
+            }));
     }
 
     public function expectingResetPasswordCalledOnUserService()
@@ -280,11 +280,12 @@ class ResetPasswordControllerTest extends ControllerTestCase
 
     public function withUserServiceFindTokenByReturningToken()
     {
-        $token = $this->createTokenEntity(self::FOUND_TOKEN_ID);
-
         $this->mockUserService->expects($this->any())
             ->method('findTokenBy')
-            ->will($this->returnValue($token));
+            ->will($this->returnCallback(function () {
+                $this->captured->foundToken = $this->createTokenEntity(self::FOUND_TOKEN_ID);
+                return $this->captured->foundToken;
+            }));
     }
 
     public function withUserServiceFindTokenByReturningFalse()
@@ -477,9 +478,10 @@ class ResetPasswordControllerTest extends ControllerTestCase
     {
         $this->withUserServiceFindTokenByReturningToken();
         $this->withUserServiceFindByIdReturningUser();
-
-        $this->expectingDeleteTokenCalledOnUserService();
+        $this->capturingDeletedToken();
 
         $this->performPutRequest();
+
+        $this->assertSame($this->captured->foundToken, $this->captured->deletedToken);
     }
 }

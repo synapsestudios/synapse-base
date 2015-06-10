@@ -1,5 +1,14 @@
 CHANGELOG
 =========
+
+## [v4.0.0](https://github.com/synapsestudios/synapse-base/compare/v3.0.1...v4.0.0) (2015-06-09)
+
+* Fixed Silex requests with expired access tokens redirected to /login
+* UserEntity's `enabled` and `verified` values are set as booleans (`if ($user->getEnabled())`)
+* Fixed ResetPasswordControllerTest::testPutDeletesToken relying on two entities being created within the same millisecond
+* Implement WebTestCase for route testing #215
+* Update phpUnit to 4.5
+
 ## [v3.0.1](https://github.com/synapsestudios/synapse-base/compare/v2.1.2...v3.0.0) (2015-05-05)
 
 * Throws exception if email whitelist trap is misconfigured
