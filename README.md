@@ -4,7 +4,7 @@
 
 ## Overview
 
-Synapse Base is a bootstrapping library for PHP applications build in the [Silex](http://silex.sensiolabs.org/) microframework. It's intented for REST APIs that serve and consume JSON.
+Synapse Base is a bootstrapping library for PHP applications build in the [Silex](http://silex.sensiolabs.org/) microframework. It's intended for REST APIs that serve and consume JSON.
 
 This library provides an opinionated, secure starting point for your REST API using the following tools and libraries:
 
@@ -69,7 +69,7 @@ In order to secure endpoints, the [Symfony Security](http://symfony.com/doc/curr
 
 **Notes:**
 
-1. When you specifify a listener in a firewall (`'anonymous' => true`, `'oauth-optional' => true`), the code that runs is in the [Listeners](https://github.com/synapsestudios/synapse-base/tree/master/src/Synapse/Security/Firewall). (These are added in the [OAuth2\SecurityServiceProvider](https://github.com/synapsestudios/synapse-base/blob/master/src/Synapse/OAuth2/SecurityServiceProvider.php).)
+1. When you specify a listener in a firewall (`'anonymous' => true`, `'oauth-optional' => true`), the code that runs is in the [Listeners](https://github.com/synapsestudios/synapse-base/tree/master/src/Synapse/Security/Firewall). (These are added in the [OAuth2\SecurityServiceProvider](https://github.com/synapsestudios/synapse-base/blob/master/src/Synapse/OAuth2/SecurityServiceProvider.php).)
 2. There is a [catch-all firewall](https://github.com/synapsestudios/synapse-base/blob/5cdd7abf7caddae16bbcb8d1ec5aee71a8aa907e/src/Synapse/Application/Services.php#L109) that constrains all endpoints to be protected by OAuth (non-public) unless specified otherwise. [More details here.](https://github.com/synapsestudios/synapse-base/blob/5355dc2c53e6398bc1ef8e1c8f8390224580e267/src/Synapse/Application/Services.php#L68)
 
 ## Utility Classes
