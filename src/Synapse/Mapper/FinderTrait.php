@@ -238,8 +238,7 @@ trait FinderTrait
 
                 $operator = $where[1];
 
-                switch ($operator)
-                {
+                switch ($operator) {
                     case '=':
                         $predicate = new Operator(
                             $where[0],
