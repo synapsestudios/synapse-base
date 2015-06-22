@@ -4,6 +4,7 @@ namespace Synapse\Security\Firewall;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Synapse\Security\Authentication\OAuth2UserToken;
 
 /**

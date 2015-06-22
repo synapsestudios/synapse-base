@@ -4,7 +4,9 @@
          convertWarningsToExceptions="true"
          stopOnFailure="false"
          syntaxCheck="false"
-         strict="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         checkForUnintentionallyCoveredCode="true"
+         beStrictAboutOutputDuringTests="true"
          verbose="true"
          bootstrap="tests/bootstrap.php">
     <testsuites>
