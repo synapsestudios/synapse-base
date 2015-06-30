@@ -206,6 +206,20 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     {
         $bridgeResponse = new BridgeResponse;
         $oauthRequest   = OAuthRequest::createFromRequest($request);
+        $user           = $this->getUserFromRequest($request);
+
+        if (! $user) {
+            return $this->createInvalidCredentialResponse();
+        }
+
+        // If enabled in config, check that user is verified
+        if ($this->requireVerification && ! $user->getVerified()) {
+            return $this->createInvalidCredentialResponse();
+        }
+
+        if (! $user->getEnabled()) {
+            return $this->createInvalidCredentialResponse();
+        }
 
         $response = $this->server->handleTokenRequest($oauthRequest, $bridgeResponse);
 
