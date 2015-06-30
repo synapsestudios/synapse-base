@@ -149,19 +149,6 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     {
         $user = $this->getUserFromRequest($request);
 
-        if (! $user) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        // If enabled in config, check that user is verified
-        if ($this->requireVerification && ! $user->getVerified()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        if (! $user->getEnabled()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
         $attemptedPassword = $request->get('password');
         $hashedPassword    = $user->getPassword();
 
