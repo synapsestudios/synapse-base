@@ -149,6 +149,10 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     {
         $user = $this->getUserFromRequest($request);
 
+        if (! $user) {
+            return $this->createInvalidCredentialResponse();
+        }
+
         $attemptedPassword = $request->get('password');
         $hashedPassword    = $user->getPassword();
 
