@@ -153,15 +153,6 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
             return $this->createInvalidCredentialResponse();
         }
 
-        // If enabled in config, check that user is verified
-        if ($this->requireVerification && ! $user->getVerified()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        if (! $user->getEnabled()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
         $attemptedPassword = $request->get('password');
         $hashedPassword    = $user->getPassword();
 
@@ -206,24 +197,24 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
     {
         $bridgeResponse = new BridgeResponse;
         $oauthRequest   = OAuthRequest::createFromRequest($request);
-        $user           = $this->getUserFromRequest($request);
-
-        if (! $user) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        // If enabled in config, check that user is verified
-        if ($this->requireVerification && ! $user->getVerified()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        if (! $user->getEnabled()) {
-            return $this->createInvalidCredentialResponse();
-        }
-
-        $response = $this->server->handleTokenRequest($oauthRequest, $bridgeResponse);
+        $response       = $this->server->handleTokenRequest($oauthRequest, $bridgeResponse);
 
         if ($response->isOk()) {
+            $user = $this->userService->findById($response->getParameter('user_id'));
+
+            if (! $user) {
+                return $this->createInvalidCredentialResponse();
+            }
+
+            // If enabled in config, check that user is verified
+            if ($this->requireVerification && ! $user->getVerified()) {
+                return $this->createInvalidCredentialResponse();
+            }
+
+            if (! $user->getEnabled()) {
+                return $this->createInvalidCredentialResponse();
+            }
+
             $userId = $response->getParameter('user_id');
 
             $this->setLastLogin($userId);

@@ -294,48 +294,6 @@ class OAuthControllerTest extends ControllerTestCase
         ]);
     }
 
-    public function testAuthorizeFormSubmitDoesNotAuthorizeUnverifiedUser()
-    {
-        $userId   = 123;
-        $password = 'foo';
-
-        $this->mockOAuth2Server->expects($this->never())
-            ->method('handleAuthorizeRequest')
-            ->with(
-                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request'),
-                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response'),
-                $this->equalTo(true),
-                $this->equalTo($userId)
-            );
-
-        $this->withUserFoundHavingPassword($password, ['id' => $userId, 'verified' => '0']);
-
-        $this->performPostRequestToAuthorizeFormSubmit([
-            'password' => $password,
-        ]);
-    }
-
-    public function testAuthorizeFormSubmitDoesNotAuthorizeDisabledUser()
-    {
-        $userId   = 123;
-        $password = 'foo';
-
-        $this->mockOAuth2Server->expects($this->never())
-            ->method('handleAuthorizeRequest')
-            ->with(
-                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Request'),
-                $this->isInstanceOf('OAuth2\HttpFoundationBridge\Response'),
-                $this->equalTo(true),
-                $this->equalTo($userId)
-            );
-
-        $this->withUserFoundHavingPassword($password, ['id' => $userId, 'enabled' => '0']);
-
-        $this->performPostRequestToAuthorizeFormSubmit([
-            'password' => $password,
-        ]);
-    }
-
     public function testAuthorizeFormSubmitConvertsPostParamsToGetParamsInRequestSentToOauthServer()
     {
         $this->withUserFoundHavingPassword('pa55');
