@@ -123,7 +123,7 @@ class LogServiceProvider implements ServiceProviderInterface
      * Log handler for files
      *
      * @param  string      $file Path of log file
-     * @return FileHandler
+     * @return DummyExceptionHandler
      */
     protected function getFileHandler($file)
     {
@@ -139,7 +139,7 @@ class LogServiceProvider implements ServiceProviderInterface
      * Exception log handler for files
      *
      * @param  string      $file Path of log file
-     * @return FileHandler
+     * @return StreamHandler
      */
     protected function getFileExceptionHandler($file)
     {
@@ -185,7 +185,8 @@ class LogServiceProvider implements ServiceProviderInterface
         $rollbarNotifier = new RollbarNotifier([
             'access_token' => $token,
             'environment'  => $environment,
-            Arr::get($rollbarConfig, 'root')
+            'batch'        => false,
+            'root'         => Arr::get($rollbarConfig, 'root')
         ]);
 
         return new RollbarHandler(
