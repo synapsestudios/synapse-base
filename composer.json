@@ -3,7 +3,7 @@
     "description" : "Base code for the API template",
     "license"     : "MIT",
     "require"     : {
-        "silex/silex"                                  : "~1.1",
+        "silex/silex"                                  : "1.2.5",
         "symfony/console"                              : "2.5.2",
         "symfony/security"                             : "2.5.2",
         "symfony/validator"                            : "2.5.2",
