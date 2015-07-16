@@ -18,7 +18,10 @@ class CommandServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['console'] = $app->share(function ($app) {
-            return new ConsoleApplication;
+            $consoleApp = new ConsoleApplication;
+            // disable swallowing exceptions so they actually get pushed to the logger
+            $consoleApp->setCatchExceptions(false);
+            return $consoleApp;
         });
     }
 

@@ -3,7 +3,7 @@
     "description" : "Base code for the API template",
     "license"     : "MIT",
     "require"     : {
-        "silex/silex"                                  : "~1.1",
+        "silex/silex"                                  : "1.2.5",
         "symfony/console"                              : "2.5.2",
         "symfony/security"                             : "2.5.2",
         "symfony/validator"                            : "2.5.2",
@@ -14,7 +14,7 @@
         "mandrill/mandrill"                            : "1.0.52",
         "psr/log"                                      : "v1.0.0",
         "monolog/monolog"                              : "~1.7",
-        "rollbar/rollbar"                              : "0.6.3",
+        "rollbar/rollbar"                              : "~0.14",
         "zendframework/zend-stdlib"                    : "~2.2.5",
         "ircmaxell/password-compat"                    : "dev-master",
         "guzzle/guzzle"                                : "~3.7",
