@@ -185,7 +185,7 @@ class LogServiceProvider implements ServiceProviderInterface
         $rollbarNotifier = new RollbarNotifier([
             'access_token' => $token,
             'environment'  => $environment,
-            'batch'        => false,
+            'batched'      => false,
             'root'         => Arr::get($rollbarConfig, 'root')
         ]);
 
