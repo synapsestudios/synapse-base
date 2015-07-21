@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+## [v4.0.3](https://github.com/synapsestudios/synapse-base/compare/v4.0.2...v4.0.3) (2015-07-16)
+
+* Fixed Rollbar not flushing errors
+
+## [v4.0.2](https://github.com/synapsestudios/synapse-base/compare/v4.0.1...v4.0.2) (2015-06-30)
+
+* Fixed user verification bug
+
+## [v4.0.1](https://github.com/synapsestudios/synapse-base/compare/v4.0.0...v4.0.1) (2015-06-30)
+
+* Added High-Level Documentation for the repo
+* Fixed required verification config setting not working on token endpoint
+
 ## [v4.0.0](https://github.com/synapsestudios/synapse-base/compare/v3.0.1...v4.0.0) (2015-06-09)
 
 * Fixed Silex requests with expired access tokens redirected to /login
