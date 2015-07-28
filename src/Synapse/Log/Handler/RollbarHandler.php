@@ -5,6 +5,8 @@ namespace Synapse\Log\Handler;
 use Monolog\Handler\AbstractProcessingHandler;
 use RollbarNotifier;
 use Exception;
+use Synapse\Config\Exception as ConfigException;
+use Synapse\Stdlib\Arr;
 
 /**
  * Sends errors to Rollbar
@@ -22,13 +24,25 @@ class RollbarHandler extends AbstractProcessingHandler
 
     /**
      * @param RollbarNotifier  $rollbarNotifier RollbarNotifier object constructed with valid token
-     * @param integer          $level           The minimum logging level at which this handler will be triggered
+     * @param string           $environment
      * @param boolean          $bubble          Whether the messages that are handled can bubble up the stack or not
      */
-    public function __construct(RollbarNotifier $rollbarNotifier, $level = Logger::ERROR, $bubble = true)
+    public function __construct($config, $environment, $bubble = true)
     {
-        $this->rollbarNotifier = $rollbarNotifier;
+        $token = Arr::get($config, 'post_server_item_access_token');
 
+        if (! $token) {
+            throw new ConfigException('Rollbar is enabled but the post server item access token is not set.');
+        }
+
+        $this->rollbarNotifier = new RollbarNotifier([
+            'access_token' => $token,
+            'environment'  => $environment,
+            'batched'      => false,
+            'root'         => Arr::get($config, 'root')
+        ]);
+
+        $level = Arr::path($config, 'level') ?: Logger::ERROR;
         parent::__construct($level, $bubble);
     }
 
