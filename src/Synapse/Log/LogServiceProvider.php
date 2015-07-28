@@ -175,22 +175,6 @@ class LogServiceProvider implements ServiceProviderInterface
     protected function getRollbarHandler($environment)
     {
         $rollbarConfig = Arr::get($this->config, 'rollbar', []);
-
-        $token = Arr::get($rollbarConfig, 'post_server_item_access_token');
-
-        if (! $token) {
-            throw new ConfigException('Rollbar is enabled but the post server item access token is not set.');
-        }
-
-        $rollbarNotifier = new RollbarNotifier([
-            'access_token' => $token,
-            'environment'  => $environment,
-            Arr::get($rollbarConfig, 'root')
-        ]);
-
-        return new RollbarHandler(
-            $rollbarNotifier,
-            Logger::ERROR
-        );
+        return new RollbarHandler($rollbarConfig, $environment);
     }
 }
