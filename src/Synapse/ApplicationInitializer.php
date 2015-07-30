@@ -51,6 +51,7 @@ class ApplicationInitializer
             'qa',
             'testing',
             'development',
+            'beta',
         );
 
         if (! isset($_SERVER['APP_ENV'])) {
