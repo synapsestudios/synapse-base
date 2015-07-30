@@ -53,12 +53,15 @@ class ApplicationInitializer
             'development',
         );
 
-        // Detect the current application environment
-        if (isset($_SERVER['APP_ENV']) && in_array($_SERVER['APP_ENV'], $environments)) {
-            $app['environment'] = $_SERVER['APP_ENV'];
-        } else {
-            $app['environment'] = 'development';
+        if (! isset($_SERVER['APP_ENV'])) {
+            throw new \Exception('Missing \'APP_ENV\' environment variable');
         }
+
+        if (! in_array($_SERVER['APP_ENV'], $environments)) {
+            throw new \Exception('Invalid \'APP_ENV\' environment variable: \'' + $_SERVER['APP_ENV'] +'\'');
+        }
+
+        $app['environment'] = $_SERVER['APP_ENV'];
     }
 
     /**
