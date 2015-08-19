@@ -206,13 +206,13 @@ class OAuthController extends AbstractController implements SecurityAwareInterfa
                 return $this->createInvalidCredentialResponse();
             }
 
-            // If enabled in config, check that user is verified
-            if ($this->requireVerification && ! $user->getVerified()) {
+            if (! $user->getEnabled()) {
                 return $this->createInvalidCredentialResponse();
             }
 
-            if (! $user->getEnabled()) {
-                return $this->createInvalidCredentialResponse();
+            // If enabled in config, check that user is verified
+            if ($this->requireVerification && ! $user->getVerified()) {
+                return $this->createSimpleResponse(422, 'Unverified user');
             }
 
             $userId = $response->getParameter('user_id');
