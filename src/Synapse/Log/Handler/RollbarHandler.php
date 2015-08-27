@@ -3,6 +3,7 @@
 namespace Synapse\Log\Handler;
 
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Logger;
 use RollbarNotifier;
 use Exception;
 use Synapse\Config\Exception as ConfigException;

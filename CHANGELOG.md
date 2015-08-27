@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [v4.0.4](https://github.com/synapsestudios/synapse-base/compare/v4.0.3...v4.0.4) (2015-08-19)
+
+* Send 'Unverified user' error message instead of 'Invalid credentials' when unverified user attempts to login
+
 ## [v4.0.3](https://github.com/synapsestudios/synapse-base/compare/v4.0.2...v4.0.3) (2015-07-16)
 
 * Fixed Rollbar not flushing errors
