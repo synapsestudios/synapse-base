@@ -11,7 +11,7 @@ before_script:
   - composer self-update
   - composer install --prefer-source
 script:
-  - APP_ENV=testing vendor/bin/phpunit --configuration phpunit.shippable.xml
+  - vendor/bin/phpunit --configuration phpunit.shippable.xml
   - vendor/bin/phpcs --standard=PSR2 src/*
 notifications:
   email: false
