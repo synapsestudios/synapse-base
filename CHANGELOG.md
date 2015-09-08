@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+## [v4.0.6](https://github.com/synapsestudios/synapse-base/compare/v4.0.5...v4.0.6) (2015-08-26)
+
+* Added Beta Environment
+
+## [v4.0.5](https://github.com/synapsestudios/synapse-base/compare/v4.0.4...v4.0.5) (2015-08-26)
+
+* Added missing use statement to RollbarHandler
+
 ## [v4.0.4](https://github.com/synapsestudios/synapse-base/compare/v4.0.3...v4.0.4) (2015-08-19)
 
 * Send 'Unverified user' error message instead of 'Invalid credentials' when unverified user attempts to login
