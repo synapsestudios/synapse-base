@@ -48,7 +48,7 @@ trait InserterTrait
         $columns = array_keys($values);
 
         if ($this->autoIncrementColumn && ! array_key_exists($this->autoIncrementColumn, $values)) {
-            throw new LogicException('auto_increment column ' + $this->autoIncrementColumn + ' not found');
+            throw new LogicException('auto_increment column ' . $this->autoIncrementColumn . ' not found');
         }
 
         $query = $this->getSqlObject()
