@@ -3,10 +3,6 @@ php:
   - 5.5
 git:
   submodules: false
-env:
-  global:
-    - SLACK_ORG=synapse PROJECT=synapse-base APP_ENV=testing
-    - secure: 2AZyPbC1I1Tp94w5fUvv9UXdCuzmpW4b0s8phVEzcxsCeney5oclGsXPQ5IPFV99NROLg8+dN7y0iQC5mGkgz78zSExL+JHgthbUHC5MGpCwRc8P6qI50SMFkt0oMsJfEL2hZJakRX6qC5kWvafiF7YoMz32HAcBQBKeZUManaGjdHqb21sKGmujFagmpHNFY2YgHr942nBhn+cppmsEvKSZeHqI3R2W1RLD2QPGBeyWEtEhU9tQWO7ll8oghA/Kc7gxNFBd76SCcAk5o5SSxJpyoXp8BpDe6p2quj7qpfkhYao3gdQm+SfPJJP2XdZb738gyVJFnwgaEBj+O6/kAw==
 before_script:
   - composer self-update
   - composer install --prefer-source
@@ -15,5 +11,3 @@ script:
   - vendor/bin/phpcs --standard=PSR2 src/*
 notifications:
   email: false
-after_failure:
-  - python slack_notifier.py --project $PROJECT --org $SLACK_ORG --token $SLACK_TOKEN
