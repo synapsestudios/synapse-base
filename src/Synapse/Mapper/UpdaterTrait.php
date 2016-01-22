@@ -48,4 +48,39 @@ trait UpdaterTrait
 
         $this->execute($query);
     }
+
+    public function patch(AbstractEntity $entity) {
+        if ($this->updatedTimestampColumn) {
+            $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
+        }
+
+        if ($this->updatedDatetimeColumn) {
+            $entity->exchangeArray([$this->updatedDatetimeColumn => date('Y-m-d H:i:s')]);
+        }
+
+        $this->patchRow($entity);
+
+        return $entity;
+    }
+
+    /**
+     * Update an entity's DB row by its ID.
+     * Set the updated timestamp column if it exists.
+     *
+     * @param  AbstractEntity $entity
+     */
+    protected function patchRow(AbstractEntity $entity)
+    {
+        $values = $entity->getChangedDbValues();
+        if (empty($values)) {
+            return;
+        }
+
+        $query = $this->getSqlObject()
+            ->update()
+            ->set($values)
+            ->where($this->getPrimaryKeyWheres($entity));
+
+        $this->execute($query);
+    }
 }
