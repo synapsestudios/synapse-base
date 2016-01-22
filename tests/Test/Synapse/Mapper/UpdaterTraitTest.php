@@ -2,11 +2,32 @@
 
 namespace Test\Synapse\Mapper;
 
+use Synapse\Mapper\AbstractMapper;
+use Synapse\Mapper\UpdaterTrait;
 use Synapse\TestHelper\MapperTestCase;
 use Synapse\User\UserEntity;
 
 class UpdaterTraitTest extends MapperTestCase
 {
+    private $prototype;
+    private $timestampPrototype;
+    /**
+     * @var AbstractMapper|UpdaterTrait
+     */
+    private $mapper;
+    /**
+     * @var AbstractMapper|UpdaterTrait
+     */
+    private $timestampMapper;
+    /**
+     * @var AbstractMapper|UpdaterTrait
+     */
+    private $datetimeMapper;
+    /**
+     * @var AbstractMapper|UpdaterTrait
+     */
+    private $differentPrimaryKeyMapper;
+
     public function setUp()
     {
         parent::setUp();
@@ -173,6 +194,28 @@ class UpdaterTraitTest extends MapperTestCase
                 $keyValues['id'],
                 $keyValues['email']
             )
+        );
+    }
+
+    public function testPatchOnMapperWithNoChangesDoesNotCallExecute()
+    {
+        $entity = $this->createEntityToUpdate();
+
+        $this->mapper->patch($entity);
+
+        $this->assertEmpty($this->sqlStrings);
+    }
+
+    public function testPatchOnMapperWithOneChangeDoesNotUpdateOtherField()
+    {
+        $entity = $this->createEntityToUpdate();
+        $entity->setEmail('x@y.com');
+
+        $this->mapper->patch($entity);
+
+        $this->assertEquals(
+            "UPDATE `test_table` SET `email` = 'x@y.com' WHERE `id` = '1234'",
+            $this->getSqlString(0)
         );
     }
 }

@@ -53,6 +53,8 @@ abstract class MapperTestCase extends TestCase
     protected $mockResults = [];
 
     protected $fallbackTableName = 'table';
+    protected $mockResultCount;
+    private $mapper;
 
     public function setUp()
     {
@@ -70,7 +72,7 @@ abstract class MapperTestCase extends TestCase
     /**
      * Set array of data that a query result will contain
      *
-     * @param array $results... Array of data for result to contain.  Repeatable
+     * @internal param array $results ... Array of data for result to contain.  Repeatable
      *                          if multiple queries will be executed.
      */
     public function setMockResults()

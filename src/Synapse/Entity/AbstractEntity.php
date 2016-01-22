@@ -14,6 +14,46 @@ abstract class AbstractEntity extends DataObject implements AbstractEntityInterf
 {
     use LoggerAwareTrait;
 
+    private $dirtyFields = [];
+
+    /**
+     * @param array $data  Initial data
+     */
+    public function __construct(array $data = [])
+    {
+        parent::__construct($data);
+        $this->dirtyFields = [];
+    }
+
+    /**
+     * Handle magic getters and setters
+     *
+     * @param  string $method Name of the method called
+     * @param  array $args    Arguments passed to the method
+     * @return mixed
+     */
+    public function __call($method, array $args)
+    {
+        $type     = $this->getMagicMethodType($method);
+        $property = $this->getMagicMethodProperty($method);
+
+        if ($type === 'get') {
+            // Return the property
+            return $this->object[$property];
+        }
+
+        // Not getting, so we must be setting; set the property
+        if (array_key_exists($property, $this->object) && $this->object[$property] !== $args[0]) {
+            $this->object[$property] = $args[0];
+            if (in_array($property, $this->getColumns())) {
+                $this->dirtyFields[$property] = true;
+            }
+        }
+
+        // Fluent interface
+        return $this;
+    }
+
     /**
      * Get all columns of this entity that correspond to database columns
      *
@@ -38,6 +78,15 @@ abstract class AbstractEntity extends DataObject implements AbstractEntityInterf
     }
 
     /**
+     * Returns only the changed values
+     * @return array
+     */
+    public function getChangedDbValues()
+    {
+        return array_intersect_key($this->getDbValues(), $this->dirtyFields);
+    }
+
+    /**
      * Determine if this entity is new (not yet persisted) by checking for existence of an ID
      *
      * @return boolean
@@ -45,5 +94,89 @@ abstract class AbstractEntity extends DataObject implements AbstractEntityInterf
     public function isNew()
     {
         return $this->getId() ? false : true;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as an integer
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsInteger($field, $value)
+    {
+        if (in_array($field, $this->getColumns()) && (
+                !array_key_exists($field, $this->object) ||
+                $this->object[$field] !== $value
+        )) {
+            $this->dirtyFields[$field] = true;
+        }
+        $this->object[$field] = (int) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a float
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsFloat($field, $value)
+    {
+        if (in_array($field, $this->getColumns()) && (
+                !array_key_exists($field, $this->object) ||
+                $this->object[$field] !== $value
+            )) {
+            $this->dirtyFields[$field] = true;
+        }
+        $this->object[$field] = (float) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a boolean
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsBoolean($field, $value)
+    {
+        if (in_array($field, $this->getColumns()) && (
+                !array_key_exists($field, $this->object) ||
+                $this->object[$field] !== $value
+            )) {
+            $this->dirtyFields[$field] = true;
+        }
+        $this->object[$field] = (bool) $value;
+
+        return $this;
+    }
+
+    /**
+     * Set the given field with the given value typecasted as a string
+     *
+     * @param string $field Field to set
+     * @param mixed  $value Value to set
+     *
+     * @return $this
+     */
+    protected function setAsString($field, $value)
+    {
+        if (in_array($field, $this->getColumns()) && (
+                !array_key_exists($field, $this->object) ||
+                $this->object[$field] !== $value
+            )) {
+            $this->dirtyFields[$field] = true;
+        }
+        $this->object[$field] = (string) $value;
+
+        return $this;
     }
 }
