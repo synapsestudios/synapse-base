@@ -49,7 +49,8 @@ trait UpdaterTrait
         $this->execute($query);
     }
 
-    public function patch(AbstractEntity $entity) {
+    public function patch(AbstractEntity $entity)
+    {
         if ($this->updatedTimestampColumn) {
             $entity->exchangeArray([$this->updatedTimestampColumn => time()]);
         }
