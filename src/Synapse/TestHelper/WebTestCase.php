@@ -58,6 +58,9 @@ class WebTestCase extends WebCase
         defined('DATADIR') or define('DATADIR', APPDIR.'/data');
         defined('TMPDIR') or define('TMPDIR', '/tmp');
         date_default_timezone_set('UTC');
+        if (!array_key_exists('APP_ENV', $_SERVER)) {
+            $_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = 'development';
+        }
 
         $applicationInitializer = new Synapse\ApplicationInitializer;
 
