@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [v4.1.0](https://github.com/synapsestudios/synapse-base/compare/v4.0.6...v4.1.0) (2016-01-22)
+
+* Add patch method to Updater to only save changed values
+
 ## [v4.0.6](https://github.com/synapsestudios/synapse-base/compare/v4.0.5...v4.0.6) (2015-08-26)
 
 * Added Beta Environment
