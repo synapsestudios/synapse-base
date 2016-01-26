@@ -54,7 +54,7 @@ abstract class MapperTestCase extends TestCase
 
     protected $fallbackTableName = 'table';
     protected $mockResultCount;
-    private $mapper;
+    protected $mapper;
 
     public function setUp()
     {

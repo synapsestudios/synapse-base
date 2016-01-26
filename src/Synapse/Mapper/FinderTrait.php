@@ -126,8 +126,8 @@ trait FinderTrait
     /**
      * Find all entities in this table
      *
-     * @param  array $options Array of options for this request
-     * @return array          Array of AbstractEntity objects
+     * @param  array $options           Array of options for this request
+     * @return array|EntityIterator Array of AbstractEntity objects
      */
     public function findAll(array $options = [])
     {

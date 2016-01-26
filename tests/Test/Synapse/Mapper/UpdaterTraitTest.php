@@ -14,7 +14,7 @@ class UpdaterTraitTest extends MapperTestCase
     /**
      * @var AbstractMapper|UpdaterTrait
      */
-    private $mapper;
+    protected $mapper;
     /**
      * @var AbstractMapper|UpdaterTrait
      */

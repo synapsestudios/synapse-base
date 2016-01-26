@@ -97,6 +97,15 @@ abstract class AbstractEntity extends DataObject implements AbstractEntityInterf
     }
 
     /**
+     * Sets entity as clean
+     * This should *ONLY* be used by a hydrator
+     */
+    public function setAsClean()
+    {
+        $this->dirtyFields = [];
+    }
+
+    /**
      * Set the given field with the given value typecasted as an integer
      *
      * @param string $field Field to set
