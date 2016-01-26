@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [v4.1.1](https://github.com/synapsestudios/synapse-base/compare/v4.1.0...v4.1.1) (2016-01-26)
+
+* Fixed mapper fetched results hydrated as dirty
 
 ## [v4.1.0](https://github.com/synapsestudios/synapse-base/compare/v4.0.6...v4.1.0) (2016-01-22)
 
