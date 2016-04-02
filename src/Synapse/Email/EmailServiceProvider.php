@@ -31,7 +31,7 @@ class EmailServiceProvider implements ServiceProviderInterface
             return $service;
         });
 
-        $app['email.sender'] = $app->share(function (Application $app) {
+        $app['email-sender.mandrill'] = $app->share(function (Application $app) {
             $emailConfig = $app['config']->load('email');
 
             if (! $apiKey = Arr::path($emailConfig, 'sender.mandrill.apiKey')) {
@@ -47,6 +47,26 @@ class EmailServiceProvider implements ServiceProviderInterface
 
             return $sender;
         });
+
+        $app['email-sender.mailgun'] = $app->share(function (Application $app) {
+            $emailConfig = $app['config']->load('email');
+
+            if (! $apiKey = Arr::path($emailConfig, 'sender.mailgun.apiKey')) {
+                return;
+            }
+
+            $sender = new MailgunSender(
+                Arr::path($emailConfig, 'sender.mailgun.domain'),
+                new Mandrill($apiKey),
+                $app['email.mapper']
+            );
+
+            $sender->setConfig($emailConfig);
+
+            return $sender;
+        });
+
+        $app['email.sender'] = $app['email-sender.mailgun'];
 
         $app['email.send'] = $app->share(function (Application $app) {
             $command = new SendEmailCommand('email:send');
