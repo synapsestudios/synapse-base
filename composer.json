@@ -32,5 +32,10 @@
     },
     "autoload" : {
         "psr-0" : { "Synapse": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-add-mailgun-sender": "4.2"
+        }
     }
 }
