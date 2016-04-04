@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## [v5.0.0](https://github.com/synapsestudios/synapse-base/compare/v4.1.1...v5.0.0) (2016-04-04)
+
+* Add Mailgun sender. Make it the default.
+
 ## [v4.1.1](https://github.com/synapsestudios/synapse-base/compare/v4.1.0...v4.1.1) (2016-01-26)
 
 * Fixed mapper fetched results hydrated as dirty
