@@ -5,6 +5,7 @@ namespace Synapse\Email;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Stdlib\Arr;
+use Mailgun\Mailgun;
 use Mandrill;
 
 /**

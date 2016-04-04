@@ -2,7 +2,7 @@
 
 namespace Synapse\Email;
 
-use Mailgun;
+use Mailgun\Mailgun;
 
 /**
  * Service to send emails
