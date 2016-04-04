@@ -46,9 +46,8 @@ class MailgunSender extends AbstractSender
         $message = $this->buildMessage($email);
 
         $result = $this->mailgun->sendMessage($this->domain, $message);
-        $result = array_shift($result);
 
-        $email->setStatus($result['status']);
+        $email->setStatus($result->http_response_code === 200 ? 'sent' : 'error');
         $email->setSent($time);
         $email->setUpdated($time);
 
@@ -68,7 +67,7 @@ class MailgunSender extends AbstractSender
     protected function buildMessage(EmailEntity $email)
     {
         // Create attachments array
-        $attachments = json_decode($email->getAttachments(), true);
+        $attachments = json_decode($email->getAttachments(), true) ?: [];
 
         // Convert Mandrill format to Mailgun format
         $attachments = array_map(
@@ -84,12 +83,14 @@ class MailgunSender extends AbstractSender
                 if (isset($attachment['type'])) {
                     $attachment['contentType'] = Arr::remove($attachment, 'type');
                 }
+
+                return attachment;
             },
             $attachments
         );
 
         if ($email->getSenderName()) {
-            $from = "${$email->getSenderName()} <${$email->getSenderEmail()}>";
+            $from = "{$email->getSenderName()} <{$email->getSenderEmail()}>";
         } else {
             $from = $email->getSenderEmail();
         }
