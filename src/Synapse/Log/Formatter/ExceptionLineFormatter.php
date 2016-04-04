@@ -62,7 +62,7 @@ class ExceptionLineFormatter extends LineFormatter
     /**
      * {@inheritdoc}
      */
-    protected function normalizeException(Exception $e)
+    protected function normalizeException($e)
     {
         $message = 'Stack Trace: '.PHP_EOL;
         $message .= sprintf(
