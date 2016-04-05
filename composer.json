@@ -13,7 +13,7 @@
         "chrisboulton/php-resque"                      : "v1.2",
         "mandrill/mandrill"                            : "1.0.52",
         "psr/log"                                      : "v1.0.0",
-        "monolog/monolog"                              : "~1.7",
+        "monolog/monolog"                              : "~1.18.2",
         "rollbar/rollbar"                              : "~0.14",
         "zendframework/zend-stdlib"                    : "~2.2.5",
         "ircmaxell/password-compat"                    : "dev-master",
