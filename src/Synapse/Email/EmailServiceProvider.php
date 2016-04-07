@@ -57,7 +57,6 @@ class EmailServiceProvider implements ServiceProviderInterface
             }
 
             $sender = new MailgunSender(
-                Arr::path($emailConfig, 'sender.mailgun.domain'),
                 new Mailgun($apiKey),
                 $app['email.mapper']
             );

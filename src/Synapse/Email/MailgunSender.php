@@ -10,11 +10,6 @@ use Mailgun\Mailgun;
 class MailgunSender extends AbstractSender
 {
     /**
-     * @var string
-     */
-    protected $domain;
-
-    /**
      * @var Mailgun
      */
     protected $mailgun;
@@ -29,9 +24,8 @@ class MailgunSender extends AbstractSender
      * @param Mailgun     $mailgun
      * @param EmailMapper $mapper
      */
-    public function __construct($domain, Mailgun $mailgun, EmailMapper $mapper)
+    public function __construct(Mailgun $mailgun, EmailMapper $mapper)
     {
-        $this->domain  = $domain;
         $this->mailgun = $mailgun;
         $this->mapper  = $mapper;
     }
@@ -45,7 +39,13 @@ class MailgunSender extends AbstractSender
 
         $message = $this->buildMessage($email);
 
-        $result = $this->mailgun->sendMessage($this->domain, $message);
+        // Get domain from the "from" address
+        if (!preg_match('/@(.+)$/', $email->getSenderEmail(), $matches)) {
+            throw new \Exception("Invalid from address: {$email->getSenderEmail()}");
+        }
+        $domain = $matches[1];
+
+        $result = $this->mailgun->sendMessage($domain, $message);
 
         $email->setStatus($result->http_response_code === 200 ? 'sent' : 'error');
         $email->setSent($time);
