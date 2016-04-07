@@ -103,6 +103,14 @@ class MailgunSender extends AbstractSender
             'attachments' => $attachments,
         ];
 
+        if ($email->getHeaders()) {
+            $headers = [];
+            foreach (json_decode($email->getHeaders(), true) as $key => $value) {
+                $headers["h:{$key}"] = $value;
+            }
+            $message['headers'] = $headers;
+        }
+
         return $message;
     }
 }
