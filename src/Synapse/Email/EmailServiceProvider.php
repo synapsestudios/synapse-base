@@ -2,6 +2,7 @@
 
 namespace Synapse\Email;
 
+use Http\Adapter\Guzzle6\Client as HttpClient;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Stdlib\Arr;
@@ -57,7 +58,7 @@ class EmailServiceProvider implements ServiceProviderInterface
             }
 
             $sender = new MailgunSender(
-                new Mailgun($apiKey),
+                new Mailgun($apiKey, new HttpClient()),
                 $app['email.mapper']
             );
 
