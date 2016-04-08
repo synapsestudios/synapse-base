@@ -3,6 +3,7 @@
 namespace Synapse\Email;
 
 use Mailgun\Mailgun;
+use Handlebars\Handlebars;
 
 /**
  * Service to send emails
@@ -20,14 +21,23 @@ class MailgunSender extends AbstractSender
     protected $mapper;
 
     /**
+     * @var Handlebars
+     */
+    protected $handlebars;
+
+    /**
      * @param string      $domain
      * @param Mailgun     $mailgun
      * @param EmailMapper $mapper
      */
-    public function __construct(Mailgun $mailgun, EmailMapper $mapper)
-    {
+    public function __construct(
+        Mailgun $mailgun,
+        EmailMapper $mapper,
+        Handlebars $handlebars
+    ) {
         $this->mailgun = $mailgun;
         $this->mapper  = $mapper;
+        $this->handlebars = $handlebars;
     }
 
     /**
@@ -95,8 +105,17 @@ class MailgunSender extends AbstractSender
             $from = $email->getSenderEmail();
         }
 
+        if ($email->getTemplateName()) {
+            $html = $this->handlebars->render(
+                $email->getTemplateName(),
+                $email->getTemplateData() ? json_decode($email->getTemplateData(), true) : []
+            );
+        } else {
+            $html = $email->getMessage();
+        }
+
         $message = [
-            'html'        => $email->getMessage(),
+            'html'        => $html,
             'subject'     => $email->getSubject(),
             'from'        => $from,
             'to'          => $this->filterThroughWhitelist($email->getRecipientEmail()),

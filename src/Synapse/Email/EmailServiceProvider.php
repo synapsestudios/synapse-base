@@ -59,7 +59,8 @@ class EmailServiceProvider implements ServiceProviderInterface
 
             $sender = new MailgunSender(
                 new Mailgun($apiKey, new HttpClient()),
-                $app['email.mapper']
+                $app['email.mapper'],
+                $app['handlebars']
             );
 
             $sender->setConfig($emailConfig);
@@ -67,7 +68,9 @@ class EmailServiceProvider implements ServiceProviderInterface
             return $sender;
         });
 
-        $app['email.sender'] = $app['email-sender.mailgun'];
+        $app['email.sender'] = $app->share(function ($app) {
+            return $app['email-sender.mailgun'];
+        });
 
         $app['email.send'] = $app->share(function (Application $app) {
             $command = new SendEmailCommand('email:send');

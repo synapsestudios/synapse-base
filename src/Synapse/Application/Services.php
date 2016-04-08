@@ -46,6 +46,7 @@ class Services implements ServicesInterface
         $app->register(new \Synapse\Session\SessionServiceProvider);
         $app->register(new \Synapse\SocialLogin\SocialLoginServiceProvider);
         $app->register(new \Synapse\Time\TimeServiceProvider);
+        $app->register(new \Synapse\Template\TemplateServiceProvider);
         $app->register(new \Synapse\Validator\ValidatorServiceProvider);
 
         $app->register(new \Synapse\View\ViewServiceProvider, [
