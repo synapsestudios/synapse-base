@@ -60,7 +60,7 @@ class EmailServiceProvider implements ServiceProviderInterface
             $sender = new MailgunSender(
                 new Mailgun($apiKey, new HttpClient()),
                 $app['email.mapper'],
-                $app['handlebars']
+                $app['template.service']
             );
 
             $sender->setConfig($emailConfig);

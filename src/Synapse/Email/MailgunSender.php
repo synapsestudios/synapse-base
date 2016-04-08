@@ -3,7 +3,7 @@
 namespace Synapse\Email;
 
 use Mailgun\Mailgun;
-use Handlebars\Handlebars;
+use Synapse\Template\TemplateService;
 
 /**
  * Service to send emails
@@ -21,9 +21,9 @@ class MailgunSender extends AbstractSender
     protected $mapper;
 
     /**
-     * @var Handlebars
+     * @var TemplateService
      */
-    protected $handlebars;
+    protected $templateService;
 
     /**
      * @param string      $domain
@@ -33,11 +33,11 @@ class MailgunSender extends AbstractSender
     public function __construct(
         Mailgun $mailgun,
         EmailMapper $mapper,
-        Handlebars $handlebars
+        TemplateService $templateService
     ) {
         $this->mailgun = $mailgun;
         $this->mapper  = $mapper;
-        $this->handlebars = $handlebars;
+        $this->templateService = $templateService;
     }
 
     /**
@@ -106,7 +106,7 @@ class MailgunSender extends AbstractSender
         }
 
         if ($email->getTemplateName()) {
-            $html = $this->handlebars->render(
+            $html = $this->templateService->renderHbsForEmail(
                 $email->getTemplateName(),
                 $email->getTemplateData() ? json_decode($email->getTemplateData(), true) : []
             );

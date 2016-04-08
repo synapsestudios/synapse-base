@@ -6,11 +6,16 @@ use Handlebars\Loader\FilesystemLoader;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Stdlib\Arr;
+use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 class TemplateServiceProvider implements ServiceProviderInterface
 {
     public function register(Application $app)
     {
+        $app['css-to-inline'] = $app->share(function ($app) {
+            return new CssToInlineStyles();
+        });
+
         $app['handlebars'] = $app->share(function ($app) {
             $emailConfig = $app['config']->load('template');
 
@@ -30,6 +35,13 @@ class TemplateServiceProvider implements ServiceProviderInterface
                     ]
                 )
             ]);
+        });
+
+        $app['template.service'] = $app->share(function ($app) {
+            return new TemplateService(
+                $app['handlebars'],
+                $app['css-to-inline']
+            );
         });
     }
 
