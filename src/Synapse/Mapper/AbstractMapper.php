@@ -4,7 +4,7 @@ namespace Synapse\Mapper;
 
 use ArrayObject;
 
-use Synapse\Stdlib\Arr;
+use Synapse\Mapper\Hydrator\ArraySerializable;
 use Synapse\Entity\AbstractEntity as AbstractEntity;
 use Synapse\Entity\EntityIterator;
 use Synapse\Db\ResultSet\HydratingResultSet;
@@ -15,7 +15,6 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\PreparableSqlInterface;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Stdlib\Hydrator\HydratorInterface;
-use Zend\Stdlib\Hydrator\ArraySerializable;
 
 /**
  * An abstract class for mapping database records to entity objects
@@ -41,7 +40,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
     /**
      * Entity prototype used to return hydrated entities
      *
-     * @var Entity
+     * @var AbstractEntity
      */
     protected $prototype;
 
@@ -55,7 +54,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
     /**
      * The hydrator used to create entities from database results
      *
-     * @var Zend\Stdlib\Hydrator\HydratorInterface
+     * @var HydratorInterface
      */
     protected $hydrator;
 
@@ -113,7 +112,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
     /**
      * Set injected objects as properties
      *
-     * @param DbAdapter      $db        Query builder object
+     * @param DbAdapter      $dbAdapter Query builder object
      * @param AbstractEntity $prototype Entity prototype
      */
     public function __construct(DbAdapter $dbAdapter, AbstractEntity $prototype = null)
@@ -160,10 +159,12 @@ abstract class AbstractMapper implements LoggerAwareInterface
      */
     public function persist(AbstractEntity $entity)
     {
+        /** @var InserterTrait $this */
         if ($entity->isNew()) {
             return $this->insert($entity);
         }
 
+        /** @var UpdaterTrait $this */
         return $this->update($entity);
     }
 
@@ -181,6 +182,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * Set the entity prototype for this mapper
      *
      * @param AbstractEntity $prototype
+     * @return $this
      */
     public function setPrototype(AbstractEntity $prototype)
     {
@@ -229,7 +231,7 @@ abstract class AbstractMapper implements LoggerAwareInterface
      * Execute a given query
      *
      * @param  PreparableSqlInterface $query Query to be executed
-     * @return Zend\Db\ResultSet\ResultSet
+     * @return HydratingResultSet
      */
     protected function execute(PreparableSqlInterface $query)
     {

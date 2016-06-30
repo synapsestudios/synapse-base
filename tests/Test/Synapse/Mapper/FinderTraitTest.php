@@ -2,8 +2,9 @@
 
 namespace Test\Synapse\Mapper;
 
+use Synapse\Mapper\AbstractMapper;
+use Synapse\Mapper\FinderTrait;
 use Synapse\TestHelper\MapperTestCase;
-use Synapse\User\UserEntity;
 use stdClass;
 
 class FinderTraitTest extends MapperTestCase
@@ -13,6 +14,10 @@ class FinderTraitTest extends MapperTestCase
 
     // Set to a non-round number to make the tests stronger
     const RESULTS_PER_PAGE = 47;
+    /** @var  AbstractMapper|FinderTrait */
+    protected $mapper;
+    private $prototype;
+    private $captured;
 
     public function setUp()
     {
@@ -22,7 +27,9 @@ class FinderTraitTest extends MapperTestCase
 
         $this->prototype = $this->createPrototype();
 
+        /** @noinspection PhpParamsInspection */
         $this->mapper = new Mapper($this->mocks['adapter'], $this->prototype);
+        /** @noinspection PhpParamsInspection */
         $this->mapper->setSqlFactory($this->mocks['sqlFactory']);
 
         $this->mapper->setResultsPerPage(self::RESULTS_PER_PAGE);
@@ -134,8 +141,6 @@ class FinderTraitTest extends MapperTestCase
 
     public function testFindByConstructsWhereClausesWithAnds()
     {
-        $tableName = $this->mapper->getTableName();
-
         $constraints = $this->createSearchConstraints();
 
         $this->mapper->findBy($constraints);
@@ -173,8 +178,6 @@ class FinderTraitTest extends MapperTestCase
 
     public function testFindAllByConstructsWhereClausesWithAnds()
     {
-        $tableName = $this->mapper->getTableName();
-
         $constraints = $this->createSearchConstraints();
 
         $this->mapper->findAllBy($constraints);
@@ -411,7 +414,7 @@ class FinderTraitTest extends MapperTestCase
     }
 
     /**
-     * @expectedException LogicException
+     * @expectedException \LogicException
      */
     public function testFindAllByThrowsExceptionIfPageGivenButOrderNotGiven()
     {
@@ -493,6 +496,8 @@ class FinderTraitTest extends MapperTestCase
         $result = $this->mapper->findBy([]);
 
         $this->assertInstanceOf('Synapse\Entity\AbstractEntity', $result);
+
+        $this->assertEmpty($result->getChangedDbValues());
 
         $this->assertEquals(
             $mockResults,
