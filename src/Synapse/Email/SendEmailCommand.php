@@ -52,7 +52,7 @@ class SendEmailCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         if (! $this->emailSender) {
-            throw new LogicException('No email sender configured (did you set the Mandrill API key?)');
+            throw new LogicException('No email sender configured (did you set the API key?)');
         }
 
         if (! $this->emailMapper) {

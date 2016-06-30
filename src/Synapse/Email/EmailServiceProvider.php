@@ -2,6 +2,7 @@
 
 namespace Synapse\Email;
 
+use Http\Adapter\Guzzle6\Client as HttpClient;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Synapse\Stdlib\Arr;
@@ -57,9 +58,9 @@ class EmailServiceProvider implements ServiceProviderInterface
             }
 
             $sender = new MailgunSender(
-                Arr::path($emailConfig, 'sender.mailgun.domain'),
-                new Mailgun($apiKey),
-                $app['email.mapper']
+                new Mailgun($apiKey, new HttpClient()),
+                $app['email.mapper'],
+                $app['template.service']
             );
 
             $sender->setConfig($emailConfig);
@@ -67,7 +68,9 @@ class EmailServiceProvider implements ServiceProviderInterface
             return $sender;
         });
 
-        $app['email.sender'] = $app['email-sender.mailgun'];
+        $app['email.sender'] = $app->share(function ($app) {
+            return $app['email-sender.mailgun'];
+        });
 
         $app['email.send'] = $app->share(function (Application $app) {
             $command = new SendEmailCommand('email:send');

@@ -3,17 +3,13 @@
 namespace Synapse\Email;
 
 use Mailgun\Mailgun;
+use Synapse\Template\TemplateService;
 
 /**
  * Service to send emails
  */
 class MailgunSender extends AbstractSender
 {
-    /**
-     * @var string
-     */
-    protected $domain;
-
     /**
      * @var Mailgun
      */
@@ -25,15 +21,23 @@ class MailgunSender extends AbstractSender
     protected $mapper;
 
     /**
+     * @var TemplateService
+     */
+    protected $templateService;
+
+    /**
      * @param string      $domain
      * @param Mailgun     $mailgun
      * @param EmailMapper $mapper
      */
-    public function __construct($domain, Mailgun $mailgun, EmailMapper $mapper)
-    {
-        $this->domain  = $domain;
+    public function __construct(
+        Mailgun $mailgun,
+        EmailMapper $mapper,
+        TemplateService $templateService
+    ) {
         $this->mailgun = $mailgun;
         $this->mapper  = $mapper;
+        $this->templateService = $templateService;
     }
 
     /**
@@ -45,7 +49,13 @@ class MailgunSender extends AbstractSender
 
         $message = $this->buildMessage($email);
 
-        $result = $this->mailgun->sendMessage($this->domain, $message);
+        // Get domain from the "from" address
+        if (!preg_match('/@(.+)$/', $email->getSenderEmail(), $matches)) {
+            throw new \Exception("Invalid from address: {$email->getSenderEmail()}");
+        }
+        $domain = $matches[1];
+
+        $result = $this->mailgun->sendMessage($domain, $message);
 
         $email->setStatus($result->http_response_code === 200 ? 'sent' : 'error');
         $email->setSent($time);
@@ -95,13 +105,30 @@ class MailgunSender extends AbstractSender
             $from = $email->getSenderEmail();
         }
 
+        if ($email->getTemplateName()) {
+            $html = $this->templateService->renderHbsForEmail(
+                $email->getTemplateName(),
+                $email->getTemplateData() ? json_decode($email->getTemplateData(), true) : []
+            );
+        } else {
+            $html = $email->getMessage();
+        }
+
         $message = [
-            'html'        => $email->getMessage(),
+            'html'        => $html,
             'subject'     => $email->getSubject(),
             'from'        => $from,
             'to'          => $this->filterThroughWhitelist($email->getRecipientEmail()),
             'attachments' => $attachments,
         ];
+
+        if ($email->getHeaders()) {
+            $headers = [];
+            foreach (json_decode($email->getHeaders(), true) as $key => $value) {
+                $headers["h:{$key}"] = $value;
+            }
+            $message['headers'] = $headers;
+        }
 
         return $message;
     }
