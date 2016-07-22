@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## [v5.0.1](https://github.com/synapsestudios/synapse-base/compare/v5.0.0...v5.0.1) (2016-07-22)
+
+* Fix undefined key error in EmailService.
+
 ## [v5.0.0](https://github.com/synapsestudios/synapse-base/compare/v4.1.1...v5.0.0) (2016-04-04)
 
 * Add Mailgun sender. Make it the default.
