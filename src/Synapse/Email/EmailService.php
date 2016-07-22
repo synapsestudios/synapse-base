@@ -64,7 +64,7 @@ class EmailService
             Arr::path($this->emailConfig, 'defaults.headers', [])
         );
 
-        if ($data['sender_localpart']) {
+        if (isset($data['sender_localpart'])) {
             if (! Arr::path($this->emailConfig, 'defaults.sender.domain')) {
                 throw new \Exception('defaults.sender.domain not set in email config');
             }
