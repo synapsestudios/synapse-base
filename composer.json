@@ -21,7 +21,7 @@
         "jdesrosiers/silex-cors-provider"              : "~0.1",
         "lusitanian/oauth"                             : "~0.2",
         "mustache/mustache"                            : "~2.5.1",
-        "mailgun/mailgun-php": "^2.0",
+        "mailgun/mailgun-php": "^2.1",
         "php-http/guzzle6-adapter": "^1.0",
         "xamin/handlebars.php": "^0.10",
         "tijsverkoyen/css-to-inline-styles": "^2.0@dev"
