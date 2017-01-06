@@ -36,6 +36,7 @@ class ServerServiceProvider implements ServiceProviderInterface
 
         $app['oauth_server'] = $app->share(function ($app) {
             $storage = $app['oauth.storage'];
+            $authConfig = $app['config']->load('auth');
 
             $grantTypes = [
                 'authorization_code' => new AuthorizationCode($storage),
@@ -43,7 +44,7 @@ class ServerServiceProvider implements ServiceProviderInterface
                 'user_credentials'   => new UserCredentials($storage),
             ];
 
-            $accessTokenResponseType = new AccessToken($storage, $storage);
+            $accessTokenResponseType = new AccessToken($storage, $storage, $authConfig);
             $authCodeResponseType = new AuthorizationCodeResponse($storage);
 
             return new OAuth2Server(
