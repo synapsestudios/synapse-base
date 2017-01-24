@@ -53,7 +53,7 @@ class MailgunSender extends AbstractSender
         if (!preg_match('/@(.+)$/', $email->getSenderEmail(), $matches)) {
             throw new \Exception("Invalid from address: {$email->getSenderEmail()}");
         }
-        $domain = $matches[1];
+        $domain = Arr::get($this->config, 'sender_domain', $matches[1]);
 
         $result = $this->mailgun->sendMessage($domain, $message);
 
