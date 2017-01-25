@@ -3,6 +3,7 @@
 namespace Synapse\Email;
 
 use Mailgun\Mailgun;
+use Synapse\Stdlib\Arr;
 use Synapse\Template\TemplateService;
 
 /**
